@@ -11,7 +11,7 @@ metadata:
 spec:
   type: service
   lifecycle: experimental
-  owner: matth-ng
+  owner: Matth-Ng
   providesApis:
     - petstore
     - streetlights
