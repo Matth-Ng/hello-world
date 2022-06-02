@@ -17,20 +17,16 @@ jobs:
         continue-on-error: true
         with:
           ref: 'staging-deployment-release-tag'
-      - name: do something not success
-        if: steps.checkoutTag.outcome != 'success'
-        id: actualWorkStepSuccess
-        run: echo "Not Success____________________________________________________"
       - name: do something
         if: steps.checkoutTag.outcome == 'success'
-        id: actualWorkStepFail
+        id: actualWorkStepSuccess
         run: echo "Success____________________________________________________"
       - uses: cardinalby/git-tag-action@master
         env:
           TAG: 'utility-deployment-release-tag'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Delete delayed-job-tag  
-        if: steps.addCommit.outcome == 'success'
+        if: steps.actualWorkStepSuccess.outcome == 'success'
         uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           tag_name: 'staging-deployment-release-tag'
