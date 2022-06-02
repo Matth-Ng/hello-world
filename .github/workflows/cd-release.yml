@@ -19,4 +19,4 @@ jobs:
         if: ## need to run delayed steps
         env:
           TAG: 'staging-deployment-release-tag'
-          PACKAGE_VERSION: ${{ upper-tier-deployment.outputs.package-version }}
+          PACKAGE_VERSION: ${{ jobs.upper-tier-deployment.outputs.package-version }}

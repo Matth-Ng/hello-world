@@ -25,4 +25,4 @@ jobs:
         with:
           tag_name: 'utility-deployment-release-tag'
         env:
-          PACKAGE_VERSION: ${{ upper-tier-deployment.outputs.package-version }}
+          PACKAGE_VERSION: ${{ jobs.upper-tier-deployment.outputs.package-version }}
