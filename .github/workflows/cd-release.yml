@@ -1,0 +1,22 @@
+name: Higher Tier Deployment Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  upper-tier-deployment:
+    runs-on: ubuntu-20.04
+    outputs:
+      package-version: ${{ steps.get-version.outputs.package-version }}
+    steps:
+      - name: Get version
+        id: get-version
+        run: |
+          echo "::set-output name=package-version::$(npm run get-version -s)-${{ github.run_number }}"
+      - uses: cardinalby/git-tag-action@master
+        if: ## need to run delayed steps
+        env:
+          TAG: 'staging-deployment-release-tag'
+          PACKAGE_VERSION: ${{ upper-tier-deployment.outputs.package-version }}

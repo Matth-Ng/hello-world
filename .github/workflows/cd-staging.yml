@@ -1,0 +1,39 @@
+name: Staging Build and Push Container
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
+
+jobs:
+  update-staging-manifest:
+    runs-on: ubuntu-latest
+    environment: 'staging'
+    steps:
+      - name: Checkout by staging-deployment-release-tag
+        id: checkoutTag
+        uses: actions/checkout@v2
+        continue-on-error: true
+        with:
+          ref: 'staging-deployment-release-tag'
+      - name: do something
+        if: steps.checkoutTag.outcome != 'success'
+        id: actualWorkStep
+        run: echo "Not Success____________________________________________________"
+      - name: do something
+        if: steps.checkoutTag.outcome == 'success'
+        id: actualWorkStep
+        run: echo "Success____________________________________________________"
+      - uses: cardinalby/git-tag-action@master
+        if: ## need to run delayed steps
+        env:
+          TAG: 'utility-deployment-release-tag'
+          PACKAGE_VERSION: ${{ upper-tier-deployment.outputs.package-version }}
+      - name: Delete delayed-job-tag  
+        if: steps.addCommit.outcome == 'success'
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          tag_name: 'staging-deployment-release-tag'
+        env:
+          PACKAGE_VERSION: ${{ upper-tier-deployment.outputs.package-version }}

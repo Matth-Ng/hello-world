@@ -1,0 +1,28 @@
+name: Utility Build and Push Container
+
+on:
+  schedule:
+    - cron: '30 2 * * 3'
+  workflow_dispatch:
+
+env:
+  AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
+
+jobs:
+  update-manifest:
+    runs-on: ubuntu-latest
+    environment: 'utility'
+    steps:
+      - name: Checkout by utility-deployment-release-tag
+        id: checkoutTag
+        uses: actions/checkout@v2
+        continue-on-error: true
+        with:
+          ref: 'utility-deployment-release-tag'
+      - name: Delete delayed-job-tag  
+        if: steps.addCommit.outcome == 'success'
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          tag_name: 'utility-deployment-release-tag'
+        env:
+          PACKAGE_VERSION: ${{ upper-tier-deployment.outputs.package-version }}
