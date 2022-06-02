@@ -19,3 +19,4 @@ jobs:
         if: ## need to run delayed steps
         env:
           TAG: 'staging-deployment-release-tag'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
