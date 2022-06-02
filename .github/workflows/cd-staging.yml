@@ -19,11 +19,11 @@ jobs:
           ref: 'staging-deployment-release-tag'
       - name: do something
         if: steps.checkoutTag.outcome != 'success'
-        id: actualWorkStep
+        id: actualWorkStepSuccess
         run: echo "Not Success____________________________________________________"
       - name: do something
         if: steps.checkoutTag.outcome == 'success'
-        id: actualWorkStep
+        id: actualWorkStepFail
         run: echo "Success____________________________________________________"
       # - uses: cardinalby/git-tag-action@master
       #   if: ## need to run delayed steps
