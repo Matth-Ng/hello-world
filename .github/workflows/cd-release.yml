@@ -15,8 +15,18 @@ jobs:
         id: get-version
         run: |
           echo "::set-output name=package-version::$(npm run get-version -s)-${{ github.run_number }}"
-      - uses: cardinalby/git-tag-action@master
-        if: ## need to run delayed steps
-        env:
-          TAG: 'staging-deployment-release-tag'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - uses: cardinalby/git-tag-action@master
+      #   if: ## need to run delayed steps
+      #   env:
+      #     TAG: 'staging-deployment-release-tag'
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/<tagname>',
+              sha: context.sha
+            })
