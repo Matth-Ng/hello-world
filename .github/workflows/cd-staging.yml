@@ -24,7 +24,7 @@ jobs:
       - name: Check Current Tag
         uses: actions/github-script@v5
         with:
-          script: echo ${{ steps.checkoutTag.outputs }}
+          script: echo '${{ steps.checkoutTag.outputs }}'
       # - name: Create tag
       #   uses: actions/github-script@v5
       #   with:
