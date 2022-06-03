@@ -45,6 +45,9 @@ jobs:
       #   with:
       #     Default: 'staging-deployment-release-tag'
       #     ref: 'utility-deployment-release-tag'
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
           script: |
             github.rest.git.createRef({
               owner: context.repo.owner,
