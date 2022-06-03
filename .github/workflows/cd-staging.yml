@@ -25,9 +25,7 @@ jobs:
         uses: actions/github-script@v5
         id: set-result
         with:
-          script: |
-            return $(echo git rev-list -n 1 staging-deployment-release-tag)"
-          result-encoding: string
+          script: return $(echo git rev-list -n 1 staging-deployment-release-tag)"
       - name: Check Current Tag
         run: echo "${{steps.set-result.outputs.result}}"
       # - name: Create tag
