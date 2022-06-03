@@ -31,7 +31,17 @@ jobs:
       - name: Check Current sha
         run: |
           echo "sha: ${{ steps.sha-result.outputs.staging-sha }}"
-      - name: Create tag
+      # - name: Create tag
+      #   uses: actions/github-script@v5
+      #   with:
+      #     script: |
+      #       github.rest.git.createRef({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         ref: 'refs/tags/utility-deployment-release-tag',
+      #         sha: "${{ steps.tag-result.outputs.staging-sha }}"
+      #       })
+        - name: Create tag
         uses: actions/github-script@v5
         with:
           script: |
@@ -39,7 +49,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: 'refs/tags/utility-deployment-release-tag',
-              sha: "${{ steps.tag-result.outputs.staging-sha }}"
+              sha: context.sha
             })
       - name: Delete delayed-job-tag  
         if: steps.actualWorkStepSuccess.outcome == 'success'
