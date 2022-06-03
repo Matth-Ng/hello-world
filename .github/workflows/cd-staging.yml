@@ -21,14 +21,8 @@ jobs:
         if: steps.checkoutTag.outcome == 'success'
         id: actualWorkStepSuccess
         run: echo "Success____________________________________________________"
-      - uses: cardinalby/git-tag-action@master
-        env:
-          TAG: 'utility-deployment-release-tag'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Delete delayed-job-tag  
-        if: steps.actualWorkStepSuccess.outcome == 'success'
-        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+      - name: Rename staging tag to utility tag
+        uses: localazy/tag@v1   
         with:
-          tag_name: 'staging-deployment-release-tag'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          rename_from: 'staging-deployment-release-tag'
+          rename_to: 'utility-deployment-release-tag'
