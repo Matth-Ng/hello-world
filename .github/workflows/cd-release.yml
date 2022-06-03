@@ -11,22 +11,9 @@ jobs:
     outputs:
       package-version: ${{ steps.get-version.outputs.package-version }}
     steps:
-      - name: Get version
-        id: get-version
-        run: |
-          echo "::set-output name=package-version::$(npm run get-version -s)-${{ github.run_number }}"
-      # - uses: cardinalby/git-tag-action@master
-      #   if: ## need to run delayed steps
-      #   env:
-      #     TAG: 'staging-deployment-release-tag'
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create tag
-        uses: actions/github-script@v5
+      - name: Dispatch Staging Ref
+        uses: peter-evans/repository-dispatch@v1.0.0
         with:
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/staging-deployment-release-tag',
-              sha: context.sha
-            })
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          event-type: builds
+          client-payload: '{"staging-ref": "${{ github.ref }}"}'

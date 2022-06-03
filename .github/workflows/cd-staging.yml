@@ -23,39 +23,12 @@ jobs:
         if: steps.checkoutTag.outcome == 'success'
         id: actualWorkStepSuccess
         run: echo "Success____________________________________________________"
-      - name: get sha
-        id: sha-result
-        shell: bash
-        run: |
-          echo "::set-output name=staging-sha::$(git rev-list -n 1 staging-deployment-release-tag)"
       - name: Check Current sha
         run: |
-          echo "sha: ${{ steps.sha-result.outputs.staging-sha }}"
-          echo "context: context.sha"
-      - name: Create utility tag
-        uses: actions/github-script@v5
+          echo "staging ref: ${{ github.event.client_payload.staging-ref }}"
+      - name: Dispatch Utility Ref
+        uses: peter-evans/repository-dispatch@v1.0.0
         with:
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/utility-deployment-release-tag',
-              sha: "${{ steps.tag-result.outputs.staging-sha }}"
-            })
-      # - name: Create tag context sha
-      #   uses: actions/github-script@v5
-      #   with:
-      #     script: |
-      #       github.rest.git.createRef({
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         ref: 'refs/tags/utility-deployment-release-tag',
-      #         sha: context.sha
-      #       })
-      - name: Delete delayed-job-tag  
-        if: steps.actualWorkStepSuccess.outcome == 'success'
-        uses: dev-drprasad/delete-tag-and-release@v0.2.0
-        with:
-          tag_name: 'staging-deployment-release-tag'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          event-type: builds
+          client-payload: '{"utility-ref": "${{ github.event.client_payload.staging-ref }}"}'
