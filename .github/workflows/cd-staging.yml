@@ -22,9 +22,7 @@ jobs:
         id: actualWorkStepSuccess
         run: echo "Success____________________________________________________"
       - name: Check Current Tag
-        uses: actions/github-script@v5
-        with:
-          script: echo "${{steps.checkoutTag}}"
+        run: echo "${{steps.checkoutTag}}"
       # - name: Create tag
       #   uses: actions/github-script@v5
       #   with:
