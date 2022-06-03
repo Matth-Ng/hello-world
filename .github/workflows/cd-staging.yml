@@ -26,8 +26,7 @@ jobs:
         id: set-result
         with:
           script: |
-            const { git_hash } =$(git rev-list -n 1 staging-deployment-release-tag)
-            echo "${git_hash}"
+            $(echo git rev-list -n 1 staging-deployment-release-tag)"
           result-encoding: string
       - name: Check Current Tag
         run: echo "${{steps.set-result.outputs.result}}"
