@@ -10,6 +10,8 @@ jobs:
   update-staging-manifest:
     runs-on: ubuntu-latest
     environment: 'staging'
+    outputs:
+      package-version: ${{ steps.set-result.outputs.staging-tag }}
     steps:
       - name: Checkout by staging-deployment-release-tag
         id: checkoutTag
@@ -25,10 +27,10 @@ jobs:
         id: set-result
         shell: bash
         run: |
-          echo "##[set-output name=staging_tag;]$(git rev-list -n 1 staging-deployment-release-tag)"
+          echo "::set-output name=staging-tag::$(git rev-list -n 1 staging-deployment-release-tag)"
       - name: Check Current Tag
         run: |
-          echo "tag: ${{ steps.set-result.output}}"
+          echo "tag: ${{ steps.set-result.outputs.staging-tag }}"
       # - name: Create tag
       #   uses: actions/github-script@v5
       #   with:
