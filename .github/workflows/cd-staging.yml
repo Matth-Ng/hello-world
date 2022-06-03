@@ -21,12 +21,12 @@ jobs:
         if: steps.checkoutTag.outcome == 'success'
         id: actualWorkStepSuccess
         run: echo "Success____________________________________________________"
-      - uses: actions/github-script@v5
+      - name: get tag
+        uses: actions/github-script@v5
         id: set-result
         with:
           script: |
             const { tag } = git rev-list -n 1 staging-deployment-release-tag
-            console.log(${tag})
             echo "${tag}"
           result-encoding: string
       - name: Check Current Tag
