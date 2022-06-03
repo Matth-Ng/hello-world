@@ -21,8 +21,13 @@ jobs:
         if: steps.checkoutTag.outcome == 'success'
         id: actualWorkStepSuccess
         run: echo "Success____________________________________________________"
+      - uses: actions/github-script@v6
+        id: set-result
+        with:
+          script: return git rev-list -n 1 $TAG
+          result-encoding: string
       - name: Check Current Tag
-        run: echo "${{ steps.checkoutTag.outputs.sha }}"
+        run: echo "${{steps.set-result.outputs.result}}"
       # - name: Create tag
       #   uses: actions/github-script@v5
       #   with:
