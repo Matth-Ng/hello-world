@@ -44,7 +44,7 @@ jobs:
         uses: EndBug/latest-tag@latest
         with:
           Default: 'staging-deployment-release-tag'
-          ref: 'refs/tags/utility-deployment-release-tag'
+          ref: 'utility-deployment-release-tag'
           # script: |
           #   github.rest.git.createRef({
           #     owner: context.repo.owner,
