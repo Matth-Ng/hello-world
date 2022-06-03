@@ -45,21 +45,13 @@ jobs:
       #   with:
       #     Default: 'staging-deployment-release-tag'
       #     ref: 'utility-deployment-release-tag'
-      - name: Get tag
-        id: tag
-        uses: dawidd6/action-get-tag@v1
-        with:
-          # Optionally strip `v` prefix
-          strip_v: true
-      - name: Use tag
-        run: echo ${{steps.tag.outputs.tag}}
-          # script: |
-          #   github.rest.git.createRef({
-          #     owner: context.repo.owner,
-          #     repo: context.repo.repo,
-          #     ref: 'refs/tags/utility-deployment-release-tag',
-          #     sha: context.sha
-          #   })
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/utility-deployment-release-tag',
+              sha: @staging-deployment-release-tag
+            })
       # - uses: cardinalby/git-tag-action@master
       #   env:
       #     TAG: 'utility-deployment-release-tag'
