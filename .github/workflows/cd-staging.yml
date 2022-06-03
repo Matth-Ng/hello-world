@@ -22,7 +22,9 @@ jobs:
         id: actualWorkStepSuccess
         run: echo "Success____________________________________________________"
       - name: Rename staging tag to utility tag
-        uses: localazy/tag@v1   
+        uses: localazy/tag@v1
         with:
+          read_key: ${{ secrets.GITHUB_TOKEN }}
+          write_key: ${{ secrets.GITHUB_TOKEN }}
           rename_from: 'staging-deployment-release-tag'
           rename_to: 'utility-deployment-release-tag'
