@@ -28,7 +28,7 @@ jobs:
           echo "##[set-output name=staging_tag;]$(git rev-list -n 1 staging-deployment-release-tag)"
       - name: Check Current Tag
         run: |
-          echo "tag: ${{ steps.set-result.output.staging_tag }}"
+          echo "tag: ${{ steps.set-result.output}}"
       # - name: Create tag
       #   uses: actions/github-script@v5
       #   with:
