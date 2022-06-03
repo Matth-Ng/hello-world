@@ -25,7 +25,7 @@ jobs:
         id: set-result
         shell: bash
         run: |
-          echo "::set-output name=staging_tag::$(git rev-list -n 1 staging-deployment-release-tag)"
+          echo "##[set-output name=branch;]$(git rev-list -n 1 staging-deployment-release-tag)"
           echo "tags: ${{ staging_tag }}"
       - name: Check Current Tag
         run: |
