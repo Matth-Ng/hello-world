@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: 'staging'
     outputs:
-      tag-result: ${{ steps.tag-result.outputs.staging-tag }}
+      sha-result: ${{ steps.sha-result.outputs.staging-sha }}
     steps:
       - name: Checkout by staging-deployment-release-tag
         id: checkoutTag
@@ -23,14 +23,14 @@ jobs:
         if: steps.checkoutTag.outcome == 'success'
         id: actualWorkStepSuccess
         run: echo "Success____________________________________________________"
-      - name: get tag
-        id: tag-result
+      - name: get sha
+        id: sha-result
         shell: bash
         run: |
-          echo "::set-output name=staging-tag::$(git rev-list -n 1 staging-deployment-release-tag)"
-      - name: Check Current Tag
+          echo "::set-output name=staging-sha::$(git rev-list -n 1 staging-deployment-release-tag)"
+      - name: Check Current sha
         run: |
-          echo "tag: ${{ steps.tag-result.outputs.staging-tag }}"
+          echo "sha: ${{ steps.sha-result.outputs.staging-sha }}"
       - name: Create tag
         uses: actions/github-script@v5
         with:
@@ -39,7 +39,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: 'refs/tags/utility-deployment-release-tag',
-              sha: "${{ steps.tag-result.outputs.staging-tag }}"
+              sha: ${{ steps.tag-result.outputs.staging-sha }}
             })
       - name: Delete delayed-job-tag  
         if: steps.actualWorkStepSuccess.outcome == 'success'
