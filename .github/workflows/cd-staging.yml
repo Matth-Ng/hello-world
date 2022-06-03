@@ -41,7 +41,7 @@ jobs:
       #         ref: 'refs/tags/utility-deployment-release-tag',
       #         sha: "${{ steps.tag-result.outputs.staging-sha }}"
       #       })
-        - name: Create tag
+      - name: Create tag context sha
         uses: actions/github-script@v5
         with:
           script: |
