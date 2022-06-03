@@ -38,14 +38,25 @@ jobs:
       #         ref: 'refs/tags/<tagname>',
       #         sha: context.sha
       #       })
-      - uses: cardinalby/git-tag-action@master
-        env:
-          TAG: 'utility-deployment-release-tag'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Delete delayed-job-tag  
-        if: steps.actualWorkStepSuccess.outcome == 'success'
-        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+      - name: Create tag
+        uses: actions/github-script@v5
         with:
-          tag_name: 'staging-deployment-release-tag'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          script: console.log(context)
+          # script: |
+          #   github.rest.git.createRef({
+          #     owner: context.repo.owner,
+          #     repo: context.repo.repo,
+          #     ref: 'refs/tags/staging-deployment-release-tag',
+          #     sha: context.sha
+          #   })
+      # - uses: cardinalby/git-tag-action@master
+      #   env:
+      #     TAG: 'utility-deployment-release-tag'
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Delete delayed-job-tag  
+      #   if: steps.actualWorkStepSuccess.outcome == 'success'
+      #   uses: dev-drprasad/delete-tag-and-release@v0.2.0
+      #   with:
+      #     tag_name: 'staging-deployment-release-tag'
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
