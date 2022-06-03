@@ -31,6 +31,7 @@ jobs:
       - name: Check Current sha
         run: |
           echo "sha: ${{ steps.sha-result.outputs.staging-sha }}"
+          echo "context: context.sha"
       # - name: Create tag
       #   uses: actions/github-script@v5
       #   with:
