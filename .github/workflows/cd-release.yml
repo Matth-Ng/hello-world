@@ -14,6 +14,6 @@ jobs:
       - name: Dispatch Staging Ref
         uses: peter-evans/repository-dispatch@v1.0.0
         with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           event-type: builds
           client-payload: '{"staging-ref": "${{ github.ref }}"}'
