@@ -43,6 +43,8 @@ jobs:
         with:
           Default: 'staging-deployment-release-tag'
           ref: 'refs/tags/utility-deployment-release-tag'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # script: |
           #   github.rest.git.createRef({
           #     owner: context.repo.owner,
