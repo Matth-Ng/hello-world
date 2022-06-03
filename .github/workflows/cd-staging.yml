@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: 'staging'
     outputs:
-      package-version: ${{ steps.set-result.outputs.staging-tag }}
+      tag-result: ${{ steps.tag-result.outputs.staging-tag }}
     steps:
       - name: Checkout by staging-deployment-release-tag
         id: checkoutTag
@@ -24,31 +24,27 @@ jobs:
         id: actualWorkStepSuccess
         run: echo "Success____________________________________________________"
       - name: get tag
-        id: set-result
+        id: tag-result
         shell: bash
         run: |
           echo "::set-output name=staging-tag::$(git rev-list -n 1 staging-deployment-release-tag)"
       - name: Check Current Tag
         run: |
-          echo "tag: ${{ steps.set-result.outputs.staging-tag }}"
-      # - name: Create tag
-      #   uses: actions/github-script@v5
-      #   with:
-      #     script: |
-      #       github.rest.git.createRef({
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         ref: 'refs/tags/utility-deployment-release-tag',
-      #         sha: staging-deployment-release-tag
-      #       })
-      # - uses: cardinalby/git-tag-action@master
-      #   env:
-      #     TAG: 'utility-deployment-release-tag'
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # - name: Delete delayed-job-tag  
-      #   if: steps.actualWorkStepSuccess.outcome == 'success'
-      #   uses: dev-drprasad/delete-tag-and-release@v0.2.0
-      #   with:
-      #     tag_name: 'staging-deployment-release-tag'
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          echo "tag: ${{ steps.tag-result.outputs.staging-tag }}"
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/utility-deployment-release-tag',
+              sha: ${{ steps.tag-result.outputs.staging-tag }}
+            })
+      - name: Delete delayed-job-tag  
+        if: steps.actualWorkStepSuccess.outcome == 'success'
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          tag_name: 'staging-deployment-release-tag'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
