@@ -22,12 +22,12 @@ jobs:
         id: actualWorkStepSuccess
         run: echo "Success____________________________________________________"
       - name: get tag
-        uses: actions/github-script@v5
         id: set-result
-        with:
-          script: return $(echo git rev-list -n 1 staging-deployment-release-tag)"
+        shell: bash
+        run: |
+          echo ##[set-output name=staging_tag;]$(git rev-list -n 1 staging-deployment-release-tag)
       - name: Check Current Tag
-        run: echo "${{steps.set-result.outputs.result}}"
+        run: echo "${{steps.set-result.outputs.staging_tag}}"
       # - name: Create tag
       #   uses: actions/github-script@v5
       #   with:
