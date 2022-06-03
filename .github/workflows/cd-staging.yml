@@ -38,10 +38,11 @@ jobs:
       #         ref: 'refs/tags/<tagname>',
       #         sha: context.sha
       #       })
+      - name: "⏬ Check out repository code"
+        uses: actions/checkout@v3
       - name: Run latest-tag
         uses: EndBug/latest-tag@latest
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           Default: 'staging-deployment-release-tag'
           ref: 'refs/tags/utility-deployment-release-tag'
           # script: |
