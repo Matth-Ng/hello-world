@@ -40,7 +40,7 @@ jobs:
         id: get-commit-sha
         shell: bash
         run: |
-          echo "${{ steps.last-monday-commits.outputs }}"
+          echo "${{ fromJson(steps.last-monday-commits.outputs.data) }}"
       # - name: Get version
       #   id: get-version
       #   run: |
