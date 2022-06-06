@@ -17,11 +17,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Get Last Week Monday
         id: last-week-monday
         shell: bash
         run: |
-          echo”::set-output name=date::$(date -d "last-monday")”
+          echo "::set-output name=date::$(date -d "last-monday")"
       - name: Get SHA
         id: get-sha
         # committer-date:>2016-01-01
@@ -31,7 +32,7 @@ jobs:
       - name: Get version
         id: get-version
         run: |
-          echo "${{ steps.get-sha.outputs.date }}_________________________________________"
+          echo "${{ steps.last-week-monday.outputs.date }}_________________________________________"
           echo "::set-output name=package-version::$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
       - name: Get previous release
         id: previous-release
