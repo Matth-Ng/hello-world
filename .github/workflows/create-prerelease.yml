@@ -23,13 +23,11 @@ jobs:
         shell: bash
         run: |
           echo "::set-output name=date::$(date +'%Y-%m-%d' -d "last-monday - 1 week")"
-      # - name: Get Last Monday Commits
-      #   id: last-monday-commits
-      #   uses: octokit/request-action@v2.x
-      #   with:
-      #     route: POST /search/commits
-      #     repo: ${{ github.repository }}
-      #     ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
+      - name: Get Last Monday Commits
+        id: last-monday-commits
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /commits/main?since=${{ steps.last-week-monday.outputs.date }}
       - name: Get SHA
         id: get-sha
         # committer-date:>2016-01-01
