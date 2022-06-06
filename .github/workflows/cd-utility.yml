@@ -5,8 +5,6 @@ on:
     - cron: '30 2 * * 3'
   workflow_dispatch:
 
-env:
-  AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
 
 jobs:
   update-manifest:

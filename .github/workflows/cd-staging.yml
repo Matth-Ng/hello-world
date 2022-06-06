@@ -1,10 +1,9 @@
 name: Staging Build and Push Container
 
 on:
+  repository_dispatch:
+    types: [my-event]
   workflow_dispatch:
-
-env:
-  AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
 
 jobs:
   update-staging-manifest:
@@ -13,12 +12,17 @@ jobs:
     outputs:
       sha-result: ${{ steps.sha-result.outputs.staging-sha }}
     steps:
-      - name: Checkout by staging-deployment-release-tag
-        id: checkoutTag
-        uses: actions/checkout@v2
-        continue-on-error: false
-        with:
-          ref: 'staging-deployment-release-tag'
+      - name: Check Staging Ref presence
+        id: checksecrets
+        shell: bash
+        run: |
+          if [ "$MULTI_LINE_ARG" == "" ]; then
+            echo ::set-output name=secretspresent::false
+          else
+            echo ::set-output name=secretspresent::true
+          fi
+        env:
+          MULTI_LINE_ARG: ${{ secrets.MULTI_LINE_ARG}}
       - name: do something
         if: steps.checkoutTag.outcome == 'success'
         id: actualWorkStepSuccess
@@ -32,3 +36,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           event-type: builds
           client-payload: '{"utility-ref": "${{ github.event.client_payload.staging-ref }}"}'
+      - name: Dispatch Utility Ref
+        uses: peter-evans/repository-dispatch@v1.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: builds
+          client-payload: '{"staging-ref": ""}'
