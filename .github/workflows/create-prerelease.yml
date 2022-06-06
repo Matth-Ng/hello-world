@@ -32,15 +32,14 @@ jobs:
           # route: GET /repos/{repo}/commits?until=${{ steps.last-week-monday.outputs.date }}T24:59:59Z
       - name: Get SHA
         id: get-sha
-        # committer-date:>2016-01-01
         run: |
           echo "::set-output name=sha::$(git rev-parse HEAD)"
           echo "::set-output name=short-sha::$(git rev-parse --short HEAD)"
+      # ${{ steps.last-week-monday.outputs.date }}
       - name: Get version
         id: get-version
         run: |
           echo "${{ toJson(steps.last-monday-commits.outputs) }}"
-          # echo "${{ steps.last-week-monday.outputs.date }}_________________________________________"
           echo "::set-output name=package-version::$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
       - name: Get previous release
         id: previous-release
