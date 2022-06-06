@@ -27,8 +27,7 @@ jobs:
         id: last-monday-commits
         uses: octokit/request-action@v2.x
         with:
-          route: GET "/repos/{owner}/{repo}/commits?until=${{ steps.last-week-monday.outputs.date }}""
-          owner: ${{ github.owner }}
+          route: GET "/repos/{repo}/commits?until=${{ steps.last-week-monday.outputs.date }}"
           repo: ${{ github.repository }}
       - name: Get SHA
         id: get-sha
