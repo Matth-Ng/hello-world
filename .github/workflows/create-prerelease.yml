@@ -38,6 +38,7 @@ jobs:
       # ${{ steps.last-week-monday.outputs.date }}
       - name: Get Commits Sha
         id: get-commit-sha
+        shell: bash
         run: echo "${{ toJson(steps.last-monday-commits.outputs) }}"
       - name: Get version
         id: get-version
