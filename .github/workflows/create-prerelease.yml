@@ -22,12 +22,13 @@ jobs:
         id: last-week-monday
         shell: bash
         run: |
-          echo "::set-output name=date::$(date +'%Y-%m-%d' -d "last-monday - 1 week")"
+          echo "::set-output name=date::$(date +'%Y-%m-%d' -d "last-tuesday - 1 week")"
       - name: Get Last Monday Commits
         id: last-monday-commits
         uses: octokit/request-action@v2.x
         with:
-          route: POST /commits/main?since=${{ steps.last-week-monday.outputs.date }}
+          route: GET /repos/{repo}/commits?until=${{ steps.last-week-monday.outputs.date }}
+          repo: ${{ github.repository }}
       - name: Get SHA
         id: get-sha
         # committer-date:>2016-01-01
@@ -37,8 +38,8 @@ jobs:
       - name: Get version
         id: get-version
         run: |
-          echo "${{ github }}"
           echo "${{ steps.last-week-monday.outputs.date }}_________________________________________"
+          echo "${{ fromJson(steps.last-monday-commits.outputs)}}"
           echo "::set-output name=package-version::$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
       - name: Get previous release
         id: previous-release
