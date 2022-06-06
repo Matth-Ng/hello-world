@@ -17,12 +17,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
+      - name: Get Last Week Monday
+        id: last-week-monday
+        shell: bash
+        run: |
+          echo”::set-output name=date::$(date+’%Y-%m-%d’ -d "last-monday")”
       - name: Get SHA
         id: get-sha
         # committer-date:>2016-01-01
         run: |
-          echo”::set-output name=date::$(date+’%Y/%m/%d’ -d "8 days")”
           echo "::set-output name=sha::$(git rev-parse HEAD)"
           echo "::set-output name=short-sha::$(git rev-parse --short HEAD)"
       - name: Get version
