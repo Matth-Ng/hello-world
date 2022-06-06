@@ -22,12 +22,12 @@ jobs:
         id: last-week-monday
         shell: bash
         run: |
-          echo "::set-output name=date::$(date +'%Y-%m-%d' -d "last-tuesday - 1 week")"
+          echo "::set-output name=date::$(date +'%Y-%m-%d' -d "last-monday - 1 week")"
       - name: Get Last Monday Commits
         id: last-monday-commits
         uses: octokit/request-action@v2.x
         with:
-          route: GET /repos/{repo}/commits
+          route: GET /repos/{repo}/commits?until=${{ steps.last-week-monday.outputs.date }}T24:59:59Z
           repo: ${{ github.repository }}
           # route: GET /repos/{repo}/commits?until=${{ steps.last-week-monday.outputs.date }}T24:59:59Z
       - name: Get SHA
