@@ -22,7 +22,7 @@ jobs:
         id: last-week-monday
         shell: bash
         run: |
-          echo "::set-output name=date::$(date -d "last-monday")"
+          echo "::set-output name=date::$(date+'%Y-%m-%d' -d "last-monday - 1 week")"
       - name: Get SHA
         id: get-sha
         # committer-date:>2016-01-01
