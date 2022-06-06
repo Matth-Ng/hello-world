@@ -39,7 +39,7 @@ jobs:
         id: get-version
         run: |
           echo "${{ steps.last-week-monday.outputs.date }}_________________________________________"
-          echo "${{ fromJson(steps.last-monday-commits.outputs)}}"
+          echo "${{ fromJson(steps.last-monday-commits.outputs.data) }}"
           echo "::set-output name=package-version::$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
       - name: Get previous release
         id: previous-release
