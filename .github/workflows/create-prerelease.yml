@@ -82,6 +82,7 @@ jobs:
   update-staging-manifest:
     environment: Staging
     runs-on: ubuntu-latest
+    needs: deploy-staging
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
@@ -92,6 +93,7 @@ jobs:
   update-release-staging:
     environment: Staging
     runs-on: ubuntu-latest
+    needs: update-staging-manifest
     env:
       MONDAY_DATE: ${{ needs.last-week-monday.outputs.date }}
       RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
