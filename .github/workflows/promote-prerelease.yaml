@@ -21,16 +21,19 @@ jobs:
         with:
           route: GET /repos/{repo}/releases
           repo: ${{ github.repository }}
+
       - name: Get prerelease
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
           cmd: echo('${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.prerelease)) | .id)'
+
       - name: Get SHA
         id: get-sha
         uses: sergeysova/jq-action@v2
         with:
           cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | first | .target_commitish'
+      
       - name: Print Var
         run: |
           echo "${{ needs.get-prerelease.outputs }}"
