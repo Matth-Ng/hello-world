@@ -50,9 +50,9 @@ jobs:
 
     steps:
     - name: Print Var
-        run: |
-          echo "${{ env.RELEASE_ID }}"
-          echo "${{ env.RELEASE_SHA }}"
+      run: |
+        echo "${{ env.RELEASE_ID }}"
+        echo "${{ env.RELEASE_SHA }}"
   #    - name: Deploy
   #      run: echo Update Production manifest with SHA ${{ env.RELEASE_SHA }}
   #    - name: Update release
