@@ -41,6 +41,7 @@ jobs:
     env:
       RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
       RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
+      GITHUB_TOKEN: ${{ github.token }}
 
     steps:
      - name: Deploy
