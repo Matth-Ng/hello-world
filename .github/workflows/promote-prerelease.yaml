@@ -38,12 +38,15 @@ jobs:
     needs: get-prerelease
     env:
       GITHUB_TOKEN: ${{ github.token }}
+      PRERELEASE: ${{ needs.get-prerelease.outputs }}
       RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
       RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
-      
+
     steps:
      - name: Deploy
-       run: echo Update Production manifest with SHA ${{ env.RELEASE_SHA }}
+       run: |
+          echo Update Production manifest with SHA ${{ env.RELEASE_SHA }}
+          echo "${{ env.PRERELEASE }}"
      - name: Update release
        uses: octokit/request-action@v2.x
        with:
