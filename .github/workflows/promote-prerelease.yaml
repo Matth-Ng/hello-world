@@ -26,32 +26,31 @@ jobs:
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo "('${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.prerelease)) | first | .id')"
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.prerelease)) | first | .id'
 
       - name: Get SHA
         id: get-sha
         uses: sergeysova/jq-action@v2
         with:
           cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | first | .target_commitish'
-      
+
       - name: Print Var
         run: |
-          "echo ${{ steps.get-prerelease.outputs }}"
-          echo "${{ steps.get-sha.outputs.data }}"
+          "echo ${{ steps.get-prerelease.outputs.value }}"
   
-  deploy-prod:
-  #   environment: Utility
-    runs-on: ubuntu-latest
-    needs: get-prerelease
-    env:
-      RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
-      RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
+  # deploy-prod:
+  # #   environment: Utility
+  #   runs-on: ubuntu-latest
+  #   needs: get-prerelease
+  #   env:
+  #     RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
+  #     RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
 
-    steps:
-    - name: Print Var
-      run: |
-        echo "${{ env.RELEASE_ID }}"
-        echo "${{ env.RELEASE_SHA }}"
+  #   steps:
+  #   - name: Print Var
+  #     run: |
+  #       echo "${{ env.RELEASE_ID }}"
+  #       echo "${{ env.RELEASE_SHA }}"
   #    - name: Deploy
   #      run: echo Update Production manifest with SHA ${{ env.RELEASE_SHA }}
   #    - name: Update release
