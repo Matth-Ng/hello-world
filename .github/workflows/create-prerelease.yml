@@ -22,7 +22,7 @@ jobs:
         id: last-week-monday
         shell: bash
         run: |
-          if $(date +%u -lt 2); then
+          if $(date +%u) -lt 2; then
             delimiter=$(date +'%Y-%m-%d' -d "last-monday")
           else
             delimiter=$(date +'%Y-%m-%d' -d "last-monday - 1 week")
