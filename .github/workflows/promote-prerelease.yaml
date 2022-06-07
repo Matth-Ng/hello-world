@@ -46,9 +46,11 @@ jobs:
     steps:
      - name: Deploy
        run: echo Update Production manifest with SHA ${{ env.RELEASE_SHA }}
+
      - name: Update release
        uses: octokit/request-action@v2.x
        with:
          route: PATCH /repos/{repo}/releases/{release_id}
          repo: ${{ github.repository }}
          release_id: ${{ env.RELEASE_ID }}
+         prerelease: false
