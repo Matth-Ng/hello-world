@@ -26,7 +26,7 @@ jobs:
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo('${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.prerelease)) | .id)'
+          cmd: echo('${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.prerelease)) | first | .id')
 
       - name: Get SHA
         id: get-sha
@@ -36,7 +36,7 @@ jobs:
       
       - name: Print Var
         run: |
-          echo "${{ steps.get-prerelease.outputs.data }}"
+          "echo ${{ steps.get-prerelease.outputs }}"
           echo "${{ steps.get-sha.outputs.data }}"
   
   deploy-prod:
