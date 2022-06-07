@@ -106,6 +106,6 @@ jobs:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
           name: ${{ env.MONDAY_DATE }}-Staging-Utility
-          tag_name: ${{ steps.get-version.outputs.package-version }}
-          target_commitish: ${{ steps.get-sha.outputs.sha }}
+          tag_name: ${{ env.PACKAGE_VERSION-version }}
+          target_commitish: ${{ env.RELEASE_SHA }}
           prerelease: true
