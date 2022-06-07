@@ -2,13 +2,18 @@ name: Create Prerelease
 
 on:
   schedule:
-    - cron: '30 2 * * 3'
+    - cron: '0 12 * * 3'
   workflow_dispatch:
 
 jobs:
   deploy-staging:
     environment: Staging
     runs-on: ubuntu-latest
+    outputs:
+      RELEASE_ID: ${{ steps.get-prerelease.outputs.value }}
+      RELEASE_SHA: ${{ steps.get-sha.outputs.value }}
+      MONDAY_DATE: ${{ steps.last-week-monday.outputs.date }}
+      PACKAGE_VERSION: ${{ steps.get-version.outputs.package-version }}
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
@@ -25,12 +30,14 @@ jobs:
             delimiter=$(date +'%Y-%m-%d' -d "last-monday - 1 week")
           fi
           echo "::set-output name=date::$delimiter"
+
       - name: Get Last Monday Commits
         id: last-monday-commits
         uses: octokit/request-action@v2.x
         with:
           route: GET /repos/{repo}/commits?per_page=1&until=${{ steps.last-week-monday.outputs.date }}T24:59:59Z
           repo: ${{ github.repository }}
+
       - name: Get SHA
         id: get-sha
         shell: bash
@@ -38,13 +45,16 @@ jobs:
           shortSha=$(echo ${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }} | cut -c1-7)
           echo "::set-output name=sha::${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }}"
           echo "::set-output name=short-sha::$shortSha"
+
       - name: Get version
         id: get-version
         run: |
           echo "::set-output name=package-version::$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
+      
       - name: All Outputs
         run: |
           echo "package-version: ${{ steps.get-version.outputs.package-version }}"
+      
       - name: Get previous release
         id: previous-release
         uses: octokit/request-action@v2.x
@@ -69,15 +79,33 @@ jobs:
           previous_tag_name: ${{ fromJson(steps.previous-release.outputs.data).tag_name }}
           target_commitish: ${{ steps.get-sha.outputs.sha }}
 
+  update-staging-manifest:
+    environment: Staging
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+
+    steps:
       - name: Deploy
         run: echo Update Staging manifest with SHA ${{ steps.get-sha.outputs.sha }}
+      
+  update-release-staging:
+    environment: Staging
+    runs-on: ubuntu-latest
+    env:
+      MONDAY_DATE: ${{ needs.last-week-monday.outputs.date }}
+      RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
+      RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
+      PACKAGE_VERSION: ${{ needs.get-version.outputs.package-version }}
+      GITHUB_TOKEN: ${{ github.token }}
 
+    steps:
       - name: Create prerelease
         uses: octokit/request-action@v2.x
         with:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
-          name: ${{ steps.last-week-monday.outputs.date }}-Staging-Utility
+          name: ${{ env.MONDAY_DATE }}-Staging-Utility
           tag_name: ${{ steps.get-version.outputs.package-version }}
           target_commitish: ${{ steps.get-sha.outputs.sha }}
           prerelease: true
