@@ -72,19 +72,12 @@ jobs:
       - name: Deploy
         run: echo Update Staging manifest with SHA ${{ steps.get-sha.outputs.sha }}
 
-  create-prerelease:
-    environment: Staging
-    runs-on: ubuntu-latest
-    needs: deploy-staging
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
-    steps:
       - name: Create prerelease
         uses: octokit/request-action@v2.x
         with:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
-          name: ${{ needs.deploy-staging.last-week-monday.outputs.date }}
-          tag_name: ${{ needs.deploy-staging.get-version.outputs.package-version }}
-          target_commitish: ${{ needs.deploy-staging.get-sha.outputs.sha }}
+          name: ${{ steps.last-week-monday.outputs.date }}-Staging-Utility
+          tag_name: ${{ steps.get-version.outputs.package-version }}
+          target_commitish: ${{ steps.get-sha.outputs.sha }}
           prerelease: true
