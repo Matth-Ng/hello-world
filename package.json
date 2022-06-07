@@ -5,6 +5,7 @@
   "workspaces": {
   },
   "scripts": {
+    "get-version": "echo $npm_package_version"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
