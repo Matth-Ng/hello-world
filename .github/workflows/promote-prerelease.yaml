@@ -36,9 +36,8 @@ jobs:
       
       - name: Print Var
         run: |
-          echo "${{ steps.get-prerelease.outputs }}"
-          echo "${{ steps.get-prerelease.outputs.RELEASE_ID }}"
-          echo "${{ steps.get-prerelease.outputs.RELEASE_SHA }}"
+          echo "${{ steps.get-prerelease.outputs.data }}"
+          echo "${{ steps.get-sha.outputs.data }}"
   
   deploy-prod:
   #   environment: Utility
