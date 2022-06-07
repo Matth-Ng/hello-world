@@ -30,53 +30,54 @@ jobs:
           route: GET /repos/{repo}/commits?per_page=1&until=${{ steps.last-week-monday.outputs.date }}T24:59:59Z
           repo: ${{ github.repository }}
           # route: GET /repos/{repo}/commits?until=${{ steps.last-week-monday.outputs.date }}T24:59:59Z
+      # - name: Get SHA
+      #   id: get-sha
+      #   run: |
+      #     echo "::set-output name=sha::$(git rev-parse HEAD)"
+      #     echo "::set-output name=short-sha::$(git rev-parse --short HEAD)"
+      # ${{ steps.last-week-monday.outputs.date }}
       - name: Get SHA
         id: get-sha
-        run: |
-          echo "::set-output name=sha::$(git rev-parse HEAD)"
-          echo "::set-output name=short-sha::$(git rev-parse --short HEAD)"
-      # ${{ steps.last-week-monday.outputs.date }}
-      - name: Get Commits Sha
-        id: get-commit-sha
         shell: bash
         run: |
-          echo "${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }}"
-      # - name: Get version
-      #   id: get-version
-      #   run: |
-      #     echo "::set-output name=package-version::$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
-      # - name: Get previous release
-      #   id: previous-release
-      #   uses: octokit/request-action@v2.x
-      #   with:
-      #     route: GET /repos/{repo}/releases/latest
-      #     repo: ${{ github.repository }}
+          echo "::set-output name=sha::${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }}"
+          echo "::set-output name=short-sha::${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha | cut -c1-7}}"
+      - name: Get version
+        id: get-version
+        run: |
+          echo "::set-output name=package-version::$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
+      - name: Get previous release
+        id: previous-release
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/{repo}/releases/latest
+          repo: ${{ github.repository }}
 
-      # - name: Create tag
-      #   uses: octokit/request-action@v2.x
-      #   with:
-      #     route: POST /repos/{repo}/git/refs
-      #     repo: ${{ github.repository }}
-      #     ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
-      #     sha: ${{ steps.get-sha.outputs.sha }}
+      - name: Create tag
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/{repo}/git/refs
+          repo: ${{ github.repository }}
+          ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
+          sha: ${{ steps.get-sha.outputs.sha }}
 
-      # - name: Generate release notes
-      #   uses: octokit/request-action@v2.x
-      #   with:
-      #     route: POST /repos/{repo}/releases/generate-notes
-      #     repo: ${{ github.repository }}
-      #     tag_name: ${{ steps.get-version.outputs.package-version }}
-      #     previous_tag_name: ${{ fromJson(steps.previous-release.outputs.data).tag_name }}
-      #     target_commitish: ${{ steps.get-sha.outputs.sha }}
+      - name: Generate release notes
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/{repo}/releases/generate-notes
+          repo: ${{ github.repository }}
+          tag_name: ${{ steps.get-version.outputs.package-version }}
+          previous_tag_name: ${{ fromJson(steps.previous-release.outputs.data).tag_name }}
+          target_commitish: ${{ steps.get-sha.outputs.sha }}
 
-      # - name: Deploy
-      #   run: echo Update Staging manifest with SHA ${{ steps.get-sha.outputs.sha }}
+      - name: Deploy
+        run: echo Update Staging manifest with SHA ${{ steps.get-sha.outputs.sha }}
 
-      # - name: Create prerelease
-      #   uses: octokit/request-action@v2.x
-      #   with:
-      #     route: POST /repos/{repo}/releases
-      #     repo: ${{ github.repository }}
-      #     tag_name: ${{ steps.get-version.outputs.package-version }}
-      #     target_commitish: ${{ steps.get-sha.outputs.sha }}
-      #     prerelease: true
+      - name: Create prerelease
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/{repo}/releases
+          repo: ${{ github.repository }}
+          tag_name: ${{ steps.get-version.outputs.package-version }}
+          target_commitish: ${{ steps.get-sha.outputs.sha }}
+          prerelease: true
