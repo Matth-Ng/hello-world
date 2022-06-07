@@ -1,11 +1,8 @@
 name: Create Prerelease
 
 on:
-  # release:
-  # types: [published]
-# cron trigger, 10am Wednesdays?
-  # schedule:
-  #   - cron: '30 2 * * 3'
+  schedule:
+    - cron: '30 2 * * 3'
   workflow_dispatch:
 
 jobs:

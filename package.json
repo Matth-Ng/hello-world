@@ -1,0 +1,29 @@
+{
+  "name": "root",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": {
+  },
+  "scripts": {
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "yarn lint",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "prettier": "@spotify/prettier-config",
+  "resolutions": {
+    "**/git-up": "4.0.2",
+    "**/parse-url": "5.0.0",
+    "@types/react": "^17",
+    "@types/react-dom": "^17",
+    "cron": "1.8.2"
+  },
+  "engines": {
+    "node": "16"
+  }
+}
