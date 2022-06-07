@@ -25,14 +25,12 @@ jobs:
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo '${{ steps.get-releases.outputs.data }}'
-          #  | jq -r 'map(select(.prerelease)) | first | .id'
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.prerelease)) | first | .id'
       - name: Get SHA
         id: get-sha
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo '${{ steps.get-releases.outputs.data }}'
-          #  | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | first | .target_commitish'
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | first | .target_commitish'
       - name: Print Var
         run: |
           echo "${{ needs.get-prerelease.outputs }}"
