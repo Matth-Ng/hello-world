@@ -31,6 +31,11 @@ jobs:
         uses: sergeysova/jq-action@v2
         with:
           cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | first | .target_commitish'
+      - name: Print Var
+        run: |
+          echo "${{ needs.get-prerelease.outputs }}"
+          echo "${{ needs.get-prerelease.outputs.RELEASE_ID }}"
+          echo "${{ needs.get-prerelease.outputs.RELEASE_SHA }}"
   
   deploy-prod:
     environment: Utility
@@ -38,15 +43,12 @@ jobs:
     needs: get-prerelease
     env:
       GITHUB_TOKEN: ${{ github.token }}
-      PRERELEASE: ${{ needs.get-prerelease.outputs }}
       RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
       RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
 
     steps:
      - name: Deploy
-       run: |
-          echo Update Production manifest with SHA ${{ env.RELEASE_SHA }}
-          echo "${{ env.PRERELEASE }}"
+       run: echo Update Production manifest with SHA ${{ env.RELEASE_SHA }}
      - name: Update release
        uses: octokit/request-action@v2.x
        with:
