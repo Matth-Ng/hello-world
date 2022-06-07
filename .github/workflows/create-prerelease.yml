@@ -42,6 +42,9 @@ jobs:
         id: get-version
         run: |
           echo "::set-output name=package-version::$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
+      - name: All Outputs
+        run: |
+          echo "package-version: ${{ steps.get-version.outputs.package-version }}"
       - name: Get previous release
         id: previous-release
         uses: octokit/request-action@v2.x
