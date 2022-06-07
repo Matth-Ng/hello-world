@@ -84,7 +84,7 @@ jobs:
         with:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
-          name: ${{ steps.last-week-monday.outputs.date }}
-          tag_name: ${{ steps.get-version.outputs.package-version }}
-          target_commitish: ${{ steps.get-sha.outputs.sha }}
+          name: ${{ needs.deploy-staging.last-week-monday.outputs.date }}
+          tag_name: ${{ needs.deploy-staging.get-version.outputs.package-version }}
+          target_commitish: ${{ needs.deploy-staging.get-sha.outputs.sha }}
           prerelease: true
