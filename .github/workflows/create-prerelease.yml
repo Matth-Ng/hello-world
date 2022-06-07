@@ -44,7 +44,7 @@ jobs:
         run: |
           echo "::set-output name=sha::${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }}"
           temp-sha=$(echo ${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }} | cut -c1-7)
-          echo "::set-output name=short-sha::$temp-sha
+          echo "::set-output name=short-sha::$temp-sha"
       - name: Get version
         id: get-version
         run: |
