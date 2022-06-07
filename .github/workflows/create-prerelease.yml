@@ -95,10 +95,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: update-staging-manifest
     env:
-      MONDAY_DATE: ${{ needs.last-week-monday.outputs.date }}
-      RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
-      RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
-      PACKAGE_VERSION: ${{ needs.get-version.outputs.package-version }}
+      MONDAY_DATE: ${{ needs.deploy-staging.outputs.MONDAY_DATE }}
+      PACKAGE_VERSION: ${{ needs.deploy-staging.outputs.PACKAGE_VERSION }}
+      RELEASE_SHA: ${{ needs.deploy-staging.outputs.RELEASE_SHA }}
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
@@ -108,6 +107,6 @@ jobs:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
           name: ${{ env.MONDAY_DATE }}-Staging-Utility
-          tag_name: ${{ env.PACKAGE_VERSION-version }}
+          tag_name: ${{ env.PACKAGE_VERSION }}
           target_commitish: ${{ env.RELEASE_SHA }}
           prerelease: true
