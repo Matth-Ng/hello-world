@@ -41,7 +41,9 @@ jobs:
         shell: bash
         run: |
           echo "::set-output name=sha::${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }}"
-          echo "::set-output name=short-sha::${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }} | cut -c1-7"
+          temp-sha=$(echo ${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }} | cut -c1-7)
+          echo "::set-output name=short-sha::temp-sha
+          # echo "::set-output name=short-sha::${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }} | cut -c1-7"
       - name: Get version
         id: get-version
         run: |
