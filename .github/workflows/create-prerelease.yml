@@ -87,7 +87,6 @@ jobs:
       RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
 
     steps:
-      steps:
       - name: UPDATE MANIFEST HERE
         run: |
           echo "RUN manifest update"
