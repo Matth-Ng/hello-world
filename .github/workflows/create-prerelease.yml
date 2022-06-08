@@ -95,7 +95,7 @@ jobs:
   update-release-staging:
     environment: Staging
     runs-on: ubuntu-latest
-    need: update-staging-manifest
+    needs: update-staging-manifest
     env:
       MONDAY_DATE: ${{ needs.last-week-monday.outputs.date }}
       RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
