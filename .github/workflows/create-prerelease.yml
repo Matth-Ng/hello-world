@@ -10,10 +10,9 @@ jobs:
     environment: Staging
     runs-on: ubuntu-latest
     outputs:
-      RELEASE_ID: ${{ steps.get-prerelease.outputs.value }}
-      RELEASE_SHA: ${{ steps.get-sha.outputs.value }}
+      RELEASE_SHA: ${{ steps.get-sha.outputs.sha }}
       MONDAY_DATE: ${{ steps.last-week-monday.outputs.date }}
-      PACKAGE_VERSION: ${{ steps.get-version.outputs.package-version }}
+      GET_VERSION: ${{ steps.get-version.outputs.package-version }}
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
@@ -82,22 +81,23 @@ jobs:
   update-staging-manifest:
     environment: Staging
     runs-on: ubuntu-latest
-    needs: deploy-staging
     env:
       GITHUB_TOKEN: ${{ github.token }}
+      RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
 
     steps:
-      - name: Deploy
-        run: echo Update Staging manifest with SHA ${{ steps.get-sha.outputs.sha }}
+      - name: UPDATE MANIFEST HERE
+        run: |
+          echo "RUN manifest update"
       
+
   update-release-staging:
     environment: Staging
     runs-on: ubuntu-latest
-    needs: update-staging-manifest
     env:
-      MONDAY_DATE: ${{ needs.deploy-staging.outputs.MONDAY_DATE }}
-      PACKAGE_VERSION: ${{ needs.deploy-staging.outputs.PACKAGE_VERSION }}
-      RELEASE_SHA: ${{ needs.deploy-staging.outputs.RELEASE_SHA }}
+      MONDAY_DATE: ${{ needs.last-week-monday.outputs.date }}
+      RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
+      GET_VERSION: ${{ needs.get-prerelease.outputs.GET_VERSION }}
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
@@ -107,6 +107,6 @@ jobs:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
           name: ${{ env.MONDAY_DATE }}-Staging-Utility
-          tag_name: ${{ env.PACKAGE_VERSION }}
+          tag_name: ${{ env.GET_VERSION }}
           target_commitish: ${{ env.RELEASE_SHA }}
           prerelease: true
