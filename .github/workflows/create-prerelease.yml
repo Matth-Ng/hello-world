@@ -81,19 +81,21 @@ jobs:
   update-staging-manifest:
     environment: Staging
     runs-on: ubuntu-latest
+    needs: deploy-staging
     env:
       GITHUB_TOKEN: ${{ github.token }}
       RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
 
     steps:
+      steps:
       - name: UPDATE MANIFEST HERE
         run: |
           echo "RUN manifest update"
-      
 
   update-release-staging:
     environment: Staging
     runs-on: ubuntu-latest
+    need: update-staging-manifest
     env:
       MONDAY_DATE: ${{ needs.last-week-monday.outputs.date }}
       RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
