@@ -96,9 +96,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: update-staging-manifest
     env:
-      MONDAY_DATE: ${{ needs.last-week-monday.outputs.date }}
-      RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
-      GET_VERSION: ${{ needs.get-prerelease.outputs.GET_VERSION }}
+      MONDAY_DATE: ${{ needs.deploy-staging.outputs.date }}
+      RELEASE_SHA: ${{ needs.deploy-staging.outputs.RELEASE_SHA }}
+      GET_VERSION: ${{ needs.deploy-staging.outputs.GET_VERSION }}
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
