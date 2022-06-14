@@ -68,9 +68,7 @@ jobs:
           sha: ${{ steps.get-sha.outputs.sha }}
 
       - name: Create alt tag
-        if: steps.create-tag.outcome != 'success'
-        run: |
-          echo "${{steps.create-tag.outcome}}"
+        if: steps.create-tag.outcome == 'failure'
         # uses: actions/github-script@v5
         # with:
         #   script: |
