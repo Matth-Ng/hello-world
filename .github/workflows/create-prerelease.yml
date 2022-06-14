@@ -69,15 +69,15 @@ jobs:
 
       - name: Create alt tag
         if: steps.create-tag.outcome == 'failure'
-        # uses: actions/github-script@v5
-        # with:
-        #   script: |
-        #     github.rest.git.createRef({
-        #       owner: context.repo.owner,
-        #       repo: context.repo.repo,
-        #       ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}',
-        #       sha: ${{ steps.get-sha.outputs.sha }}
-        #     })
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ steps.get-version.outputs.package-version }},
+              sha: ${{ steps.get-sha.outputs.sha }}
+            })
       
       - name: Generate release notes
         uses: octokit/request-action@v2.x
