@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       latest:
-        description: 'Whether to get current date or last Monday'
+        description: 'Check to get current date and time, otherwise default to last Monday'
         type: boolean
         required: false
 
