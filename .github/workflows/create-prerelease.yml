@@ -34,7 +34,7 @@ jobs:
         id: last-monday-commits
         uses: octokit/request-action@v2.x
         with:
-          route: GET /repos/{repo}/commits?per_page=1&until=${{ steps.last-week-monday.outputs.date }}T24:59:59Z
+          route: GET /repos/{repo}/commits?per_page=1&until=${{ steps.last-week-monday.outputs.date }}T23:59:59Z
           repo: ${{ github.repository }}
 
       - name: Get SHA
@@ -50,10 +50,6 @@ jobs:
         run: |
           echo "::set-output name=package-version::$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
       
-      - name: All Outputs
-        run: |
-          echo "package-version: ${{ steps.get-version.outputs.package-version }}"
-      
       - name: Get previous release
         id: previous-release
         uses: octokit/request-action@v2.x
@@ -62,13 +58,27 @@ jobs:
           repo: ${{ github.repository }}
 
       - name: Create tag
+        id: create-tag
         uses: octokit/request-action@v2.x
+        continue-on-error: true
         with:
           route: POST /repos/{repo}/git/refs
           repo: ${{ github.repository }}
           ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
           sha: ${{ steps.get-sha.outputs.sha }}
 
+      - name: Create alt tag
+        if: steps.create-tag.outcome != 'success'
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
+              sha: ${{ steps.get-sha.outputs.sha }}
+            })
+      
       - name: Generate release notes
         uses: octokit/request-action@v2.x
         with:
@@ -84,12 +94,13 @@ jobs:
     needs: deploy-staging
     env:
       GITHUB_TOKEN: ${{ github.token }}
-      RELEASE_SHA: ${{ needs.get-prerelease.outputs.RELEASE_SHA }}
+      RELEASE_SHA: ${{ needs.deploy-staging.outputs.RELEASE_SHA }}
 
     steps:
-      - name: UPDATE MANIFEST HERE
-        run: |
-          echo "RUN manifest update"
+      - name: Configure AWS Credentials
+        shell: bash
+        run: echo "Updating Staging Manifest"
+
 
   update-release-staging:
     environment: Staging
