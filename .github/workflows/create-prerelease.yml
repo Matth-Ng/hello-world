@@ -68,16 +68,18 @@ jobs:
           sha: ${{ steps.get-sha.outputs.sha }}
 
       - name: Create alt tag
-        if: steps.create-tag.outcome != 'success'
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}',
-              sha: ${{ steps.get-sha.outputs.sha }}
-            })
+        if: steps.create-tag.outcome != 'success'=
+        run: |
+          echo "${{steps.create-tag.outcome}}"
+        # uses: actions/github-script@v5
+        # with:
+        #   script: |
+        #     github.rest.git.createRef({
+        #       owner: context.repo.owner,
+        #       repo: context.repo.repo,
+        #       ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}',
+        #       sha: ${{ steps.get-sha.outputs.sha }}
+        #     })
       
       - name: Generate release notes
         uses: octokit/request-action@v2.x
@@ -97,8 +99,7 @@ jobs:
       RELEASE_SHA: ${{ needs.deploy-staging.outputs.RELEASE_SHA }}
 
     steps:
-      - name: Configure AWS Credentials
-        shell: bash
+      - name: Update Staging Manifest
         run: echo "Updating Staging Manifest"
 
 
