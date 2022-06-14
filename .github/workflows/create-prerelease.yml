@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '0 12 * * 3'
   workflow_dispatch:
+    inputs:
+      latest:
+        description: 'Whether to get current date or last Monday'
+        type: boolean
+        required: false
 
 jobs:
   deploy-staging:
@@ -19,8 +24,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Get Recent
+        shell: base
+        run: |
+          delimiter=$(date +'%Y-%m-%d')
+
       - name: Get Last Week Monday
         id: last-week-monday
+        if: "${{ github.event.inputs.level != '' }}"
         shell: bash
         run: |
           if $(date +%u) -lt 2; then
@@ -75,8 +86,8 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: `refs/tags/${{ steps.get-version.outputs.package-version }}`,
-              sha: ${{ steps.get-sha.outputs.sha }}
+              ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}',
+              sha: ${{ steps.get-version.outputs.package-version }}
             })
       
       - name: Generate release notes
