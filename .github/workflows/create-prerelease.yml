@@ -99,6 +99,15 @@ jobs:
           previous_tag_name: ${{ fromJson(steps.previous-release.outputs.data).tag_name }}
           target_commitish: ${{ steps.get-sha.outputs.sha }}
 
+      - name: Look at release notes
+        run: |
+          echo "${{ steps.get-version.outputs }}"
+
+#  ?commitish=0.3.0-250e189&tag_name=0.3.0-250e189&previous_tag_name=
+          # commitish=0.3.0-250e189&
+          # tag_name=0.3.0-250e189&
+          # previous_tag_name=
+
   update-staging-manifest:
     environment: Staging
     runs-on: ubuntu-latest
