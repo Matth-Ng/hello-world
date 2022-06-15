@@ -80,6 +80,10 @@ jobs:
           ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
           sha: ${{ steps.get-sha.outputs.sha }}
 
+      - name: check outcome
+        run: |
+          echo ${{ steps.create-tag.outcome }}
+
       - name: Create alt tag
         if: steps.create-tag.outcome == 'failure'
         uses: actions/github-script@v5
