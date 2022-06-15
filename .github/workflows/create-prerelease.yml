@@ -74,7 +74,9 @@ jobs:
           repo: ${{ github.repository }}
 
       - name: Create tag
+        id: create-tag
         uses: octokit/request-action@v2.x
+        continue-on-error: true
         with:
           route: POST /repos/{repo}/git/refs
           repo: ${{ github.repository }}
@@ -91,7 +93,7 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
-            github.git.createRef({
+            github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}',
