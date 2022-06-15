@@ -83,6 +83,7 @@ jobs:
       - name: check outcome
         run: |
           echo ${{ steps.create-tag.outcome }}
+          echo ${{ steps.get-version.outputs.package-version }}
 
       - name: Create alt tag
         if: steps.create-tag.outcome == 'failure'
