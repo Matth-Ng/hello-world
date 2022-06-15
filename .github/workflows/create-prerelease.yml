@@ -9,6 +9,7 @@ on:
         description: 'Check to use current date and time, otherwise default to last Monday'
         type: boolean
         required: false
+        default: false
 
 jobs:
   deploy-staging:
@@ -26,13 +27,13 @@ jobs:
 
       - name: Get Recent Date
         shell: bash
-        if: "${{ github.event.inputs.level == 'true' }}"
+        if: "${{ github.event.inputs.latest == 'true' }}"
         run: |
           delimiter=$(date +'%Y-%m-%d')
 
       - name: Get Last Week Monday
         id: last-week-monday
-        if: "${{ github.event.inputs.level == 'false' }}"
+        if: "${{ github.event.inputs.latest == 'false' }}"
         shell: bash
         run: |
           if $(date +%u) -lt 2; then
