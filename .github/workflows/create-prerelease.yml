@@ -24,14 +24,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Get Recent
+      - name: Get Recent Date
         shell: bash
+        if: "${{ github.event.inputs.level == 'true' }}"
         run: |
           delimiter=$(date +'%Y-%m-%d')
 
       - name: Get Last Week Monday
         id: last-week-monday
-        if: "${{ github.event.inputs.level != '' }}"
+        if: "${{ github.event.inputs.level == 'false' }}"
         shell: bash
         run: |
           if $(date +%u) -lt 2; then
@@ -89,11 +90,6 @@ jobs:
               ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}',
               sha: ${{ steps.get-version.outputs.package-version }}
             })
-
-#  ?commitish=0.3.0-250e189&tag_name=0.3.0-250e189&previous_tag_name=
-          # commitish=0.3.0-250e189&
-          # tag_name=0.3.0-250e189&
-          # previous_tag_name=
 
   update-staging-manifest:
     environment: Staging
