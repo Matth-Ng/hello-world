@@ -89,19 +89,6 @@ jobs:
               ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}',
               sha: ${{ steps.get-version.outputs.package-version }}
             })
-      
-      - name: Generate release notes
-        uses: octokit/request-action@v2.x
-        with:
-          route: POST /repos/{repo}/releases/generate-notes
-          repo: ${{ github.repository }}
-          tag_name: ${{ steps.get-version.outputs.package-version }}
-          previous_tag_name: ${{ fromJson(steps.previous-release.outputs.data).tag_name }}
-          target_commitish: ${{ steps.get-sha.outputs.sha }}
-
-      - name: Look at release notes
-        run: |
-          echo "${{ steps.get-version.outputs }}"
 
 #  ?commitish=0.3.0-250e189&tag_name=0.3.0-250e189&previous_tag_name=
           # commitish=0.3.0-250e189&
@@ -140,4 +127,5 @@ jobs:
           name: ${{ env.MONDAY_DATE }}-Staging-Utility
           tag_name: ${{ env.GET_VERSION }}
           target_commitish: ${{ env.RELEASE_SHA }}
+          generate_release_notes: true
           prerelease: true
