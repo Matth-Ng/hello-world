@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       latest:
-        description: 'Check to get current date and time, otherwise default to last Monday'
+        description: 'Check to use current date and time, otherwise default to last Monday'
         type: boolean
         required: false
 
@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Get Recent
-        shell: base
+        shell: bash
         run: |
           delimiter=$(date +'%Y-%m-%d')
 
