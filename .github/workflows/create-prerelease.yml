@@ -92,7 +92,7 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}-${{ github.run_number }}',
+              ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}',
               sha: ${{ steps.get-version.outputs.package-version }}
             })
 
