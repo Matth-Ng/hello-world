@@ -1,0 +1,19 @@
+name: Hotfix Deployment Release
+
+on:
+  # release:
+  #   types: [published]
+  workflow_dispatch:
+
+jobs:
+  hotfix-deployment:
+    runs-on: ubuntu-20.04
+    outputs:
+      package-version: ${{ steps.get-version.outputs.package-version }}
+    steps:
+      - name: Dispatch Staging Ref
+        uses: peter-evans/repository-dispatch@v1.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: staging-builds
+          client-payload: '{"staging-ref": "${{ github.ref }}"}'
