@@ -10,6 +10,11 @@ on:
         type: boolean
         required: false
         default: false
+      tag-generate:
+        description: 'The previous tag to start the changelog from'
+        type: string
+        required: false
+        default: ''
 
 env:
   AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
@@ -22,6 +27,7 @@ jobs:
       RELEASE_SHA: ${{ steps.get-sha.outputs.sha }}
       MONDAY_DATE: ${{ steps.last-week-monday.outputs.date }}
       GET_VERSION: ${{ steps.get-version.outputs.package-version }}
+      PREV_RELEASE_TAG: ${{ steps.previous_release_tag.outputs.prev-release-tag }}
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
@@ -72,16 +78,29 @@ jobs:
           fi
           echo "::set-output name=package-version::$package"
       
-      - name: Get previous release
+      - name: Get previous releases
         id: previous-release
         uses: octokit/request-action@v2.x
         with:
-          route: GET /repos/{repo}/releases/latest
+          route: GET /repos/{repo}/releases
           repo: ${{ github.repository }}
 
       - name: check variable
         run: |
           echo "${{ steps.get-version.outputs.package-version }}"
+          echo "github.event.inputs.latest"
+          echo "$github.event.inputs.latest"
+          echo "${{ github.event.inputs.latest }}"
+
+      - name: Get previous release tag
+        id: previous_release_tag
+        shell: bash
+        run: |
+          if "${{ github.event.inputs.latest }}" == ""
+            tag=$(echo ${{ fromJson(steps.previous-release.outputs.data) }}  | jq -r 'map(select(.prerelease)) | first | .tag_name' )
+            echo "::set-output name=prev-release-tag::$tag"
+          else
+            echo "::set-output name=prev-release-tag::"${{ github.event.inputs.latest }}""
 
       - name: Create tag
         id: create-tag
@@ -92,6 +111,15 @@ jobs:
           repo: ${{ github.repository }}
           ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
           sha: ${{ steps.get-sha.outputs.sha }}
+
+      - name: Generate release notes
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/{repo}/releases/generate-notes
+          repo: ${{ github.repository }}
+          tag_name: ${{ steps.get-version.outputs.package-version }}
+          previous_tag_name: steps.previous_release_tag.outputs.prev-release-tag
+          target_commitish: ${{ steps.get-sha.outputs.sha }}
 
   update-staging-manifest:
     environment: Staging
