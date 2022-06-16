@@ -65,10 +65,10 @@ jobs:
         id: get-version
         shell: bash
         run: |
-          if git rev-parse "$TAG" >/dev/null 2>&1; then
-            package=$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}
+          if git rev-parse "$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}" >/dev/null 2>&1; then
+            package="$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
           else
-            package=$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}-${{ github.run_number }}
+            package="$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}-${{ github.run_number }}"
           fi
           echo "::set-output name=package-version::$package"
       
