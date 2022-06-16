@@ -130,6 +130,17 @@ jobs:
   update-staging-manifest:
     environment: Staging
     runs-on: ubuntu-latest
+    needs: deploy-staging
+
+    steps:
+      - name: Run staging manifest
+        run: |
+          echo "Running staging manifest updates"
+
+
+  update-release-staging:
+    environment: Staging
+    runs-on: ubuntu-latest
     needs: [deploy-staging, update-staging-manifest]
     env:
       MONDAY_DATE: ${{ needs.deploy-staging.outputs.MONDAY_DATE }}
