@@ -105,6 +105,7 @@ jobs:
             echo "inside"
           else
             echo "inside"
+          fi
 
       - name: Create tag
         id: create-tag
