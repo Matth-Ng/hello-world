@@ -89,14 +89,14 @@ jobs:
         id: previous_release_tag
         shell: bash
         run: |
-          echo ${{ fromJson(steps.previous-release.outputs.data) }} | jq -r 'map(select(.name))' | first
-        # if [[ "${{ github.event.inputs.tag-generate }}" == "" ]]; then
-        #   echo "inside"
-        #   tag=$(echo ${{ fromJson(steps.previous-release.outputs.data) }}  | jq -r 'map(select(.name)) | first | .tag_name')
-        #   echo "::set-output name=prev-release-tag::$tag"
-        # else
-        #   echo "::set-output name=prev-release-tag::${{ github.event.inputs.tag-generate }}"
-        # fi
+# echo ${{ fromJson(steps.previous-release.outputs.data) }} | jq -r 'map(select(.name))' | first
+          if [[ "${{ github.event.inputs.tag-generate }}" == "" ]]; then
+            echo "inside"
+            tag=$(echo ${{ fromJson(steps.previous-release.outputs.data) }}  | jq -r 'map(select(.name)) | first | .tag_name')
+            echo "::set-output name=prev-release-tag::$tag"
+          else
+            echo "::set-output name=prev-release-tag::${{ github.event.inputs.tag-generate }}"
+          fi
 
       - name: check variable
         shell: bash
@@ -108,56 +108,56 @@ jobs:
             echo "inside"
           fi
 
-  #     - name: Create tag
-  #       id: create-tag
-  #       uses: octokit/request-action@v2.x
-  #       continue-on-error: true
-  #       with:
-  #         route: POST /repos/{repo}/git/refs
-  #         repo: ${{ github.repository }}
-  #         ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
-  #         sha: ${{ steps.get-sha.outputs.sha }}
+      - name: Create tag
+        id: create-tag
+        uses: octokit/request-action@v2.x
+        continue-on-error: true
+        with:
+          route: POST /repos/{repo}/git/refs
+          repo: ${{ github.repository }}
+          ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
+          sha: ${{ steps.get-sha.outputs.sha }}
 
-  #     - name: Generate release notes
-  #       uses: octokit/request-action@v2.x
-  #       with:
-  #         route: POST /repos/{repo}/releases/generate-notes
-  #         repo: ${{ github.repository }}
-  #         tag_name: ${{ steps.get-version.outputs.package-version }}
-  #         previous_tag_name: ${{ steps.previous_release_tag.outputs.prev-release-tag }}
-  #         target_commitish: ${{ steps.get-sha.outputs.sha }}
+      - name: Generate release notes
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/{repo}/releases/generate-notes
+          repo: ${{ github.repository }}
+          tag_name: ${{ steps.get-version.outputs.package-version }}
+          previous_tag_name: ${{ steps.previous_release_tag.outputs.prev-release-tag }}
+          target_commitish: ${{ steps.get-sha.outputs.sha }}
 
-  # update-staging-manifest:
-  #   environment: Staging
-  #   runs-on: ubuntu-latest
-  #   needs: deploy-staging
-  #   env:
-  #     GITHUB_TOKEN: ${{ github.token }}
-  #     RELEASE_SHA: ${{ needs.deploy-staging.outputs.RELEASE_SHA }}
+  update-staging-manifest:
+    environment: Staging
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      RELEASE_SHA: ${{ needs.deploy-staging.outputs.RELEASE_SHA }}
 
-  #   steps:
-  #     - name: Update Staging Manifest
-  #       run: echo "Updating Staging Manifest"
+    steps:
+      - name: Update Staging Manifest
+        run: echo "Updating Staging Manifest"
 
 
-  # update-release-staging:
-  #   environment: Staging
-  #   runs-on: ubuntu-latest
-  #   needs: [deploy-staging, update-staging-manifest]
-  #   env:
-  #     MONDAY_DATE: ${{ needs.deploy-staging.outputs.MONDAY_DATE }}
-  #     RELEASE_SHA: ${{ needs.deploy-staging.outputs.RELEASE_SHA }}
-  #     GET_VERSION: ${{ needs.deploy-staging.outputs.GET_VERSION }}
-  #     GITHUB_TOKEN: ${{ github.token }}
+  update-release-staging:
+    environment: Staging
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, update-staging-manifest]
+    env:
+      MONDAY_DATE: ${{ needs.deploy-staging.outputs.MONDAY_DATE }}
+      RELEASE_SHA: ${{ needs.deploy-staging.outputs.RELEASE_SHA }}
+      GET_VERSION: ${{ needs.deploy-staging.outputs.GET_VERSION }}
+      GITHUB_TOKEN: ${{ github.token }}
 
-  #   steps:
-  #     - name: Create prerelease
-  #       uses: octokit/request-action@v2.x
-  #       with:
-  #         route: POST /repos/{repo}/releases
-  #         repo: ${{ github.repository }}
-  #         name: ${{ env.MONDAY_DATE }}-Staging-Utility
-  #         tag_name: ${{ env.GET_VERSION }}
-  #         target_commitish: ${{ env.RELEASE_SHA }}
-  #         generate_release_notes: true
-  #         prerelease: true
+    steps:
+      - name: Create prerelease
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/{repo}/releases
+          repo: ${{ github.repository }}
+          name: ${{ env.MONDAY_DATE }}-Staging-Utility
+          tag_name: ${{ env.GET_VERSION }}
+          target_commitish: ${{ env.RELEASE_SHA }}
+          generate_release_notes: true
+          prerelease: true
