@@ -88,19 +88,19 @@ jobs:
       - name: check variable
         run: |
           echo "${{ steps.get-version.outputs.package-version }}"
-          echo "github.event.inputs.latest"
-          echo "$github.event.inputs.latest"
-          echo "${{ github.event.inputs.latest }}"
+          echo "github.event.inputs.tag-generate"
+          echo "$github.event.inputs.tag-generate"
+          echo "${{ github.event.inputs.tag-generate }}"
 
       - name: Get previous release tag
         id: previous_release_tag
         shell: bash
         run: |
-          if "${{ github.event.inputs.latest }}" == "false"
+          if "${{ github.event.inputs.tag-generate }}" == "false"
             tag=$(echo ${{ fromJson(steps.previous-release.outputs.data) }}  | jq -r 'map(select(.prerelease)) | first | .tag_name' )
             echo "::set-output name=prev-release-tag::$tag"
           else
-            echo "::set-output name=prev-release-tag::"${{ github.event.inputs.latest }}"
+            echo "::set-output name=prev-release-tag::"${{ github.event.inputs.tag-generate }}"
 
       - name: Create tag
         id: create-tag
