@@ -89,13 +89,15 @@ jobs:
         id: previous_release_tag
         shell: bash
         run: |
-          if [[ "${{ github.event.inputs.tag-generate }}" == "" ]]; then
-            echo "inside"
-            tag=$(echo ${{ fromJson(steps.previous-release.outputs.data) }}  | jq -r 'map(select(.name)) | first | .tag_name')
-            echo "::set-output name=prev-release-tag::$tag"
-          else
-            echo "::set-output name=prev-release-tag::${{ github.event.inputs.tag-generate }}"
-          fi
+          tag=$(echo ${{ fromJson(steps.previous-release.outputs.data) }}  | jq -r 'map(select(.name))')
+          "echo $tag"
+        # if [[ "${{ github.event.inputs.tag-generate }}" == "" ]]; then
+        #   echo "inside"
+        #   tag=$(echo ${{ fromJson(steps.previous-release.outputs.data) }}  | jq -r 'map(select(.name)) | first | .tag_name')
+        #   echo "::set-output name=prev-release-tag::$tag"
+        # else
+        #   echo "::set-output name=prev-release-tag::${{ github.event.inputs.tag-generate }}"
+        # fi
 
       - name: check variable
         shell: bash
