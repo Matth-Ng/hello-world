@@ -130,17 +130,14 @@ jobs:
   update-staging-manifest:
     environment: Staging
     runs-on: ubuntu-latest
-    needs: deploy-staging
+    needs: [deploy-staging, update-staging-manifest]
     env:
-      GITHUB_TOKEN: ${{ github.token }}
+      MONDAY_DATE: ${{ needs.deploy-staging.outputs.MONDAY_DATE }}
       RELEASE_SHA: ${{ needs.deploy-staging.outputs.RELEASE_SHA }}
+      PACKAGE_VERSION: ${{ needs.deploy-staging.outputs.PACKAGE_VERSION }}
+      GITHUB_TOKEN: ${{ github.token }}
 
     steps:
-      - name: Update Staging Manifest
-        run: echo "Updating Staging Manifest"
-
-
-  steps:
       - name: Get previous release
         id: previous-release
         uses: octokit/request-action@v2.x
