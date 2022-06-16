@@ -89,7 +89,7 @@ jobs:
         id: previous_release_tag
         shell: bash
         run: |
-            echo ${{ fromJson(steps.previous-release.outputs.data) }} | jq -r 'map(select(.name))' | first
+            echo '${{ fromJson(steps.previous-release.outputs.data) }}' | jq -r 'map(select(.name))' | first
   # if [[ "${{ github.event.inputs.tag-generate }}" == "" ]]; then
   #   echo "inside"
   #   tag=$(echo ${{ fromJson(steps.previous-release.outputs.data) }}  | jq -r 'map(select(.name)) | first | .tag_name')
