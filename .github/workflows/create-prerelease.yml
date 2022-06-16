@@ -96,11 +96,11 @@ jobs:
         id: previous_release_tag
         shell: bash
         run: |
-          if "${{ github.event.inputs.latest }}" == ""
+          if "${{ github.event.inputs.latest }}" == "false"
             tag=$(echo ${{ fromJson(steps.previous-release.outputs.data) }}  | jq -r 'map(select(.prerelease)) | first | .tag_name' )
             echo "::set-output name=prev-release-tag::$tag"
           else
-            echo "::set-output name=prev-release-tag::"${{ github.event.inputs.latest }}""
+            echo "::set-output name=prev-release-tag::"${{ github.event.inputs.latest }}"
 
       - name: Create tag
         id: create-tag
