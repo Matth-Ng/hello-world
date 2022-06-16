@@ -91,7 +91,7 @@ jobs:
         run: |
           if [[ "${{ github.event.inputs.tag-generate }}" == "" ]]; then
             echo "inside"
-            tag=$(echo (${{ fromJson(steps.previous-release.outputs.data) }}  | jq -r 'map(select(.prerelease)) | first | .tag_name')
+            tag=$(echo ${{ fromJson(steps.previous-release.outputs.data) }}  | jq -r 'map(select(.prerelease)) | first | .tag_name')
             echo "::set-output name=prev-release-tag::$tag"
           else
             echo "::set-output name=prev-release-tag::${{ github.event.inputs.tag-generate }}"
