@@ -85,13 +85,6 @@ jobs:
           route: GET /repos/{repo}/releases
           repo: ${{ github.repository }}
 
-      - name: check variable
-        run: |
-          echo "${{ steps.get-version.outputs.package-version }}"
-          echo "github.event.inputs.tag-generate"
-          echo "$github.event.inputs.tag-generate"
-          echo "${{ github.event.inputs.tag-generate }}"
-
       - name: Get previous release tag
         id: previous_release_tag
         shell: bash
@@ -102,6 +95,16 @@ jobs:
             echo "::set-output name=prev-release-tag::$tag"
           else
             echo "::set-output name=prev-release-tag::"${{ github.event.inputs.tag-generate }}"
+          fi
+
+      - name: check variable
+        shell: bash
+        run: |
+          echo "${{ steps.previous_release_tag.outputs.prev-release-tag }}"
+          if "" == ""
+            echo "inside"
+          else
+            echo "inside"
 
       - name: Create tag
         id: create-tag
@@ -119,7 +122,7 @@ jobs:
           route: POST /repos/{repo}/releases/generate-notes
           repo: ${{ github.repository }}
           tag_name: ${{ steps.get-version.outputs.package-version }}
-          previous_tag_name: steps.previous_release_tag.outputs.prev-release-tag
+          previous_tag_name: ${{ steps.previous_release_tag.outputs.prev-release-tag }}
           target_commitish: ${{ steps.get-sha.outputs.sha }}
 
   update-staging-manifest:
