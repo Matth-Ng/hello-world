@@ -63,8 +63,14 @@ jobs:
 
       - name: Get version
         id: get-version
+        shell: bash
         run: |
-          echo "::set-output name=package-version::$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            package=$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}
+          else
+            package=$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}-${{ github.run_number }}
+          fi
+          echo "::set-output name=package-version::$package"
       
       - name: Get previous release
         id: previous-release
@@ -72,6 +78,10 @@ jobs:
         with:
           route: GET /repos/{repo}/releases/latest
           repo: ${{ github.repository }}
+
+      - name: check variable
+        run: |
+          echo "${{ steps.get-version.outputs.package-version }}"
 
       - name: Create tag
         id: create-tag
@@ -82,23 +92,6 @@ jobs:
           repo: ${{ github.repository }}
           ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
           sha: ${{ steps.get-sha.outputs.sha }}
-
-      - name: check outcome
-        run: |
-          echo ${{ steps.create-tag.outcome }}
-          echo ${{ steps.get-version.outputs.package-version }}
-
-      - name: Create alt tag
-        if: steps.create-tag.outcome == 'failure'
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}',
-              sha: ${{ steps.get-version.outputs.package-version }}
-            })
 
   update-staging-manifest:
     environment: Staging
