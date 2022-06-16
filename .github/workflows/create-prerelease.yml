@@ -101,7 +101,7 @@ jobs:
         shell: bash
         run: |
           echo "${{ steps.previous_release_tag.outputs.prev-release-tag }}"
-          if "" == ""
+          if "" == ""; then
             echo "inside"
           else
             echo "inside"
