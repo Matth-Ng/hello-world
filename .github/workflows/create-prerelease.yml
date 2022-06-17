@@ -16,9 +16,6 @@ on:
         required: false
         default: '' 
 
-env:
-  AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
-
 jobs:
   deploy-staging:
     environment: Staging
@@ -76,7 +73,7 @@ jobs:
             package="$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}-${{ github.run_number }}"
           fi
           echo "::set-output name=package-version::$package"
-          
+
       - name: Create tag
         uses: octokit/request-action@v2.x
         with:
