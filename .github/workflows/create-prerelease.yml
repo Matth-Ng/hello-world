@@ -1,11 +1,10 @@
-name: Create Prerelease
-
+name: Create Prerelease test
 
 on:
   schedule:
     - cron: '0 12 * * 3'
   workflow_dispatch:
-
+#test here
 jobs:
   deploy-staging:
     environment: Staging
@@ -78,6 +77,11 @@ jobs:
       - name: Configure AWS Credentials
         run: |
           echo "running manifest stuff do other things here"
+          echo "why we doing this"
+      
+      - name: test
+        run: |
+          echo "test"
 
   update-release-staging:
     environment: Staging
