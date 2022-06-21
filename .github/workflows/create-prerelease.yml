@@ -21,13 +21,11 @@ jobs:
 
       - name: Get Recent Date
         shell: bash
-        if: "${{ github.event.inputs.latest == 'true' }}"
         run: |
           delimiter=$(date +'%Y-%m-%d')
 
       - name: Get Last Week Monday
         id: last-week-monday
-        if: "${{ github.event.inputs.latest == 'false' }}"
         shell: bash
         run: |
           if $(date +%u) -lt 2; then
