@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: '0 12 * * 3'
   workflow_dispatch:
+    inputs:
+      latest:
+        description: 'Check to use current date and time, otherwise default to last Monday'
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   deploy-staging:
