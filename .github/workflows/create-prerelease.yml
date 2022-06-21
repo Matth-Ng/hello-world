@@ -4,17 +4,6 @@ on:
   schedule:
     - cron: '0 12 * * 3'
   workflow_dispatch:
-    inputs:
-      latest:
-        description: 'Check to use current date and time, otherwise default to last Monday'
-        type: boolean
-        required: false
-        default: false
-      tag-generate:
-        description: 'The previous tag to start the changelog from'
-        type: string
-        required: false
-        default: '' 
 
 jobs:
   deploy-staging:
@@ -65,16 +54,8 @@ jobs:
 
       - name: Get version
         id: get-version
-        shell: bash
         run: |
           echo "::set-output name=package-version::$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
-
-        # if git rev-parse "$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}" >/dev/null 2>&1; then
-        #   package="$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
-        # else
-        #   package="$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}-${{ github.run_number }}"
-        # fi
-        # echo "::set-output name=package-version::$package"
 
       - name: Create tag
         uses: octokit/request-action@v2.x
@@ -94,9 +75,10 @@ jobs:
       PACKAGE_VERSION: ${{ needs.deploy-staging.outputs.PACKAGE_VERSION }}
 
     steps:
-      - name: Update manifest
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
         run: |
-          echo "do manifest updates"
+          echo "running manifest stuff"
 
   update-release-staging:
     environment: Staging
