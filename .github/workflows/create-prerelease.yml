@@ -1,9 +1,17 @@
 name: Create Prerelease
 
+
 on:
   schedule:
     - cron: '0 12 * * 3'
   workflow_dispatch:
+    inputs:
+      latest:
+        description: 'Check to use current date and time, otherwise default to last Monday'
+        type: boolean
+        required: false
+        default: false
+
 
 jobs:
   deploy-staging:
@@ -13,6 +21,7 @@ jobs:
       RELEASE_SHA: ${{ steps.get-sha.outputs.sha }}
       MONDAY_DATE: ${{ steps.last-week-monday.outputs.date }}
       PACKAGE_VERSION: ${{ steps.get-version.outputs.package-version }}
+      
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
@@ -21,11 +30,13 @@ jobs:
 
       - name: Get Recent Date
         shell: bash
+        if: "${{ github.event.inputs.latest == 'true' }}"
         run: |
           delimiter=$(date +'%Y-%m-%d')
 
       - name: Get Last Week Monday
         id: last-week-monday
+        if: "${{ github.event.inputs.latest == 'false' }}"
         shell: bash
         run: |
           if $(date +%u) -lt 2; then
@@ -75,7 +86,7 @@ jobs:
     steps:
       - name: Configure AWS Credentials
         run: |
-          echo "running manifest stuff"
+          echo "running manifest stuff do other things here"
 
   update-release-staging:
     environment: Staging
