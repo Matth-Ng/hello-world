@@ -18,11 +18,13 @@ on:
         required: false
         default: false
 
+permissions: write-all
+
 jobs:
   deploy-staging:
     environment: Staging
     runs-on: ubuntu-latest
-    permissions: write-all
+    # permissions: write-all
     # permissions:
     #   contents: write
     outputs:
