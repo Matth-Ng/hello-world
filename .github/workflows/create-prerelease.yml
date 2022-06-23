@@ -22,8 +22,9 @@ jobs:
   deploy-staging:
     environment: Staging
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    permissions: read-all|write-all
+    # permissions:
+    #   contents: write
     outputs:
       RELEASE_SHA: ${{ steps.get-sha.outputs.sha }}
       MONDAY_DATE: ${{ steps.get-last-date.outputs.date }}
