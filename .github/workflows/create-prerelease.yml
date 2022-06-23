@@ -21,15 +21,15 @@ jobs:
         id: get-last-date
         shell: bash
         run: |
-          if [ "${{ github.event.inputs.latest }}" == "true" ]; then
+          # if [ "${{ github.event.inputs.latest }}" == "true" ]; then
             delimiter=$(date +'%Y-%m-%d')
-          elif [ "${{ inputs.latest-date }}" == "true" ]; then
-            delimiter=$(date +'%Y-%m-%d')
-          elif $(date +%u) -lt 2; then
-            delimiter=$(date +'%Y-%m-%d' -d "last-monday")
-          else 
-            delimiter=$(date +'%Y-%m-%d' -d "last-monday - 1 week")
-          fi
+          # elif [ "${{ inputs.latest-date }}" == "true" ]; then
+          #   delimiter=$(date +'%Y-%m-%d')
+          # elif $(date +%u) -lt 2; then
+          #   delimiter=$(date +'%Y-%m-%d' -d "last-monday")
+          # else 
+          #   delimiter=$(date +'%Y-%m-%d' -d "last-monday - 1 week")
+          # fi
           echo "::set-output name=date::$delimiter"
 
       - name: Get Last Monday Commits
