@@ -40,7 +40,7 @@ jobs:
           repo: ${{ github.repository }}
 # route: GET /repos/{repo}/commits?per_page=1&until=${{ steps.get-last-date.outputs.date }}T23:59:59Z
 # repo: ${{ github.repository }}
-
+      
       - name: Get SHA
         id: get-sha
         shell: bash
