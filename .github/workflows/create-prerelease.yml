@@ -4,19 +4,19 @@ on:
   # schedule:
   #   - cron: '0 12 * * 3'
   workflow_call:
-    inputs:
-      latest-date:
-        description: 'Check to use current date and time, otherwise default to last Monday'
-        type: boolean
-        required: true
-        default: false
+    # inputs:
+    #   latest-date:
+    #     description: 'Check to use current date and time, otherwise default to last Monday'
+    #     type: boolean
+    #     required: true
+    #     default: false
   workflow_dispatch:
-    inputs:
-      latest:
-        description: 'Check to use current date and time, otherwise default to last Monday'
-        type: boolean
-        required: false
-        default: false
+    # inputs:
+    #   latest:
+    #     description: 'Check to use current date and time, otherwise default to last Monday'
+    #     type: boolean
+    #     required: false
+    #     default: false
 
 permissions: write-all
 
