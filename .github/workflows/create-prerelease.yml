@@ -9,6 +9,7 @@ jobs:
   deploy-staging:
     environment: Staging
     runs-on: ubuntu-latest
+    permissions: write-all
     outputs:
       RELEASE_SHA: ${{ steps.get-sha.outputs.sha }}
       MONDAY_DATE: ${{ steps.get-last-date.outputs.date }}
@@ -61,7 +62,6 @@ jobs:
 
       - name: Create tag
         uses: octokit/request-action@v2.x
-        permissions: write-all
         with:
           route: POST /repos/{repo}/git/refs
           repo: ${{ github.repository }}
