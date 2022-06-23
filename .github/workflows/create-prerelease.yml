@@ -5,14 +5,6 @@ on:
 
 jobs:
   deploy-staging:
-    permissions:
-      actions: write
-      checks: write
-      contents: write
-      deployments: write
-      id-token: write
-      pull-requests: write
-      security-events: write
     environment: Staging
     runs-on: ubuntu-latest
     outputs:
@@ -64,6 +56,17 @@ jobs:
           else
             echo "::set-output name=package-version::$TAG_NAME"
           fi
+
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}',
+              sha: ${{ steps.get-sha.outputs.sha }}
+            })
 
   update-staging-manifest:
     environment: Staging
