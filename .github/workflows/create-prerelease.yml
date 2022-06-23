@@ -21,7 +21,7 @@ jobs:
         id: get-last-date
         shell: bash
         run: |
-          echo "::set-output name=date::22022-06-13
+          echo "::set-output name=date::22022-06-13"
         # if [ "${{ github.event.inputs.latest }}" == "true" ]; then
         #   delimiter=$(date +'%Y-%m-%d')
         # elif [ "${{ inputs.latest-date }}" == "true" ]; then
