@@ -11,41 +11,47 @@ jobs:
       RELEASE_SHA: ${{ steps.get-sha.outputs.sha }}
       MONDAY_DATE: ${{ steps.get-last-date.outputs.date }}
       PACKAGE_VERSION: ${{ steps.get-version.outputs.package-version }}
-    # env:
-    #   GITHUB_TOKEN: ${{ github.token }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Get Last Date
-        id: get-last-date
-        shell: bash
-        run: |
-          if [ "${{ github.event.inputs.latest }}" == "true" ]; then
-            delimiter=$(date +'%Y-%m-%d')
-          elif [ "${{ inputs.latest-date }}" == "true" ]; then
-            delimiter=$(date +'%Y-%m-%d')
-          elif $(date +%u) -lt 2; then
-            delimiter=$(date +'%Y-%m-%d' -d "last-monday")
-          else 
-            delimiter=$(date +'%Y-%m-%d' -d "last-monday - 1 week")
-          fi
-          echo "::set-output name=date::$delimiter"
+      # - name: Get Last Date
+      #   id: get-last-date
+      #   shell: bash
+      #   run: |
+      #     if [ "${{ github.event.inputs.latest }}" == "true" ]; then
+      #       delimiter=$(date +'%Y-%m-%d')
+      #     elif [ "${{ inputs.latest-date }}" == "true" ]; then
+      #       delimiter=$(date +'%Y-%m-%d')
+      #     elif $(date +%u) -lt 2; then
+      #       delimiter=$(date +'%Y-%m-%d' -d "last-monday")
+      #     else 
+      #       delimiter=$(date +'%Y-%m-%d' -d "last-monday - 1 week")
+      #     fi
+      #     echo "::set-output name=date::$delimiter"
 
-      - name: Get Last Monday Commits
-        id: last-monday-commits
-        uses: octokit/request-action@v2.x
-        with:
-          route: GET /repos/{repo}/commits?per_page=1&until=${{ steps.get-last-date.outputs.date }}T23:59:59Z
-          repo: ${{ github.repository }}
+      # - name: Get Last Monday Commits
+      #   id: last-monday-commits
+      #   uses: octokit/request-action@v2.x
+      #   with:
+      #     route: GET /repos/{repo}/commits?per_page=1&until=${{ steps.get-last-date.outputs.date }}T23:59:59Z
+      #     repo: ${{ github.repository }}
 
+      # - name: Get SHA
+      #   id: get-sha
+      #   shell: bash
+      #   run: |
+      #     shortSha=$(echo ${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }} | cut -c1-7)
+      #     echo "::set-output name=sha::${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }}"
+      #     echo "::set-output name=short-sha::$shortSha"
+      
       - name: Get SHA
         id: get-sha
-        shell: bash
         run: |
-          shortSha=$(echo ${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }} | cut -c1-7)
-          echo "::set-output name=sha::${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }}"
-          echo "::set-output name=short-sha::$shortSha"
+          echo "::set-output name=sha::$(git rev-parse HEAD)"
+          echo "::set-output name=short-sha::$(git rev-parse --short HEAD)"
 
       - name: Get version
         id: get-version
