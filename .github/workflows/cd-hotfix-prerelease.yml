@@ -1,9 +1,11 @@
 name: Hotfix Deployment Release
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
-      - hotfix/*
+      - main
   workflow_dispatch:
 
 jobs:

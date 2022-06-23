@@ -1,37 +1,48 @@
-name: Create Prerelease test
+name: Create Prerelease
 
 on:
-  schedule:
-    - cron: '0 12 * * 3'
+  # schedule:
+  #   - cron: '0 12 * * 3'
+  workflow_call:
+    inputs:
+      latest-date:
+        description: 'Check to use current date and time, otherwise default to last Monday'
+        type: boolean
+        required: true
+        default: false
   workflow_dispatch:
-#test here
+    inputs:
+      latest:
+        description: 'Check to use current date and time, otherwise default to last Monday'
+        type: boolean
+        required: false
+        default: false
+
 jobs:
   deploy-staging:
     environment: Staging
     runs-on: ubuntu-latest
     outputs:
       RELEASE_SHA: ${{ steps.get-sha.outputs.sha }}
-      MONDAY_DATE: ${{ steps.last-week-monday.outputs.date }}
+      MONDAY_DATE: ${{ steps.get-last-date.outputs.date }}
       PACKAGE_VERSION: ${{ steps.get-version.outputs.package-version }}
-
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Get Recent Date
+      - name: Get Last Date
+        id: get-last-date
         shell: bash
         run: |
-          delimiter=$(date +'%Y-%m-%d')
-
-      - name: Get Last Week Monday
-        id: last-week-monday
-        shell: bash
-        run: |
-          if $(date +%u) -lt 2; then
+          if [ "${{ github.event.inputs.latest }}" == "true" ]; then
+            delimiter=$(date +'%Y-%m-%d')
+          elif [ "${{ inputs.latest-date }}" == "true" ]; then
+            delimiter=$(date +'%Y-%m-%d')
+          elif $(date +%u) -lt 2; then
             delimiter=$(date +'%Y-%m-%d' -d "last-monday")
-          else
+          else 
             delimiter=$(date +'%Y-%m-%d' -d "last-monday - 1 week")
           fi
           echo "::set-output name=date::$delimiter"
@@ -40,7 +51,7 @@ jobs:
         id: last-monday-commits
         uses: octokit/request-action@v2.x
         with:
-          route: GET /repos/{repo}/commits?per_page=1&until=${{ steps.last-week-monday.outputs.date }}T23:59:59Z
+          route: GET /repos/{repo}/commits?per_page=1&until=${{ steps.get-last-date.outputs.date }}T23:59:59Z
           repo: ${{ github.repository }}
 
       - name: Get SHA
@@ -54,7 +65,12 @@ jobs:
       - name: Get version
         id: get-version
         run: |
-          echo "::set-output name=package-version::$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}"
+          TAG_NAME=$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}
+          if [ "$(git ls-remote --exit-code --tags origin $TAG_NAME)" != ""]; then
+            echo "::set-output name=package-version::$TAG_NAME-${{ github.run_number }}"
+          else
+            echo "::set-output name=package-version::$TAG_NAME"
+          fi
 
       - name: Create tag
         uses: octokit/request-action@v2.x
@@ -72,16 +88,16 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
       RELEASE_SHA: ${{ needs.deploy-staging.outputs.RELEASE_SHA }}
       PACKAGE_VERSION: ${{ needs.deploy-staging.outputs.PACKAGE_VERSION }}
+      BRANCH_NAME: ${{ github.ref_name }}
 
     steps:
-      - name: Configure AWS Credentials
+      - name: update staging manifest
         run: |
-          echo "running manifest stuff do other things here"
-          echo "why we doing this"
-      
-      - name: test
+          echo "updating staging manifest"
+      - name: Extract branch name
+        shell: bash
         run: |
-          echo "test"
+          echo "${{ env.BRANCH_NAME }}"
 
   update-release-staging:
     environment: Staging
@@ -94,23 +110,6 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
-      - name: Get previous release
-        id: previous-release
-        uses: octokit/request-action@v2.x
-        with:
-          route: GET /repos/{repo}/releases/latest
-          repo: ${{ github.repository }}
-
-      - name: Generate release notes
-        id: release-notes
-        uses: octokit/request-action@v2.x
-        with:
-          route: POST /repos/{repo}/releases/generate-notes
-          repo: ${{ github.repository }}
-          tag_name: ${{ steps.get-version.outputs.package-version }}
-          previous_tag_name: ${{ fromJson(steps.previous-release.outputs.data).tag_name }}
-          target_commitish: ${{ steps.get-sha.outputs.sha }}
-
       - name: Create prerelease
         uses: octokit/request-action@v2.x
         with:
@@ -119,6 +118,5 @@ jobs:
           name: ${{ env.MONDAY_DATE }}-Staging-Utility
           tag_name: ${{ env.PACKAGE_VERSION }}
           target_commitish: ${{ env.RELEASE_SHA }}
-          body: ${{ fromJson(steps.release-notes.outputs.data).body }}
           generate_release_notes: true
           prerelease: true
