@@ -43,8 +43,8 @@ jobs:
         id: get-sha
         shell: bash
         run: |
-          echo "::set-output name=sha::e2ce7dfae4be42263d2d1265d0552fbe3a444b48"
-          echo "::set-output name=short-sha::e2ce7df"
+          echo "::set-output name=sha::0a1aac0fd5b19fb4a5049ec7193515d1b28bbaa4"
+          echo "::set-output name=short-sha::0a1aac0"
         # shortSha=$(echo ${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }} | cut -c1-7)
         # echo "::set-output name=sha::${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }}"
         # echo "::set-output name=short-sha::$shortSha"
