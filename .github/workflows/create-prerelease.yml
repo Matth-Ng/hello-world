@@ -17,20 +17,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Get Last Date
-        id: get-last-date
-        shell: bash
-        run: |
-          if [ "${{ github.event.inputs.latest }}" == "true" ]; then
-            delimiter=$(date +'%Y-%m-%d')
-          elif [ "${{ inputs.latest-date }}" == "true" ]; then
-            delimiter=$(date +'%Y-%m-%d')
-          elif $(date +%u) -lt 2; then
-            delimiter=$(date +'%Y-%m-%d' -d "last-monday")
-          else 
-            delimiter=$(date +'%Y-%m-%d' -d "last-monday - 1 week")
-          fi
-          echo "::set-output name=date::$delimiter"
+      # - name: Get Last Date
+      #   id: get-last-date
+      #   shell: bash
+      #   run: |
+      #     if [ "${{ github.event.inputs.latest }}" == "true" ]; then
+      #       delimiter=$(date +'%Y-%m-%d')
+      #     elif [ "${{ inputs.latest-date }}" == "true" ]; then
+      #       delimiter=$(date +'%Y-%m-%d')
+      #     elif $(date +%u) -lt 2; then
+      #       delimiter=$(date +'%Y-%m-%d' -d "last-monday")
+      #     else 
+      #       delimiter=$(date +'%Y-%m-%d' -d "last-monday - 1 week")
+      #     fi
+      #     echo "::set-output name=date::$delimiter"
 
       - name: Get Last Monday Commits
         id: last-monday-commits
@@ -43,15 +43,17 @@ jobs:
         id: get-sha
         shell: bash
         run: |
-          shortSha=$(echo ${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }} | cut -c1-7)
-          echo "::set-output name=sha::${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }}"
-          echo "::set-output name=short-sha::$shortSha"
+# shortSha=$(echo ${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }} | cut -c1-7)
+# echo "::set-output name=sha::${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }}"
+# echo "::set-output name=short-sha::$shortSha"
+          echo "::set-output name=sha::'09d1474c59205727385d7f1a6d665bddd708d069'"
+          echo "::set-output name=short-sha::'09d1474'"
 
-      - name: Get other SHA
-        id: get-other-sha
-        run: |
-          echo "::set-output name=sha::$(git rev-parse HEAD)"
-          echo "::set-output name=short-sha::$(git rev-parse --short HEAD)"
+      # - name: Get other SHA
+      #   id: get-other-sha
+      #   run: |
+      #     echo "::set-output name=sha::$(git rev-parse HEAD)"
+      #     echo "::set-output name=short-sha::$(git rev-parse --short HEAD)"
 
       - name: print sha variable
         run: |
