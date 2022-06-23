@@ -1,22 +1,7 @@
 name: Create Prerelease
 
 on:
-  # schedule:
-  #   - cron: '0 12 * * 3'
-  workflow_call:
-    # inputs:
-    #   latest-date:
-    #     description: 'Check to use current date and time, otherwise default to last Monday'
-    #     type: boolean
-    #     required: true
-    #     default: false
   workflow_dispatch:
-    # inputs:
-    #   latest:
-    #     description: 'Check to use current date and time, otherwise default to last Monday'
-    #     type: boolean
-    #     required: false
-    #     default: false
 
 permissions: write-all
 
@@ -24,9 +9,6 @@ jobs:
   deploy-staging:
     environment: Staging
     runs-on: ubuntu-latest
-    # permissions: write-all
-    # permissions:
-    #   contents: write
     outputs:
       RELEASE_SHA: ${{ steps.get-sha.outputs.sha }}
       MONDAY_DATE: ${{ steps.get-last-date.outputs.date }}
@@ -79,6 +61,7 @@ jobs:
 
       - name: Create tag
         uses: octokit/request-action@v2.x
+        permissions: write-all
         with:
           route: POST /repos/{repo}/git/refs
           repo: ${{ github.repository }}
