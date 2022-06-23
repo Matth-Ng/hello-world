@@ -22,7 +22,7 @@ jobs:
   deploy-staging:
     environment: Staging
     runs-on: ubuntu-latest
-    permissions: read-all|write-all
+    permissions: write-all
     # permissions:
     #   contents: write
     outputs:
