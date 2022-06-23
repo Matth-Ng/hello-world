@@ -58,15 +58,15 @@ jobs:
           fi
 
       - name: Create tag
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
-          github-token: ${{ env.GITHUB_TOKEN }}
+          # github-token: ${{ env.GITHUB_TOKEN }}
           script: |
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}',
-              sha: ${{ steps.get-sha.outputs.sha }}
+              sha: "${{ steps.get-sha.outputs.sha }}"
             })
 
   update-staging-manifest:
