@@ -13,7 +13,7 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
-    - name: Get Date
+      - name: Get Date
         id: get-date
         shell: bash
         run: |
