@@ -9,12 +9,12 @@ on:
 jobs:
   draft-prerelease:
     runs-on: ubuntu-latest
-    outputs:
-      RELEASE_SHA: ${{ steps.get-sha.outputs.sha }}
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
+      - uses: actions/checkout@v3
+
       - name: Get Date
         id: get-date
         shell: bash
