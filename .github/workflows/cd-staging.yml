@@ -1,44 +1,73 @@
 name: Staging Build and Push Container
 
 on:
-  repository_dispatch:
-    types: [my-event]
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
-  update-staging-manifest:
+  get-prerelease:
     runs-on: ubuntu-latest
-    environment: 'staging'
     outputs:
-      sha-result: ${{ steps.sha-result.outputs.staging-sha }}
+      RELEASE_ID: ${{ steps.get-prerelease.outputs.value }}
+      RELEASE_TAG: ${{ steps.get-tag.outputs.value }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+
     steps:
-      - name: Check Staging Ref presence
-        id: checksecrets
-        shell: bash
-        run: |
-          if [ "$MULTI_LINE_ARG" == "" ]; then
-            echo ::set-output name=secretspresent::false
-          else
-            echo ::set-output name=secretspresent::true
-          fi
-        env:
-          MULTI_LINE_ARG: ${{ secrets.MULTI_LINE_ARG}}
-      - name: do something
-        if: steps.checkoutTag.outcome == 'success'
-        id: actualWorkStepSuccess
-        run: echo "Success____________________________________________________"
-      - name: Check Current sha
-        run: |
-          echo "staging ref: ${{ github.event.client_payload.staging-ref }}"
-      - name: Dispatch Utility Ref
-        uses: peter-evans/repository-dispatch@v1.0.0
+      - name: Get releases
+        id: get-releases
+        uses: octokit/request-action@v2.x
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          event-type: builds
-          client-payload: '{"utility-ref": "${{ github.event.client_payload.staging-ref }}"}'
-      - name: Dispatch Utility Ref
-        uses: peter-evans/repository-dispatch@v1.0.0
+          route: GET /repos/{repo}/releases
+          repo: ${{ github.repository }}
+
+      - name: Get prerelease
+        id: get-prerelease
+        uses: sergeysova/jq-action@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          event-type: builds
-          client-payload: '{"staging-ref": ""}'
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.draft)) | nth(1) | .id'
+
+      - name: Get Tag
+        id: get-tag
+        uses: sergeysova/jq-action@v2
+        with:
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | nth(1) | .target_commitish'
+  
+  update-staging-manifest:
+    environment: Staging
+    runs-on: ubuntu-latest
+    needs: get-prerelease
+    env:
+      RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
+      RELEASE_TAG: ${{ needs.get-prerelease.outputs.RELEASE_TAG }}
+      GITHUB_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-gov-west-1
+      
+      - name: Get bot token from Parameter Store
+        uses: marvinpinto/action-inject-ssm-secrets@latest
+        with:
+          ssm_parameter: /devops/VA_VSP_BOT_GITHUB_TOKEN
+          env_variable_name: VA_VSP_BOT_GITHUB_TOKEN
+      
+      - name: Checkout Application Manifests repo
+        uses: actions/checkout@v2
+        with:
+          repository: department-of-veterans-affairs/vsp-infra-application-manifests
+          token: ${{ env.VA_VSP_BOT_GITHUB_TOKEN }}
+          fetch-depth: 1
+          path: vsp-infra-application-manifests
+      
+      - name: Edit manifest
+        uses: mikefarah/yq@v4.20.2
+        with:
+          cmd: |
+            cd vsp-infra-application-manifests/apps/platform-pst-console-ui/backstage/staging
+            yq e -i '.spec.template.spec.containers.[].image = "${{ env.AWS_ECR_REPO }}:${{ env.PACKAGE_VERSION }}"' platform-console-ui.yaml

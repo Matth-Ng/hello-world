@@ -1,26 +1,76 @@
-name: Utility Build and Push Container
+name: Promote Prerelease
 
 on:
-  # schedule:
-  #   - cron: '30 2 * * 3'
+  release:
+    types: [released]
   workflow_dispatch:
 
+env:
+  AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
 
 jobs:
-  update-manifest:
+  get-release:
     runs-on: ubuntu-latest
-    environment: 'utility'
+    outputs:
+      RELEASE_ID: ${{ steps.get-prerelease.outputs.value }}
+      RELEASE_TAG: ${{ steps.get-tag.outputs.value }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+
     steps:
-      - name: Checkout by utility-deployment-release-tag
-        id: checkoutTag
+      - name: Get releases
+        id: get-releases
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/{repo}/releases
+          repo: ${{ github.repository }}
+
+      - name: Get prerelease
+        id: get-prerelease
+        uses: sergeysova/jq-action@v2
+        with:
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.prerelease)) | first | .id'
+
+      - name: Get Tag
+        id: get-tag
+        uses: sergeysova/jq-action@v2
+        with:
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | first | .target_commitish'
+  
+  deploy-prod:
+    environment: Utility
+    runs-on: ubuntu-latest
+    needs: get-release
+    env:
+      RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
+      RELEASE_TAG: ${{ needs.get-prerelease.outputs.RELEASE_TAG }}
+      GITHUB_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-gov-west-1
+      
+      - name: Get bot token from Parameter Store
+        uses: marvinpinto/action-inject-ssm-secrets@latest
+        with:
+          ssm_parameter: /devops/VA_VSP_BOT_GITHUB_TOKEN
+          env_variable_name: VA_VSP_BOT_GITHUB_TOKEN
+      
+      - name: Checkout Application Manifests repo
         uses: actions/checkout@v2
-        continue-on-error: true
         with:
-          ref: 'utility-deployment-release-tag'
-      - name: Delete delayed-job-tag  
-        if: steps.addCommit.outcome == 'success'
-        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+          repository: department-of-veterans-affairs/vsp-infra-application-manifests
+          token: ${{ env.VA_VSP_BOT_GITHUB_TOKEN }}
+          fetch-depth: 1
+          path: vsp-infra-application-manifests
+      
+      - name: Edit manifest
+        uses: mikefarah/yq@v4.20.2
         with:
-          tag_name: 'utility-deployment-release-tag'
-        env:
-          PACKAGE_VERSION: ${{ jobs.upper-tier-deployment.outputs.package-version }}
+          cmd: |
+            cd vsp-infra-application-manifests/apps/platform-pst-console-ui/backstage/utility
+            yq e -i '.spec.template.spec.containers.[].image = "${{ env.AWS_ECR_REPO }}:${{ env.RELEASE_TAG }}"' platform-console-ui.yaml

@@ -5,9 +5,6 @@ on:
     - cron: '0 11 * * 3'
   workflow_dispatch:
 
-env:
-  AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
-
 jobs:
   get-prerelease:
     runs-on: ubuntu-latest
@@ -47,9 +44,15 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
-      - name: Configure AWS Credentials
-        run: | 
-          echo "Updating staging Manifest"
+      - name: Add and Commit change(s)
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: va-vsp-bot
+          author_email: devops@va.gov
+          branch: main
+          cwd: vsp-infra-application-manifests/apps/platform-pst-console-ui/backstage
+          add: utility/*.yaml
+          message: 'auto update platform-console-ui manifests'
 
       - name: Update release
         uses: octokit/request-action@v2.x
