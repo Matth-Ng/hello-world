@@ -9,6 +9,8 @@ on:
 jobs:
   draft-prerelease:
     runs-on: ubuntu-latest
+    outputs:
+
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
@@ -25,7 +27,11 @@ jobs:
         run: |
           echo "::set-output name=sha::$(git rev-parse HEAD)"
           echo "::set-output name=short-sha::$(git rev-parse --short HEAD)"
-      
+
+      - name: Get Variable
+        run: |
+          echo "${{ steps.get-sha.outputs }}"
+
       - name: Get version
         id: get-version
         run: |
