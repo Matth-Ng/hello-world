@@ -28,8 +28,7 @@ jobs:
 
       - name: Get Variable
         run: |
-          echo "${{ steps.get-sha.outputs.short-sha }}"
-          echo "${{ steps.get-sha.outputs.sha }}"
+          echo "${{ fromJSON(steps.get-sha.outputs) }}"
 
       - name: Get version
         id: get-version
