@@ -45,29 +45,5 @@ jobs:
 
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-gov-west-1
-      
-      - name: Get bot token from Parameter Store
-        uses: marvinpinto/action-inject-ssm-secrets@latest
-        with:
-          ssm_parameter: /devops/VA_VSP_BOT_GITHUB_TOKEN
-          env_variable_name: VA_VSP_BOT_GITHUB_TOKEN
-      
-      - name: Checkout Application Manifests repo
-        uses: actions/checkout@v2
-        with:
-          repository: department-of-veterans-affairs/vsp-infra-application-manifests
-          token: ${{ env.VA_VSP_BOT_GITHUB_TOKEN }}
-          fetch-depth: 1
-          path: vsp-infra-application-manifests
-      
-      - name: Edit manifest
-        uses: mikefarah/yq@v4.20.2
-        with:
-          cmd: |
-            cd vsp-infra-application-manifests/apps/platform-pst-console-ui/backstage/staging
-            yq e -i '.spec.template.spec.containers.[].image = "${{ env.AWS_ECR_REPO }}:${{ env.PACKAGE_VERSION }}"' platform-console-ui.yaml
+        run: |
+          echo "deploying to staging"
