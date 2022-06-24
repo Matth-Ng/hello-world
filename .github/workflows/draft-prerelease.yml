@@ -1,15 +1,25 @@
-name: Tag and Release
+name: Draft Prerelease
 
 on:
-  # 10pm Monday
+  # 5am Monday
   schedule:
-    - cron: '0 11 * * 1'
+    - cron: '0 10 * * 1'
   workflow_dispatch:
 
 jobs:
-  tag-release:
+  draft-prerelease:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+
     steps:
+    - name: Get Date
+        id: get-date
+        shell: bash
+        run: |
+          delimiter=$(date +'%Y-%m-%d')
+          echo "::set-output name=date::$delimiter"
+
       - name: Get SHA
         id: get-sha
         run: |
@@ -33,3 +43,14 @@ jobs:
           repo: ${{ github.repository }}
           ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
           sha: ${{ steps.get-sha.outputs.sha }}
+
+      - name: Create prerelease
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/{repo}/releases
+          repo: ${{ github.repository }}
+          name: ${{ steps.get-date.outputs.date }}-Staging-Utility
+          tag_name: ${{ steps.get-version.outputs.package-version }}
+          target_commitish: ${{ steps.get-sha.outputs.sha }}
+          generate_release_notes: true
+          prerelease: true
