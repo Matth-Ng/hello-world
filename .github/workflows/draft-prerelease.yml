@@ -24,6 +24,7 @@ jobs:
 
       - name: Get SHA
         id: get-sha
+        shell: bash
         run: |
           echo "::set-output name=sha::$(git rev-parse HEAD)"
           echo "::set-output name=short-sha::$(git rev-parse --short HEAD)"
