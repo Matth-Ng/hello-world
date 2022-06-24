@@ -9,8 +9,6 @@ on:
 jobs:
   draft-prerelease:
     runs-on: ubuntu-latest
-    outputs:
-
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
