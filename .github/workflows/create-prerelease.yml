@@ -38,7 +38,20 @@ jobs:
         with:
           route: GET /repos/{repo}/commits?per_page=1&until=${{ steps.get-last-date.outputs.date }}T23:59:59Z
           repo: ${{ github.repository }}
-          
+
+      - name: Get Tag Sha
+        id: get-tag-sha
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/{repo}/git/tags/{tag_sha}
+          repo: ${{ github.repository }}
+          tag_sha: "65a6085e15158aa87e73b64e44c1e94900b146a2"
+#git tag --sort "-committerdate" | head -n 2| tail -1 | cut -d# -f2          
+      - name: print variable
+        shell: bash
+        run: |
+          echo '${{ steps.get-tag-sha.outputs.data }}'
+
       - name: Get SHA
         id: get-sha
         shell: bash
@@ -49,19 +62,6 @@ jobs:
         # echo "::set-output name=sha::${{ fromJson(steps.last-monday-commits.outputs.data)[0].sha }}"
         # echo "::set-output name=short-sha::$shortSha"
 
-      # - name: Get SHA
-      #   id: get-sha
-      #   run: |
-      #     echo "::set-output name=sha::$(git rev-parse HEAD)"
-      #     echo "::set-output name=short-sha::$(git rev-parse --short HEAD)"
-
-      - name: print sha variable
-        run: |
-          echo "${{ steps.get-sha.outputs.short-sha }}"
-          echo "${{ steps.get-sha.outputs.sha }}"
-          echo "${{ steps.get-other-sha.outputs.short-sha }}"
-          echo "${{ steps.get-other-sha.outputs.sha }}"
-
       - name: Get version
         id: get-version
         run: |
@@ -71,19 +71,6 @@ jobs:
           else
             echo "::set-output name=package-version::$TAG_NAME"
           fi
-
-      - name: Create tag
-        uses: actions/github-script@v6
-        with:
-          # token: ${{ secrets.MY_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}',
-              sha: "${{ steps.get-sha.outputs.sha }}"
-            })
 
   update-staging-manifest:
     environment: Staging

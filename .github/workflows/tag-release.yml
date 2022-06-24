@@ -1,0 +1,35 @@
+name: Tag and Release
+
+on:
+  # 10pm Monday
+  schedule:
+    - cron: '0 11 * * 1'
+  workflow_dispatch:
+
+jobs:
+  tag-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get SHA
+        id: get-sha
+        run: |
+          echo "::set-output name=sha::$(git rev-parse HEAD)"
+          echo "::set-output name=short-sha::$(git rev-parse --short HEAD)"
+      
+      - name: Get version
+        id: get-version
+        run: |
+          TAG_NAME=$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}
+          if [ "$(git ls-remote --exit-code --tags origin $TAG_NAME)" != ""]; then
+            echo "::set-output name=package-version::$TAG_NAME-${{ github.run_number }}"
+          else
+            echo "::set-output name=package-version::$TAG_NAME"
+          fi
+
+      - name: Create tag
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/{repo}/git/refs
+          repo: ${{ github.repository }}
+          ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
+          sha: ${{ steps.get-sha.outputs.sha }}
