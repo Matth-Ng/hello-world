@@ -59,4 +59,4 @@ jobs:
           tag_name: ${{ steps.get-version.outputs.package-version }}
           target_commitish: ${{ steps.get-sha.outputs.sha }}
           generate_release_notes: true
-          prerelease: true
+          draft: true
