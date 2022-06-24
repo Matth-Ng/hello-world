@@ -1,9 +1,9 @@
 name: Dev Build and Push Container
 
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   workflow_dispatch:
 
 env:
