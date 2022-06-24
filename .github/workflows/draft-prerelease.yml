@@ -38,17 +38,19 @@ jobs:
           TAG_NAME=$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}
           if [ "$(git ls-remote --exit-code --tags origin $TAG_NAME)" == ""]; then
             echo "::set-output name=package-version::$TAG_NAME"
+            echo "not found"
           else
             echo "::set-output name=package-version::$TAG_NAME-${{ github.run_number }}"
+            echo "found"
           fi
 
-      # - name: Create tag
-      #   uses: octokit/request-action@v2.x
-      #   with:
-      #     route: POST /repos/{repo}/git/refs
-      #     repo: ${{ github.repository }}
-      #     ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
-      #     sha: ${{ steps.get-sha.outputs.sha }}
+      - name: Create tag
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/{repo}/git/refs
+          repo: ${{ github.repository }}
+          ref: 'refs/tags/${{ steps.get-version.outputs.package-version }}'
+          sha: ${{ steps.get-sha.outputs.sha }}
 
       # - name: Create prerelease
       #   uses: octokit/request-action@v2.x
