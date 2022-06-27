@@ -16,9 +16,14 @@ jobs:
 
       - name: Get Date
         id: get-date
-        shell: bash
         run: |
           delimiter=$(date +'%Y-%m-%d')
+          echo "::set-output name=date-string::$delimiter"
+
+      - name: Date to String
+        id: date-to-string
+        run: |
+          delimiter="${{ steps.get-date.outputs.date-string }}"
           echo "::set-output name=date-string::$delimiter"
 
       - name: Get SHA
@@ -54,7 +59,7 @@ jobs:
         with:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
-          name: "${{ steps.get-date.outputs.date-string }}."
+          name: ${{ steps.date-to-string.outputs.date-string }}
           tag_name: ${{ steps.get-version.outputs.package-version }}
           target_commitish: ${{ steps.get-sha.outputs.sha }}
           generate_release_notes: true
