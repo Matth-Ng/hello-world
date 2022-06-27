@@ -27,7 +27,7 @@ jobs:
         with:
           cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.draft)) | nth(1) | .id'
 
-  deploy-staging:
+  publish-for-staging:
     runs-on: ubuntu-latest
     needs: get-prerelease
     env:
@@ -42,3 +42,4 @@ jobs:
           repo: ${{ github.repository }}
           release_id: ${{ env.RELEASE_ID }}
           draft: false
+          prerelease: true

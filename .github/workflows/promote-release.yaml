@@ -2,7 +2,7 @@ name: Promote Release
 
 on:
   schedule:
-    - cron: '0 11 * * 3'
+    - cron: '0 10 * * 3'
   workflow_dispatch:
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
         with:
           cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.prerelease)) | first | .id'
 
-  deploy-prod:
+  promote-for-utility:
     runs-on: ubuntu-latest
     needs: get-prerelease
     env:
