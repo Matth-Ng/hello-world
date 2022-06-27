@@ -1,4 +1,4 @@
-name: Deploy prerelase to Staging
+name: Deploy Prerelase to Staging
 
 on:
   release:
