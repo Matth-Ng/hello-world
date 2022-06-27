@@ -48,5 +48,5 @@ jobs:
 
     steps:
       - name: Configure AWS Credentials
-        runs: |
+        run: |
           echo "updating utility manifest"
