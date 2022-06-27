@@ -1,4 +1,4 @@
-name: Create Prerelease
+name: Create Prerelease Draft
 
 on:
   schedule:
@@ -50,8 +50,9 @@ jobs:
         with:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
-          name: ${{ steps.get-date.outputs.date }}-Staging-Utility
+          name: ${{ steps.get-date.outputs.date }}
           tag_name: ${{ steps.get-version.outputs.package-version }}
           target_commitish: ${{ steps.get-sha.outputs.sha }}
           generate_release_notes: true
           draft: true
+          prerelease: true

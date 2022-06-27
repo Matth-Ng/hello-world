@@ -1,4 +1,4 @@
-name: Promote Prerelease
+name: Promote release
 
 on:
   schedule:
@@ -44,16 +44,6 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
-      - name: Add and Commit change(s)
-        uses: EndBug/add-and-commit@v7
-        with:
-          author_name: va-vsp-bot
-          author_email: devops@va.gov
-          branch: main
-          cwd: vsp-infra-application-manifests/apps/platform-pst-console-ui/backstage
-          add: utility/*.yaml
-          message: 'auto update platform-console-ui manifests'
-
       - name: Update release
         uses: octokit/request-action@v2.x
         with:

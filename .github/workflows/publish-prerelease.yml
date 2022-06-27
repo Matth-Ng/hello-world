@@ -1,8 +1,8 @@
-name: Publish Prerelease
+name: Pubish Prerelease
 
 on:
   schedule:
-    - cron: '0 12 * * 3'
+    - cron: '0 11 * * 3'
   workflow_dispatch:
 
 jobs:
@@ -26,16 +26,16 @@ jobs:
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.draft)) | nth(1) | .id'
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.prerelease)) | first | .id'
 
       - name: Get Tag
         id: get-tag
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | nth(1) | .target_commitish'
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | first | .target_commitish'
   
-  update-staging-manifest:
-    environment: Staging
+  deploy-prod:
+    environment: Utility
     runs-on: ubuntu-latest
     needs: get-prerelease
     env:
@@ -44,21 +44,11 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
-      - name: Add and Commit change(s)
-        uses: EndBug/add-and-commit@v7
-        with:
-          author_name: va-vsp-bot
-          author_email: devops@va.gov
-          branch: main
-          cwd: vsp-infra-application-manifests/apps/platform-pst-console-ui/backstage
-          add: staging/*.yaml
-          message: 'auto update platform-console-ui manifests'
-      
+
       - name: Update release
         uses: octokit/request-action@v2.x
         with:
           route: PATCH /repos/{repo}/releases/{release_id}
           repo: ${{ github.repository }}
           release_id: ${{ env.RELEASE_ID }}
-          draft: false
-          prerelease: true
+          prerelease: false

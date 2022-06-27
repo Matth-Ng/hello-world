@@ -1,9 +1,9 @@
 name: Hotfix Deployment Release
 
 on:
-  push:
-    branches:
-      - hotfix
+  # push:
+  #   branches:
+  #     - hotfix
   workflow_dispatch:
 
 jobs:

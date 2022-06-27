@@ -1,9 +1,12 @@
-name: Staging Build and Push Container
+name: Deploy prerelase to Staging
 
 on:
   release:
     types: [published]
   workflow_dispatch:
+
+env:
+  AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
 
 jobs:
   get-prerelease:
@@ -46,4 +49,4 @@ jobs:
     steps:
       - name: Configure AWS Credentials
         run: |
-          echo "deploying to staging"
+          echo "updating staging manifest"

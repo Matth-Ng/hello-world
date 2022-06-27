@@ -1,4 +1,4 @@
-name: Promote Prerelease
+name: Deploy Release to Utility
 
 on:
   release:
@@ -48,5 +48,5 @@ jobs:
 
     steps:
       - name: Configure AWS Credentials
-        run:
-          echo "deploying to utility"
+        runs: |
+          echo "updating utility manifest"

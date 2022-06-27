@@ -1,9 +1,9 @@
 name: Dev Build and Push Container
 
 on:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 env:
@@ -16,8 +16,8 @@ jobs:
       package-version: ${{ steps.get-version.outputs.package-version }}
     steps:
       - name: Configure AWS Credentials
-        run: |
-          echo "Build Dev container"
+        run:
+          echo "building dev package"
 
   update-dev-manifest:
     runs-on: ubuntu-latest
@@ -26,4 +26,4 @@ jobs:
     steps:
       - name: Configure AWS Credentials
         run: |
-          echo "Update Dev Manifest"
+          echo "dev manifest update"
