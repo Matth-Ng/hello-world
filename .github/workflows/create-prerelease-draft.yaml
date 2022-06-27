@@ -64,4 +64,3 @@ jobs:
           target_commitish: ${{ steps.get-sha.outputs.sha }}
           generate_release_notes: true
           draft: true
-          prerelease: true

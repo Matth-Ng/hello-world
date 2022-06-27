@@ -5,12 +5,14 @@ on:
     - cron: '0 11 * * 3'
   workflow_dispatch:
 
+env:
+  AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
+
 jobs:
   get-prerelease:
     runs-on: ubuntu-latest
     outputs:
       RELEASE_ID: ${{ steps.get-prerelease.outputs.value }}
-      RELEASE_TAG: ${{ steps.get-tag.outputs.value }}
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
@@ -28,19 +30,21 @@ jobs:
         with:
           cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.prerelease)) | first | .id'
 
-      - name: Get Tag
-        id: get-tag
-        uses: sergeysova/jq-action@v2
+      - name: Add and Commit change(s)
+        uses: EndBug/add-and-commit@v7
         with:
-          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | first | .target_commitish'
-  
+          author_name: va-vsp-bot
+          author_email: devops@va.gov
+          branch: main
+          cwd: vsp-infra-application-manifests/apps/platform-pst-console-ui/backstage
+          add: utility/*.yaml
+          message: 'auto update platform-console-ui manifests'
+
   deploy-prod:
-    environment: Utility
     runs-on: ubuntu-latest
     needs: get-prerelease
     env:
       RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
-      RELEASE_TAG: ${{ needs.get-prerelease.outputs.RELEASE_TAG }}
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
