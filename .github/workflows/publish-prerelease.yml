@@ -27,16 +27,6 @@ jobs:
         with:
           cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.prerelease)) | first | .id'
 
-      - name: Add and Commit change(s)
-        uses: EndBug/add-and-commit@v7
-        with:
-          author_name: va-vsp-bot
-          author_email: devops@va.gov
-          branch: main
-          cwd: vsp-infra-application-manifests/apps/platform-pst-console-ui/backstage
-          add: staging/*.yaml
-          message: 'auto update platform-console-ui manifests'
-
   deploy-staging:
     runs-on: ubuntu-latest
     needs: get-prerelease
