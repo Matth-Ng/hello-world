@@ -54,7 +54,7 @@ jobs:
         with:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
-          name: "${{ steps.get-date.outputs.date-string }}-Release"
+          name: "${{ steps.get-date.outputs.date-string }} "
           tag_name: ${{ steps.get-version.outputs.package-version }}
           target_commitish: ${{ steps.get-sha.outputs.sha }}
           generate_release_notes: true
