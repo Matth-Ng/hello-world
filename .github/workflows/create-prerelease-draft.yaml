@@ -29,7 +29,7 @@ jobs:
 
       - name: get variable
         run: |
-          echo "${{ steps.get-date.outputs.date }}"
+          echo "${{ steps.get-date.outputs.date-string }}"
 
       - name: Get version
         id: get-version
