@@ -15,6 +15,11 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
+      - name: Get variables
+        id: get-variables
+        run: |
+          echo "${{ toJSON(github.event.release) }}"
+
       - name: Get releases
         id: get-releases
         uses: octokit/request-action@v2.x
