@@ -34,6 +34,11 @@ jobs:
         uses: sergeysova/jq-action@v2
         with:
           cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-release.outputs.value }})) | first | .target_commitish'
+
+      - name: print variable
+        run: |
+          echo "${{ steps.get-release.outputs.value }}"
+          echo "${{ steps.get-tag.outputs.value }}"
   
   deploy-prod:
     environment: Utility
