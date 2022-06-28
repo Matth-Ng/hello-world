@@ -7,7 +7,7 @@ on:
 
 jobs:
   get-release:
-    if: "!github.event.release.draft" && "!github.event.release.prerelease"
+    if: github.event.release.draft == false && github.event.release.prerelease == false
     runs-on: ubuntu-latest
     outputs:
       RELEASE_ID: ${{ steps.get-release.outputs.value }}
