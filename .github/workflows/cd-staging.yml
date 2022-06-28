@@ -47,4 +47,4 @@ jobs:
     steps:
       - name: Configure AWS Credentials
         run: |
-          echo "edit staging manifest"
+          echo "updating staging manifest"

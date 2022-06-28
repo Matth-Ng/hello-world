@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -13,8 +16,8 @@ jobs:
       package-version: ${{ steps.get-version.outputs.package-version }}
     steps:
       - name: Configure AWS Credentials
-        run:
-          echo "building dev package"
+        run: |
+          echo "Get AWS configs"
 
   update-dev-manifest:
     runs-on: ubuntu-latest
@@ -23,4 +26,4 @@ jobs:
     steps:
       - name: Configure AWS Credentials
         run: |
-          echo "dev manifest update"
+          echo "updating dev manifest"
