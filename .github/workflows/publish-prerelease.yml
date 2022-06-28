@@ -29,6 +29,7 @@ jobs:
 
       - name: get var
         run:
+          echo "${{ steps.get-prerelease.outputs }}"
           echo "${{ steps.get-prerelease.outputs.value }}"
 
       # - name: Get Tag
