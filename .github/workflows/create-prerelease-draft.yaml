@@ -13,17 +13,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
+#delimiter=$(date +'%Y-%b-%d')
       - name: Get Date
         id: get-date
         run: |
-          delimiter=$(date +'%Y-%b-%d')
-          echo "::set-output name=date-string::$delimiter"
-
-      - name: Date to String
-        id: date-to-string
-        run: |
-          delimiter="${{ steps.get-date.outputs.date-string }}"
+          delimiter=$(date +'%Y/%m/%d')
           echo "::set-output name=date-string::$delimiter"
 
       - name: Get SHA
@@ -31,10 +25,6 @@ jobs:
         run: |
           echo "::set-output name=sha::$(git rev-parse HEAD)"
           echo "::set-output name=short-sha::$(git rev-parse --short HEAD)"
-
-      - name: get variable
-        run: |
-          echo "${{ steps.get-date.outputs.date-string }}"
 
       - name: Get version
         id: get-version
@@ -61,8 +51,7 @@ jobs:
         with:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
-          # name: "2022-JUN-28"
-          name: ${{ steps.date-to-string.outputs.date-string }}
+          name: ${{ steps.get-date.outputs.date-string }}
           tag_name: ${{ steps.get-version.outputs.package-version }}
           target_commitish: ${{ steps.get-sha.outputs.sha }}
           generate_release_notes: true
