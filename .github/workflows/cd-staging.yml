@@ -27,7 +27,7 @@ jobs:
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.draft)) | nth(1) | first | .id'
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.draft)) | nth(1) | .id'
 
       - name: Get Tag
         id: get-tag
