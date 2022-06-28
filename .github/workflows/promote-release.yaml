@@ -32,6 +32,7 @@ jobs:
     needs: get-prerelease
     env:
       RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
+      GITHUB_TOKEN: ${{ github.token }}
 
     steps:
       - name: Generate token

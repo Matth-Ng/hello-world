@@ -45,6 +45,13 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
+      - name: Get releases
+        id: get-releases
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/{repo}/releases
+          repo: ${{ github.repository }}
+
       - name: Generate token
         id: generate-token
         uses: tibdex/github-app-token@v1
