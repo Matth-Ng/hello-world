@@ -27,6 +27,16 @@ jobs:
         with:
           cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.draft)) | nth(1) | .id'
 
+      - name: get var
+        run:
+          echo "${{ steps.get-prerelease.outputs.value }}"
+
+      # - name: Get Tag
+      #   id: get-tag
+      #   uses: sergeysova/jq-action@v2
+      #   with:
+      #     cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | nth(1) | .target_commitish'
+
   publish-for-staging:
     runs-on: ubuntu-latest
     needs: get-prerelease
