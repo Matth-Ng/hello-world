@@ -51,5 +51,5 @@ jobs:
           route: PATCH /repos/{repo}/releases/{release_id}
           repo: ${{ github.repository }}
           release_id: ${{ env.RELEASE_ID }}
-          draft: false
           prerelease: true
+          draft: false
