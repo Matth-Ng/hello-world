@@ -17,7 +17,7 @@ jobs:
       - name: Get Date
         id: get-date
         run: |
-          delimiter=$(date +'%Y-%m-%d')
+          delimiter=$(date +'%Y-%b-%d')
           echo "::set-output name=date-string::$delimiter"
 
       - name: Date to String
@@ -61,8 +61,8 @@ jobs:
         with:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
-          name: "2022-JUN-28"
-          # name: ${{ steps.date-to-string.outputs.date-string }}.
+          # name: "2022-JUN-28"
+          name: ${{ steps.date-to-string.outputs.date-string }}
           tag_name: ${{ steps.get-version.outputs.package-version }}
           target_commitish: ${{ steps.get-sha.outputs.sha }}
           generate_release_notes: true
