@@ -33,11 +33,7 @@ jobs:
         id: get-tag
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | .target_commitish'
-
-      - name: print variable
-        run: |
-          echo "${{ steps.get-tag.outputs.value }}"
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | first | .target_commitish'
   
   deploy-prod:
     environment: Utility
