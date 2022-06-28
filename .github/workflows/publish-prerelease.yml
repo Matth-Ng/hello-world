@@ -42,11 +42,19 @@ jobs:
     needs: get-prerelease
     env:
       RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
-      GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
     steps:
       - name: Update release
         uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:
           route: PATCH /repos/{repo}/releases/{release_id}
           repo: ${{ github.repository }}
