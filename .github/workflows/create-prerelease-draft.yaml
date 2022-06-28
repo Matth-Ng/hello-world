@@ -40,13 +40,11 @@ jobs:
         id: get-version
         run: |
           TAG_NAME=$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}
-          echo "::set-output name=package-version::$TAG_NAME-${{ github.run_number }}"
-  # TAG_NAME=$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}
-  # if [ "$(git ls-remote --exit-code --tags origin $TAG_NAME)" ]; then
-  #   echo "::set-output name=package-version::$TAG_NAME-${{ github.run_number }}"
-  # else
-  #   echo "::set-output name=package-version::$TAG_NAME"
-  # fi
+          if [ "$(git ls-remote --exit-code --tags origin $TAG_NAME)" ]; then
+            echo "::set-output name=package-version::$TAG_NAME-${{ github.run_number }}"
+          else
+            echo "::set-output name=package-version::$TAG_NAME"
+          fi
 
       - name: Create tag
         uses: octokit/request-action@v2.x
