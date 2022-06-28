@@ -7,7 +7,7 @@ on:
 
 jobs:
   get-prerelease:
-    if: "github.event.release.prerelease"
+    # if: "github.event.release.prerelease"
     runs-on: ubuntu-latest
     outputs:
       RELEASE_ID: ${{ steps.get-prerelease.outputs.value }}
@@ -27,7 +27,7 @@ jobs:
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.draft)) | nth(1) | .id'
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.draft)) | nth(1) | first | .id'
 
       - name: Get Tag
         id: get-tag
