@@ -34,10 +34,9 @@ jobs:
         uses: sergeysova/jq-action@v2
         with:
           cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | first | .target_commitish'
-  
+
   update-staging-manifest:
     environment: Staging
-    if: "github.event.release.prerelease"
     runs-on: ubuntu-latest
     needs: get-prerelease
     env:
@@ -48,4 +47,4 @@ jobs:
     steps:
       - name: Configure AWS Credentials
         run: |
-          echo "updating staging manifest"
+          echo "edit staging manifest"

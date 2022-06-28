@@ -13,6 +13,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Get Date
         id: get-date
         run: |
@@ -28,9 +29,7 @@ jobs:
       - name: Get version
         id: get-version
         run: |
-          VERSION=$(npm run get-version -s)
-          echo "::set-output name=version::$VERSION"
-          TAG_NAME=$VERSION-${{ steps.get-sha.outputs.short-sha }}
+          TAG_NAME=$(npm run get-version -s)-${{ steps.get-sha.outputs.short-sha }}
           if [ "$(git ls-remote --exit-code --tags origin $TAG_NAME)" ]; then
             echo "::set-output name=package-version::$TAG_NAME-${{ github.run_number }}"
           else
