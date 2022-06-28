@@ -35,12 +35,6 @@ jobs:
         with:
           cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-release.outputs.value }})) | first | .target_commitish'
 
-      - name: print utility variable
-        id: print-utility-variable
-        run: |
-          echo "${{ steps.get-release.outputs.value }}"
-          echo "${{ steps.get-tag.outputs.value }}"
-  
   deploy-prod:
     environment: Utility
     if: "!github.event.release.draft"
