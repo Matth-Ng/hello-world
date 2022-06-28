@@ -13,11 +13,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-#delimiter=$(date +'%Y-%b-%d')
       - name: Get Date
         id: get-date
         run: |
-          delimiter=$(date +'%Y/%m/%d')
+          delimiter=$(date +'%Y-%b-%d')
           echo "::set-output name=date-string::$delimiter"
 
       - name: Get SHA
