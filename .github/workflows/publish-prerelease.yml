@@ -24,16 +24,8 @@ jobs:
       - name: Get prerelease
         id: get-prerelease
         uses: sergeysova/jq-action@v2
-        env:
-          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
         with:
           cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.draft)) | nth(1) | .id'
-
-      - name: get var
-        run:
-          echo "${{ toJSON(steps.get-releases.outputs.data) }}"
-          echo "${{ toJSON(steps.get-prerelease.outputs) }}"
-          echo "${{ steps.get-prerelease.outputs.value }}"
 
   publish-for-staging:
     runs-on: ubuntu-latest
