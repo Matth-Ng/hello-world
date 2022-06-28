@@ -51,3 +51,4 @@ jobs:
           repo: ${{ github.repository }}
           release_id: ${{ env.RELEASE_ID }}
           draft: false
+          prerelease: true

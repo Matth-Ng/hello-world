@@ -16,11 +16,6 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
-      - name: Get Variables
-        run: |
-          echo "${{ toJSON(github.event.release) }}"
-          echo "${{ github.event.release.prerelease }}"
-
       - name: Get releases
         id: get-releases
         uses: octokit/request-action@v2.x

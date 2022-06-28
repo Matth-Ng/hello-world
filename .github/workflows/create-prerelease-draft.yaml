@@ -61,7 +61,7 @@ jobs:
         with:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
-          name: ${{ steps.date-to-string.outputs.date-string }}/CUI-v${{ steps.get-version.outputs.version }}
+          name: ${{ steps.date-to-string.outputs.date-string }}-CUI-v${{ steps.get-version.outputs.version }}
           tag_name: ${{ steps.get-version.outputs.package-version }}
           target_commitish: ${{ steps.get-sha.outputs.sha }}
           generate_release_notes: true
