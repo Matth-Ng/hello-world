@@ -20,14 +20,14 @@ jobs:
         id: get-releases
         uses: octokit/request-action@v2.x
         with:
-          route: GET /repos/{repo}/releases/latest
+          route: GET /repos/{repo}/releases
           repo: ${{ github.repository }}
 
       - name: Get prerelease
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.tag_name)) | first | .id'
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.published_at)) |= sort_by(.lastTimestamp) | first | .id'
 
       - name: Get Tag
         id: get-tag
