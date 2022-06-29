@@ -24,32 +24,23 @@ jobs:
           echo "::set-output name=promote-release::$REPO/.github/workflows/cd-promote-release.yml@hotfix"
 
   deploy-to-dev:
-    env:
-      RELEASE_ID: ${{ needs.set-reusable-workflow-var.outputs.DEPLOY-TO-DEV }}
-    uses: ${{ env.RELEASE_ID }}
+    uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@hotfix
     
   create-prerelease:
     needs: deploy-to-dev
-    env:
-      CREATE-PRERELEASE: ${{ needs.set-reusable-workflow-var.outputs.CREATE-PRERELEASE }}
-    uses: ${{ env.CREATE-PRERELEASE }}
-    #uses: "${{ github.repository }}/.github/workflows/cd-create-prerelease-draft.yml@hotfix"
+    uses: Matth-Ng/hello-world/.github/workflows/cd-create-prerelease-draft.yml@hotfix
 
   publish-prerelease:
     needs: create-prerelease
     env:
       PUBLISH-PRERELEASE: ${{ needs.set-reusable-workflow-var.outputs.PUBLISH-PRERELEASE }}
-    uses: ${{ env.PUBLISH-PRERELEASE }}
-    # "${{ github.repository }}/.github/workflows/cd-publish-prerelease.yml@hotfix"
+    uses: Matth-Ng/hello-world/.github/workflows/cd-publish-prerelease.yml@hotfix
     with:
       latest: true
 
   promote-release:
     needs: publish-prerelease
-    env:
-      PROMOTE-RELEASE: ${{ needs.set-reusable-workflow-var.outputs.PROMOTE-RELEASE }}
-    uses: ${{ env.PROMOTE-RELEASE }}
-    #uses: "${{ github.repository }}/.github/workflows/cd-promote-release.yml@hotfix"
+    uses: Matth-Ng/hello-world/.github/workflows/cd-promote-release.yml@hotfix
 
   merge-to-main-pr:
     runs-on: ubuntu-latest
