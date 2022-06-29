@@ -14,7 +14,7 @@ jobs:
       PUBLISH-PRERELEASE: ${{ steps.set-variable.outputs.publish-prerelease }}
       PROMOTE-RELEASE: ${{ steps.set-variable.outputs.promote-release }}
     steps:
-      -name: Set Variable
+      - name: Set Variable
         id: set-variable
         run: |
           REPO=${{ github.repository }}
