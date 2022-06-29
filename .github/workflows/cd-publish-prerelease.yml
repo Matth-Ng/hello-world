@@ -1,9 +1,15 @@
-name: Promote Release
+name: Pubish Prerelease
 
 on:
   schedule:
-    - cron: '0 10 * * 3'
+    - cron: '30 10 * * 3'
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      latest:
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   get-prerelease:
@@ -21,18 +27,28 @@ jobs:
           route: GET /repos/{repo}/releases
           repo: ${{ github.repository }}
 
+      - name: release offset
+        id: release-offset
+        run: |
+          if [ "${{ inputs.latest }}" ]; then
+            echo "latest true"
+            echo "::set-output name=offset::first"
+          else
+            echo "latest false"
+            echo "::set-output name=offset::nth(1)"
+          fi
+
       - name: Get prerelease
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.draft == true and .prerelease == true)) | ${{ steps.release-offset.outputs.offset }} | .id'
 
-  promote-for-utility:
+  publish-for-staging:
     runs-on: ubuntu-latest
     needs: get-prerelease
     env:
       RELEASE_ID: ${{ needs.get-prerelease.outputs.RELEASE_ID }}
-      GITHUB_TOKEN: ${{ github.token }}
 
     steps:
       - name: Generate token
@@ -50,4 +66,5 @@ jobs:
           route: PATCH /repos/{repo}/releases/{release_id}
           repo: ${{ github.repository }}
           release_id: ${{ env.RELEASE_ID }}
-          prerelease: false
+          draft: false
+          prerelease: true
