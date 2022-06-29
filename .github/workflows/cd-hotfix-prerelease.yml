@@ -8,21 +8,28 @@ on:
 
 jobs:
   deploy-to-dev:
-    uses: ./.github/workflows/cd-build.yml@hotfix
+    uses: {repo}/.github/workflows/cd-build.yml@hotfix
+    with:
+      repo: ${{ github.repository }}
     
   create-prerelease:
     needs: deploy-to-dev
     uses: ./.github/workflows/cd-create-prerelease-draft.yml@hotfix
+    with:
+      repo: ${{ github.repository }}
 
   publish-prerelease:
     needs: create-prerelease
     uses: ./.github/workflows/cd-publish-prerelease.yml@hotfix
     with:
       latest: true
+      repo: ${{ github.repository }}
 
   promote-release:
     needs: publish-prerelease
     uses: ./.github/workflows/cd-promote-release.yml@hotfix
+    with:
+      repo: ${{ github.repository }}
 
   merge-to-main-pr:
     runs-on: ubuntu-latest
