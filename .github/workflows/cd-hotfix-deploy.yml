@@ -10,9 +10,9 @@ on:
 jobs:
   get-variables:
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
 
     steps:
-      if: "github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true"
       - name: print variables
         run: |
           echo "GITHUB_HEAD_REF:$GITHUB_HEAD_REF"
