@@ -1,16 +1,18 @@
 name: Hotfix Deployment Release
+
 on:
   pull_request:
     types:
       - closed
-    branches:
+    branches:    
       - main
   workflow_dispatch:
 
 jobs:
-  print-variable:
+  get-variables:
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
       - name: print variables
         run: |
           echo "GITHUB_HEAD_REF:$GITHUB_HEAD_REF"
