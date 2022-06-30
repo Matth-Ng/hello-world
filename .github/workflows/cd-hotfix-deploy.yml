@@ -3,6 +3,8 @@ name: Hotfix Deployment Release
 on:
   pull_request:
     types: [closed]
+    branches:
+      - hotfix
   workflow_dispatch:
 
 jobs:
@@ -10,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && GITHUB_HEAD_REF == 'hotfix'
+      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
       - name: print variables
         run: |
           echo "GITHUB_HEAD_REF:$GITHUB_HEAD_REF"
