@@ -10,10 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && $GITHUB_HEAD_REF == 'hotfix'
       - name: print variables
         run: |
           echo "GITHUB_HEAD_REF:$GITHUB_HEAD_REF"
+          echo "Github sha: $GITHUB_SHA"
   
   # deploy-to-dev:
   #   if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
