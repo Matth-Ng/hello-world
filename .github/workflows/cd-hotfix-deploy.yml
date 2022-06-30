@@ -3,8 +3,8 @@ name: Hotfix Deployment Release
 on:
   pull_request:
     types: [closed]
-    branches:
-      - hotfix
+    branches:    
+      - 'hotfix'
   workflow_dispatch:
 
 jobs:
