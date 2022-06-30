@@ -1,15 +1,13 @@
 name: Hotfix Deployment Release
-
 on:
   pull_request:
     types: [closed]
   workflow_dispatch:
 
 jobs:
-
   print-variable:
-    name: print variables
     steps:
+      - uses: actions/checkout@v3
       - name: print variables
         run: |
           echo "GITHUB_HEAD_REF:$GITHUB_HEAD_REF"
