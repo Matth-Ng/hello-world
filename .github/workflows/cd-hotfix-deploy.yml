@@ -4,13 +4,13 @@ on:
   pull_request:
     types: [closed]
     branches:    
-      - 'hotfix'
+      - main
   workflow_dispatch:
 
 jobs:
   get-variables:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && $GITHUB_HEAD_REF == 'hotfix'
 
     steps:
       - name: print variables
