@@ -1,0 +1,34 @@
+name: Hotfix Deployment Release
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+
+  print-variable:
+    name: print variables
+    steps:
+      - name: print variables
+        run: |
+          echo "GITHUB_HEAD_REF:$GITHUB_HEAD_REF"
+  
+  # deploy-to-dev:
+  #   if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+  #   uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@hotfix
+    
+  # create-prerelease:
+  #   needs: deploy-to-dev
+  #   uses: Matth-Ng/hello-world/.github/workflows/cd-create-prerelease-draft.yml@hotfix
+
+  # publish-prerelease:
+  #   needs: create-prerelease
+  #   env:
+  #     PUBLISH-PRERELEASE: ${{ needs.set-reusable-workflow-var.outputs.PUBLISH-PRERELEASE }}
+  #   uses: Matth-Ng/hello-world/.github/workflows/cd-publish-prerelease.yml@hotfix
+  #   with:
+  #     latest: true
+
+  # promote-release:
+  #   needs: publish-prerelease
+  #   uses: Matth-Ng/hello-world/.github/workflows/cd-promote-release.yml@hotfix

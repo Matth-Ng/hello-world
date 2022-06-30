@@ -1,28 +1,12 @@
 name: Hotfix Deployment Release
 
 on:
-  push:
-    branches:
-      - hotfix
-  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - hotfix
+  # workflow_dispatch:
 
 jobs:
-  set-reusable-workflow-var:
-    outputs:
-      DEPLOY-TO-DEV: ${{ steps.set-variable.outputs.deploy-to-dev }}
-      CREATE-PRERELEASE: ${{ steps.set-variable.outputs.create-prerelease }}
-      PUBLISH-PRERELEASE: ${{ steps.set-variable.outputs.publish-prerelease }}
-      PROMOTE-RELEASE: ${{ steps.set-variable.outputs.promote-release }}
-    steps:
-      - name: Set Variable
-        id: set-variable
-        run: |
-          REPO=${{ github.repository }}
-          echo "::set-output name=deploy-to-dev::$REPO/.github/workflows/cd-build.yml@hotfix"
-          echo "::set-output name=create-prerelease::$REPO/.github/workflows/cd-create-prerelease-draft.yml@hotfix"
-          echo "::set-output name=publish-prerelease::$REPO/.github/workflows/cd-publish-prerelease.yml@hotfix"
-          echo "::set-output name=promote-release::$REPO/.github/workflows/cd-promote-release.yml@hotfix"
-
   deploy-to-dev:
     uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@hotfix
     

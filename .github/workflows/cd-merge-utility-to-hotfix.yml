@@ -1,9 +1,9 @@
 name: Merge Utility to Hotfix
 
 on:
-  schedule:
-    - cron: '0 11 * * 3'
-  workflow_dispatch:
+  # schedule:
+  #   - cron: '0 11 * * 3'
+  # workflow_dispatch:
 
 jobs:
   merge-main-to-hotfix:
