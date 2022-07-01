@@ -8,22 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  get-source-branch:
-    runs-on: ubuntu-latest
-    if: github.event.review.state == 'approved'
-    outputs:
-      SOURCE_BRANCH: ${{ steps.get-source-info.outputs.head-ref }}
-      SOURCE_SHA: ${{ steps.get-source-info.outputs.head-sha }}
-    steps:
-      - name: Get Source Info
-        id: get-source-info
-        run: |
-          echo "$GITHUB_HEAD_REF"
-          echo "::set-output name=head-ref::$GITHUB_HEAD_REF"
-  
-  deploy-to-dev:
     needs: get-source-branch
-    if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
+    if: github.event.review.state == 'approved'
     uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@hotfix
     
   create-prerelease:
