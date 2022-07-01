@@ -7,10 +7,13 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  SOURCE_BRANCH: {{ GITHUB_HEAD_REF }}
+
 jobs:
   get-variables:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && GITHUB_HEAD_REF == 'hotfix'
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true &&  env.SOURCE_BRANCH == 'hotfix'
 
     steps:
       - name: print variables
