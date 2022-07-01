@@ -7,23 +7,22 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  SOURCE_BRANCH: {{ GITHUB_HEAD_REF }}
-
 jobs:
-  get-variables:
+  get-source-branch:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true &&  env.SOURCE_BRANCH == 'hotfix'
-
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    outputs:
+      SOURCE_BRANCH: $GITHUB_HEAD_REF
     steps:
       - name: print variables
         run: |
           echo "GITHUB_HEAD_REF:$GITHUB_HEAD_REF"
           echo "Github sha: $GITHUB_SHA"
   
-  # deploy-to-dev:
-  #   if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
-  #   uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@hotfix
+  deploy-to-dev:
+    needs: get-source-branch
+    if: needs.get-source-branch.outputs.SOURCE_BRANCH
+    uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@hotfix
     
   # create-prerelease:
   #   needs: deploy-to-dev
