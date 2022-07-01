@@ -12,7 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
     outputs:
-      SOURCE_BRANCH: $GITHUB_HEAD_REF
+      SOURCE_BRANCH: ${{ steps.get-source-info.outputs.head-ref }}
+      SOURCE_SHA: ${{ steps.get-source-info.outputs.head-sha }}
+    steps:
+      - name: Get Source Info
+        id: get-source-info
+        run: |
+          echo "::set-output name=head-ref::$GITHUB_HEAD_REF"
+          echo "::set-output name=head-sha::$GITHUB_SHA"
   
   deploy-to-dev:
     needs: get-source-branch
