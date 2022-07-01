@@ -27,17 +27,15 @@ jobs:
     uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@${{needs.get-source-branch.outputs.SOURCE_SHA}}
     
   create-prerelease:
-    needs: [get-source-branch, deploy-to-dev]
+    needs: [deploy-to-dev, deploy-to-dev]
     uses: Matth-Ng/hello-world/.github/workflows/cd-create-prerelease-draft.yml@${{needs.get-source-branch.outputs.SOURCE_SHA}}
 
   publish-prerelease:
-    needs: [get-source-branch, create-prerelease]
-    env:
-      PUBLISH-PRERELEASE: ${{ needs.set-reusable-workflow-var.outputs.PUBLISH-PRERELEASE }}
+    needs:  [deploy-to-dev, deploy-to-dev, create-prerelease]
     uses: Matth-Ng/hello-world/.github/workflows/cd-publish-prerelease.yml@${{needs.get-source-branch.outputs.SOURCE_SHA}}
     with:
       latest: true
 
   promote-release:
-    needs: [get-source-branch, publish-prerelease]
+    needs: [deploy-to-dev, deploy-to-dev, create-prerelease, publish-prerelease]
     uses: Matth-Ng/hello-world/.github/workflows/cd-promote-release.yml@${{needs.get-source-branch.outputs.SOURCE_SHA}}
