@@ -85,11 +85,11 @@ jobs:
             echo "::set-output name=boolean::true"
           fi
 
-      - name: Disable Workflow
-        if: ${{ steps.disable-workflow-boolean.outputs.boolean == 'true' }}
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        route: POST /repos/{repo}/actions/workflows/{workflow_id}/disable
-          repo: ${{ github.repository }}
-          workflow_id: "cd-publish-prerelease.yml"
+      # - name: Disable Workflow
+      #   if: ${{ steps.disable-workflow-boolean.outputs.boolean == 'true' }}
+      #   uses: octokit/request-action@v2.x
+      #   env:
+      #     GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+      #   route: POST /repos/{repo}/actions/workflows/{workflow_id}/disable
+      #     repo: ${{ github.repository }}
+      #     workflow_id: "cd-publish-prerelease.yml"
