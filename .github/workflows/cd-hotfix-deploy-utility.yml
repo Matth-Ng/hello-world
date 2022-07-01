@@ -17,6 +17,7 @@ jobs:
     uses: Matth-Ng/hello-world/.github/workflows/cd-create-prerelease-draft.yml@hotfix
     secrets: inherit
     with:
+      disable-workflow: true
       disable-notes: true
 
   publish-prerelease:
