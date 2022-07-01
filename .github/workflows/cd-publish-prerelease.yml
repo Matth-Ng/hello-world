@@ -87,7 +87,7 @@ jobs:
 
       - name: Disable Workflow
         uses: octokit/request-action@v2.x
-        if: ${{ steps.disable-workflow-boolean.outputs.boolean }} 
+        if: "${{ steps.disable-workflow-boolean.outputs.boolean }}"
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         route: POST /repos/{repo}/actions/workflows/{workflow_id}/disable
