@@ -10,6 +10,15 @@ on:
         required: true
         type: boolean
         default: false
+      disable-workflow:
+        type: boolean
+        default: false
+        required: true
+    secrets:
+      ACTIONS_TOKEN_APP_ID:
+        required: true
+      ACTIONS_TOKEN_PRIVATE_KEY:
+        required: true
 
 jobs:
   get-prerelease:
@@ -30,12 +39,10 @@ jobs:
       - name: release offset
         id: release-offset
         run: |
+          echo "::set-output name=offset::nth(1)"
           if [ "${{ inputs.latest }}" ]; then
             echo "latest true"
             echo "::set-output name=offset::first"
-          else
-            echo "latest false"
-            echo "::set-output name=offset::nth(1)"
           fi
 
       - name: Get prerelease
@@ -68,3 +75,22 @@ jobs:
           release_id: ${{ env.RELEASE_ID }}
           draft: false
           prerelease: true
+      
+      - name: Disable workflow boolean
+        id: disable-workflow-boolean
+        run: |
+          echo "::set-output name=boolean::false"
+          if [ "${{ inputs.disable-workflow }}" ]; then
+            echo "latest true"
+            echo "::set-output name=boolean::true"
+          fi
+
+      - name: Disable Workflow
+        if: ${{ steps.disable-workflow-boolean.outputs.boolean == true }} 
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+        with:
+          route: PUT /repos/{repo}/actions/workflows/{workflow_id}/disable
+          repo: ${{ github.repository }}
+          workflow_id: "cd-publish-prerelease.yml"
