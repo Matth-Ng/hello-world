@@ -13,15 +13,10 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
     outputs:
       SOURCE_BRANCH: $GITHUB_HEAD_REF
-    steps:
-      - name: print variables
-        run: |
-          echo "GITHUB_HEAD_REF:$GITHUB_HEAD_REF"
-          echo "Github sha: $GITHUB_SHA"
   
   deploy-to-dev:
     needs: get-source-branch
-    if: needs.get-source-branch.outputs.SOURCE_BRANCH
+    if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
     uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@hotfix
     
   # create-prerelease:
