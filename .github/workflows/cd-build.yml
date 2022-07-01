@@ -5,6 +5,7 @@ on:
     branches:
       - main
   workflow_dispatch:
+  workflow_call:
 
 env:
   AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
