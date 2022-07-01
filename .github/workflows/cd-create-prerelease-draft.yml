@@ -36,9 +36,19 @@ jobs:
           else
             echo "::set-output name=package-version::$TAG_NAME"
           fi
+      
+      steps:
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
       - name: Create tag
         uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:
           route: POST /repos/{repo}/git/refs
           repo: ${{ github.repository }}
@@ -47,6 +57,8 @@ jobs:
 
       - name: Create prerelease
         uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
