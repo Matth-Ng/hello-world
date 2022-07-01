@@ -10,7 +10,7 @@ on:
         type: boolean
         default: false
         required: true
-      diable-notes:
+      disable-notes:
         type: boolean
         description: "true to disable auto generate release notes, false to auto generate release notes"
         default: false
