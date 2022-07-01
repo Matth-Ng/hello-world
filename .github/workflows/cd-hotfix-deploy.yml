@@ -24,20 +24,20 @@ jobs:
   deploy-to-dev:
     needs: get-source-branch
     if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
-    uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@hotfix
+    uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@${{needs.get-source-branch.outputs.SOURCE_SHA}}
     
-  # create-prerelease:
-  #   needs: deploy-to-dev
-  #   uses: Matth-Ng/hello-world/.github/workflows/cd-create-prerelease-draft.yml@hotfix
+  create-prerelease:
+    needs: [get-source-branch, deploy-to-dev]
+    uses: Matth-Ng/hello-world/.github/workflows/cd-create-prerelease-draft.yml@${{needs.get-source-branch.outputs.SOURCE_SHA}}
 
-  # publish-prerelease:
-  #   needs: create-prerelease
-  #   env:
-  #     PUBLISH-PRERELEASE: ${{ needs.set-reusable-workflow-var.outputs.PUBLISH-PRERELEASE }}
-  #   uses: Matth-Ng/hello-world/.github/workflows/cd-publish-prerelease.yml@hotfix
-  #   with:
-  #     latest: true
+  publish-prerelease:
+    needs: [get-source-branch, create-prerelease]
+    env:
+      PUBLISH-PRERELEASE: ${{ needs.set-reusable-workflow-var.outputs.PUBLISH-PRERELEASE }}
+    uses: Matth-Ng/hello-world/.github/workflows/cd-publish-prerelease.yml@${{needs.get-source-branch.outputs.SOURCE_SHA}}
+    with:
+      latest: true
 
-  # promote-release:
-  #   needs: publish-prerelease
-  #   uses: Matth-Ng/hello-world/.github/workflows/cd-promote-release.yml@hotfix
+  promote-release:
+    needs: [get-source-branch, publish-prerelease]
+    uses: Matth-Ng/hello-world/.github/workflows/cd-promote-release.yml@${{needs.get-source-branch.outputs.SOURCE_SHA}}
