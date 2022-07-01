@@ -105,4 +105,4 @@ jobs:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         shell: bash
         run: |
-          echo "gh workflow disable cd-create-prerelease-draft.yml"
+          echo "$(gh workflow disable cd-create-prerelease-draft.yml)"
