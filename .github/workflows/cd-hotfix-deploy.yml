@@ -18,6 +18,8 @@ jobs:
       - name: Get Source Info
         id: get-source-info
         run: |
+          echo "$GITHUB_HEAD_REF"
+          echo "$GITHUB_SHA"
           echo "::set-output name=head-ref::$GITHUB_HEAD_REF"
           echo "::set-output name=head-sha::$GITHUB_SHA"
   
