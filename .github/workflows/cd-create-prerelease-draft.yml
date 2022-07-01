@@ -5,6 +5,21 @@ on:
     - cron: '0 10 * * 1'
   workflow_dispatch:
   workflow_call:
+    inputs:
+      disable-workflow:
+        type: boolean
+        default: false
+        required: true
+      disable-notes:
+        type: boolean
+        description: "true to disable auto generate release notes, false to auto generate release notes"
+        default: false
+        required: false
+    secrets:
+      ACTIONS_TOKEN_APP_ID:
+        required: true
+      ACTIONS_TOKEN_PRIVATE_KEY:
+        required: true
 
 jobs:
   draft-prerelease:
@@ -14,6 +29,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+
+      - name: Generate Notes Boolean
+        id: generate-notes-boolean
+        run: |
+          echo "::set-output name=boolean::true"
+          if [ "${{ inputs.disable-notes }}" ]; then
+            echo "::set-output name=boolean::false"
+          fi
 
       - name: Get Date
         id: get-date
@@ -39,6 +69,8 @@ jobs:
 
       - name: Create tag
         uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:
           route: POST /repos/{repo}/git/refs
           repo: ${{ github.repository }}
@@ -47,12 +79,30 @@ jobs:
 
       - name: Create prerelease
         uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:
           route: POST /repos/{repo}/releases
           repo: ${{ github.repository }}
           name: ${{ steps.get-date.outputs.date-string }}
           tag_name: ${{ steps.get-version.outputs.package-version }}
           target_commitish: ${{ steps.get-sha.outputs.sha }}
-          generate_release_notes: true
+          generate_release_notes: ${{ steps.generate-notes-boolean.outputs.boolean }}
           prerelease: true
           draft: true
+
+      - name: Disable workflow boolean
+        id: disable-workflow-boolean
+        run: |
+          echo "::set-output name=boolean::false"
+          if [ "${{ inputs.disable-workflow }}" ]; then
+            echo "::set-output name=boolean::true"
+          fi
+
+      - name: Disable Workflow
+        if: ${{ steps.disable-workflow-boolean.outputs.boolean == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+        shell: bash
+        run: |
+          echo "$(gh workflow disable cd-create-prerelease-draft.yml)"
