@@ -36,8 +36,7 @@ jobs:
           else
             echo "::set-output name=package-version::$TAG_NAME"
           fi
-      
-      steps:
+
       - name: Generate token
         id: generate-token
         uses: tibdex/github-app-token@v1
