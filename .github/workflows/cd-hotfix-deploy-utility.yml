@@ -24,6 +24,7 @@ jobs:
     needs: create-prerelease
     uses: Matth-Ng/hello-world/.github/workflows/cd-publish-prerelease.yml@hotfix
     with:
+      disable-workflow: true
       latest: true
     secrets: inherit
 
@@ -31,3 +32,5 @@ jobs:
     needs: publish-prerelease
     uses: Matth-Ng/hello-world/.github/workflows/cd-promote-release.yml@hotfix
     secrets: inherit
+    with:
+      disable-workflow: true
