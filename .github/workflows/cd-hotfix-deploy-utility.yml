@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-    needs: get-source-branch
+  deploy-to-dev:
     if: github.event.review.state == 'approved'
     uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@hotfix
     
