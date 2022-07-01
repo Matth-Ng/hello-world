@@ -10,7 +10,7 @@ on:
 jobs:
   deploy-to-dev:
     if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
-    uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml
+    uses: .github/workflows/cd-build.yml
     
   create-prerelease:
     needs: deploy-to-dev
