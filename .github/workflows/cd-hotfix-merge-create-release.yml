@@ -1,0 +1,23 @@
+name: Hotfix Merge and Create Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy-to-dev:
+    if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
+    uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml
+    
+  create-prerelease:
+    needs: deploy-to-dev
+    uses: Matth-Ng/hello-world/.github/workflows/cd-create-prerelease-draft.yml
+
+  publish-prerelease:
+    needs:  create-prerelease
+    uses: Matth-Ng/hello-world/.github/workflows/cd-publish-prerelease.yml
+    with:
+      latest: true

@@ -1,0 +1,41 @@
+name: Hotfix Deploy to Utility
+
+on:
+  pull_request_review:
+    types: [submitted]
+    branches:    
+      - main
+  workflow_dispatch:
+
+jobs:
+  get-source-branch:
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved'
+    outputs:
+      SOURCE_BRANCH: ${{ steps.get-source-info.outputs.head-ref }}
+      SOURCE_SHA: ${{ steps.get-source-info.outputs.head-sha }}
+    steps:
+      - name: Get Source Info
+        id: get-source-info
+        run: |
+          echo "$GITHUB_HEAD_REF"
+          echo "::set-output name=head-ref::$GITHUB_HEAD_REF"
+  
+  deploy-to-dev:
+    needs: get-source-branch
+    if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
+    uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@hotfix
+    
+  create-prerelease:
+    needs: deploy-to-dev
+    uses: Matth-Ng/hello-world/.github/workflows/cd-create-prerelease-draft.yml@hotfix
+
+  publish-prerelease:
+    needs:  create-prerelease
+    uses: Matth-Ng/hello-world/.github/workflows/cd-publish-prerelease.yml@hotfix
+    with:
+      latest: true
+
+  promote-release:
+    needs: publish-prerelease
+    uses: Matth-Ng/hello-world/.github/workflows/cd-promote-release.yml@hotfix
