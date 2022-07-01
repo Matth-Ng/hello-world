@@ -8,6 +8,19 @@ on:
   workflow_dispatch:
 
 jobs:
+  enable-workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disable Workflow
+        if: ${{ steps.disable-workflow-boolean.outputs.boolean == true }} 
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+        with:
+          route: PUT /repos/{repo}/actions/workflows/{workflow_id}/disable
+          repo: ${{ github.repository }}
+          workflow_id: cd-create-prerelease-draft.yml
+
   deploy-to-dev:
     if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
     uses: ./.github/workflows/cd-build.yml
