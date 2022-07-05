@@ -14,31 +14,31 @@ jobs:
 
   steps:
     - name: Enable cd-create-prerelease-draft Workflow
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        with:
-          route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
-          repo: ${{ github.repository }}
-          workflow_id: cd-create-prerelease-draft.yml
+      uses: octokit/request-action@v2.x
+      env:
+        GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+      with:
+        route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
+        repo: ${{ github.repository }}
+        workflow_id: cd-create-prerelease-draft.yml
 
     - name: Enable cd-publish-prerelease Workflow
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        with:
-          route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
-          repo: ${{ github.repository }}
-          workflow_id: cd-publish-prerelease.yml
+      uses: octokit/request-action@v2.x
+      env:
+        GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+      with:
+        route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
+        repo: ${{ github.repository }}
+        workflow_id: cd-publish-prerelease.yml
 
     - name: Enable cd-promote-release Workflow
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        with:
-          route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
-          repo: ${{ github.repository }}
-          workflow_id: cd-promote-release.yml
+      uses: octokit/request-action@v2.x
+      env:
+        GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+      with:
+        route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
+        repo: ${{ github.repository }}
+        workflow_id: cd-promote-release.yml
 
   deploy-to-dev:
     if: github.event.review.state == 'approved'
@@ -73,28 +73,28 @@ jobs:
 
     steps:
     - name: Enable cd-create-prerelease-draft Workflow
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        with:
-          route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
-          repo: ${{ github.repository }}
-          workflow_id: cd-create-prerelease-draft.yml
+      uses: octokit/request-action@v2.x
+      env:
+        GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+      with:
+        route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
+        repo: ${{ github.repository }}
+        workflow_id: cd-create-prerelease-draft.yml
 
     - name: Enable cd-publish-prerelease Workflow
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        with:
-          route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
-          repo: ${{ github.repository }}
-          workflow_id: cd-publish-prerelease.yml
+      uses: octokit/request-action@v2.x
+      env:
+        GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+      with:
+        route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
+        repo: ${{ github.repository }}
+        workflow_id: cd-publish-prerelease.yml
 
     - name: Enable cd-promote-release Workflow
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        with:
-          route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
-          repo: ${{ github.repository }}
-          workflow_id: cd-promote-release.yml
+      uses: octokit/request-action@v2.x
+      env:
+        GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+      with:
+        route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
+        repo: ${{ github.repository }}
+        workflow_id: cd-promote-release.yml
