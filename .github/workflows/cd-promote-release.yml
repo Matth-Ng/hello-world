@@ -32,18 +32,18 @@ jobs:
           route: GET /repos/{repo}/releases
           repo: ${{ github.repository }}
 
-      - name: Remove body newlines
-        id: remove-body-newlines
-        run: |
-          content="${{ steps.get-releases.outputs.data }}"
-          content="${content//$'\n'/'%0A'}"
-          echo "::set-output name=newdata::$content"
+      # - name: Remove body newlines
+      #   id: remove-body-newlines
+      #   run: |
+      #     content="${{ steps.get-releases.outputs.data }}"
+      #     content="${content//$'\n'/'%0A'}"
+      #     echo "::set-output name=newdata::$content"
 
       - name: Get prerelease
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo '${{ steps.remove-body-newlines.outputs.newdata }}' | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
+          cmd: echo "${{ steps.get-releases.outputs.data}}" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
 
   promote-for-utility:
     runs-on: ubuntu-latest
