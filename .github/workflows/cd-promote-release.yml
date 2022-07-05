@@ -34,19 +34,19 @@ jobs:
 
       - name: print variables
         run: |
-          echo "${{ toJSON(steps.get-releases.outputs.data) }}"
+          echo "${{ steps.get-releases.outputs.data }}"
 
-      - name: Remove body newlines
-        id: remove-body-newlines
-        run: |
-          markdown_msg="${ ${{ steps.get-releases.outputs.data }}/'/\'}"
-          echo "::set-output name=newdata::$markdown_msg"
+      # - name: Remove body newlines
+      #   id: remove-body-newlines
+      #   run: |
+      #     markdown_msg="${ ${{ steps.get-releases.outputs.data }}/'/\'}"
+      #     echo "::set-output name=newdata::$markdown_msg"
 
       - name: Get prerelease
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo "${{ steps.remove-body-newlines.outputs.newdata}}" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
+          cmd: echo "${{ steps.get-releases.outputs.data}}" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
 
   promote-for-utility:
     runs-on: ubuntu-latest
