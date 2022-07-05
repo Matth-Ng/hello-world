@@ -4,21 +4,21 @@ on:
   schedule:
     - cron: '30 10 * * 3'
   workflow_dispatch:
-  workflow_call:
-    inputs:
-      latest:
-        required: true
-        type: boolean
-        default: false
-      disable-workflow:
-        type: boolean
-        default: false
-        required: true
-    secrets:
-      ACTIONS_TOKEN_APP_ID:
-        required: true
-      ACTIONS_TOKEN_PRIVATE_KEY:
-        required: true
+  # workflow_call:
+  #   inputs:
+  #     latest:
+  #       required: true
+  #       type: boolean
+  #       default: false
+  #     disable-workflow:
+  #       type: boolean
+  #       default: false
+  #       required: true
+  #   secrets:
+  #     ACTIONS_TOKEN_APP_ID:
+  #       required: true
+  #     ACTIONS_TOKEN_PRIVATE_KEY:
+  #       required: true
 
 jobs:
   get-prerelease:

@@ -4,7 +4,17 @@ on:
   schedule:
     - cron: '0 10 * * 3'
   workflow_dispatch:
-  workflow_call:
+  # workflow_call:
+  #   inputs:
+  #     disable-workflow:
+  #       type: boolean
+  #       default: false
+  #       required: true
+  #   secrets:
+  #     ACTIONS_TOKEN_APP_ID:
+  #       required: true
+  #     ACTIONS_TOKEN_PRIVATE_KEY:
+  #       required: true
 
 jobs:
   get-prerelease:
@@ -51,3 +61,22 @@ jobs:
           repo: ${{ github.repository }}
           release_id: ${{ env.RELEASE_ID }}
           prerelease: false
+
+      - name: Disable workflow boolean
+        id: disable-workflow-boolean
+        run: |
+          echo "::set-output name=boolean::false"
+          if [ "${{ inputs.disable-workflow }}" ]; then
+            echo "latest true"
+            echo "::set-output name=boolean::true"
+          fi
+
+      - name: Disable Workflow
+        if: ${{ steps.disable-workflow-boolean.outputs.boolean == 'true' }}
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+        with:
+          route: PUT /repos/{repo}/actions/workflows/{workflow_id}/disable
+          repo: ${{ github.repository }}
+          workflow_id: "cd-promote-release.yml"
