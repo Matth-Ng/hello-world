@@ -35,11 +35,7 @@ jobs:
       - name: Remove body newlines
         id: remove-body-newlines
         run: |
-          markdown_msg=$(
-          cat <<"EOF"
-          ${{ steps.get-releases.outputs.data }}
-          EOF
-          )
+          markdown_msg="${ ${{ steps.get-releases.outputs.data }}/'/\'}"
           echo "::set-output name=newdata::$markdown_msg"
 
       - name: Get prerelease
