@@ -39,14 +39,16 @@ jobs:
       # - name: Remove body newlines
       #   id: remove-body-newlines
       #   run: |
-      #     markdown_msg="${ ${{ steps.get-releases.outputs.data }}/'/\'}"
-      #     echo "::set-output name=newdata::$markdown_msg"
+      #     foo=$(cat <<EOF
+      #     ${{ steps.get-releases.outputs.data }}
+      #     EOF
+      #     )
 
       - name: Get prerelease
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo "${{ steps.get-releases.outputs.data }}" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
+          cmd: echo "${{ toJSON(steps.get-releases.outputs.data) }}" | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
 
   promote-for-utility:
     runs-on: ubuntu-latest
