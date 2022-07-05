@@ -79,4 +79,4 @@ jobs:
         with:
           route: PUT /repos/{repo}/actions/workflows/{workflow_id}/disable
           repo: ${{ github.repository }}
-          workflow_id: "cd-publish-prerelease.yml"
+          workflow_id: "cd-promote-release.yml"

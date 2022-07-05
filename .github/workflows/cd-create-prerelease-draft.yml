@@ -101,8 +101,10 @@ jobs:
 
       - name: Disable Workflow
         if: ${{ steps.disable-workflow-boolean.outputs.boolean == 'true' }}
+        uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        shell: bash
-        run: |
-          echo "$(gh workflow disable cd-create-prerelease-draft.yml)"
+        with:
+          route: PUT /repos/{repo}/actions/workflows/{workflow_id}/disable
+          repo: ${{ github.repository }}
+          workflow_id: cd-publish-prerelease.yml
