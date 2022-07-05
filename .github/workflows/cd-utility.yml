@@ -28,13 +28,13 @@ jobs:
         id: get-release
         uses: sergeysova/jq-action@v2
         with:
-          cmd: printf '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.published_at and .prerelease == false)) | first | .id'
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.published_at and .prerelease == false)) | first | .id'
 
       - name: Get Tag
         id: get-tag
         uses: sergeysova/jq-action@v2
         with:
-          cmd: printf '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-release.outputs.value }})) | first | .target_commitish'
+          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-release.outputs.value }})) | first | .target_commitish'
   
   deploy-prod:
     environment: Utility
