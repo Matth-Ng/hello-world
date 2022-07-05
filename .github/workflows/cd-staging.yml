@@ -3,8 +3,6 @@ name: Deploy Prerelease to Staging
 on:
   release:
     types: [published]
-env:
-  AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
 
 jobs:
   get-prerelease:
@@ -28,13 +26,13 @@ jobs:
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
+          cmd: printf '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
 
       - name: Get Tag
         id: get-tag
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | first | .target_commitish'
+          cmd: printf '${{ steps.get-releases.outputs.data }}' | jq -r 'map(select(.id == ${{ steps.get-prerelease.outputs.value }})) | first | .target_commitish'
 
   update-staging-manifest:
     environment: Staging
