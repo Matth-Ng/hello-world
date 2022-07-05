@@ -48,7 +48,7 @@ jobs:
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: cat <<EOT ${{ steps.get-releases.outputs.data }} EOT | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
+          cmd: echo \${{ (steps.get-releases.outputs.data) }}\ | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
 
   promote-for-utility:
     runs-on: ubuntu-latest
