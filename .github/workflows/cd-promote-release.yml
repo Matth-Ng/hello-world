@@ -40,6 +40,7 @@ jobs:
         id: json-file
         run: |
           JSON=${{ toJSON(steps.get-releases.outputs.data) }}
+          echo $JSON
           # for i in "${JSON[@]}"
           # do : 
           #   echo 'start here'
