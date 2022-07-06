@@ -50,5 +50,5 @@ jobs:
             echo "${{ steps.get-releases.outputs.data }}" | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
 
       - name: get varible
-        runs: |
+        run: |
           echo '${{ steps.get-prerelease.outputs.value }}'
