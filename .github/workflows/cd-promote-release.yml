@@ -48,7 +48,7 @@ jobs:
         with:
           cmd: |
             echo ${{ steps.get-releases.outputs.data }} >> release.json
-            cat release.json | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
+            tr -d \' release.json | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
           # cmd: echo "${{ steps.get-releases.outputs.data }}" | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
 
   promote-for-utility:
