@@ -41,8 +41,15 @@ jobs:
         uses: sergeysova/jq-action@v2
         with:
           cmd: |
+            echo "original"
+            temp=${{ steps.get-releases.outputs.data }}
+            echo $temp
+            echo "toJSON"
             JSON=${{ toJSON(steps.get-releases.outputs.data) }}
             JSON=$JSON | sed -e "s/'//g"
+            JSON=${ fromJSON($JSON) }
+            echo "fromJSON"
+            echo $JSON
             echo "${ fromJSON($JSON) }" | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
           # sed -e "s/'//g" <<< ${{ steps.get-releases.outputs.data }} | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
           # echo ${{ steps.get-releases.outputs.data }} >> release.json
