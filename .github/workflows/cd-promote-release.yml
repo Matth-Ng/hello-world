@@ -36,11 +36,11 @@ jobs:
       #   run: |
       #     echo $"${{ steps.get-releases.outputs.data }}"
 
-      - name: Remove single quotes
-        id: remove-quotes
-        run: |
-          line=$(sed -e "s/'//g" <<< )${{ steps.get-releases.outputs.data }}
-          echo "::set-output name=update::$line"
+      # - name: Remove single quotes
+      #   id: remove-quotes
+      #   run: |
+      #     line=$(sed -e "s/'//g" <<< )${{ steps.get-releases.outputs.data }}
+      #     echo "::set-output name=update::$line"
 
       - name: Get prerelease
         id: get-prerelease
