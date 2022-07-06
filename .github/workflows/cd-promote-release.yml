@@ -39,7 +39,7 @@ jobs:
       - name: Add json to file
         id: json-file
         run: |
-          JSON=${{ steps.get-releases.outputs.data }}
+          JSON=${{ toJSON(steps.get-releases.outputs.data) }}
           for i in "${JSON[body]}"
           do
             : 
