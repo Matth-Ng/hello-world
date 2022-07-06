@@ -3,7 +3,7 @@ name: Hotfix Deploy to Utility
 on:
   pull_request_review:
     types: [submitted]
-    branches:    
+    branches:
       - hotfix
   workflow_dispatch:
 
@@ -14,32 +14,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Enable cd-create-prerelease-draft Workflow
+      - name: Get cd-create-prerelease-draft workflow
+        id: create-workflow-info
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:
-          route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
+          route: GET /repos/{repo}/actions/workflows/{workflow_id}
           repo: ${{ github.repository }}
           workflow_id: cd-create-prerelease-draft.yml
-
-      - name: Enable cd-publish-prerelease Workflow
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+      
+      - name: Check if create workflow enabled
+        id: create-workflow-enabled
+        uses: sergeysova/jq-action@v2
         with:
-          route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
-          repo: ${{ github.repository }}
-          workflow_id: cd-publish-prerelease.yml
+          cmd: |
+            echo ${{ steps.create-workflow-info.outputs.data }} | jq '.state'
 
-      - name: Enable cd-promote-release Workflow
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        with:
-          route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
-          repo: ${{ github.repository }}
-          workflow_id: cd-promote-release.yml
+      - name: Print variable
+        run: |
+          echo "${{ steps.create-workflow-enabled.outputs.data }}"
 
   deploy-to-dev:
     if: github.event.review.state == 'approved'
