@@ -46,7 +46,7 @@ jobs:
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo $'${{ steps.remove-quotes.outputs.update }}' | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
+          cmd: echo ${{ steps.remove-quotes.outputs.update }} | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
 
   promote-for-utility:
     runs-on: ubuntu-latest
