@@ -50,9 +50,6 @@ jobs:
             EOF
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
-            echo "new json"
-            echo "$JSON"
-            echo "end json"
             echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) |  first | .id'
           #   printf "%s\n" "$string"${{ steps.get-releases.outputs.data }} > release.json
           # temp=
