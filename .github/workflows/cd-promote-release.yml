@@ -41,8 +41,8 @@ jobs:
         run: |
           JSON=${{ toJSON(steps.get-releases.outputs.data) }}
           for i in "${JSON[body]}"
-          do
-            : 
+          do : 
+            echo 'start here'
             echo $i
             # do whatever on "$i" here
           done
