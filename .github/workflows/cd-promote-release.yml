@@ -41,8 +41,7 @@ jobs:
         uses: sergeysova/jq-action@v2
         with:
           cmd: |
-            echo "original"
-            temp=$(echo '${{ toJSON(steps.get-releases.outputs.data) }}')
+            temp=cat << EOF | ${{ steps.get-releases.outputs.data) }} | EOF
             echo $temp | sed -e "s/'//g"
           # echo "toJSON"
           # JSON="${{ steps.get-releases.outputs.data }}" | sed -e "s/'//g"
