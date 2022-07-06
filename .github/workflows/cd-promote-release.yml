@@ -29,7 +29,7 @@ jobs:
         id: get-releases
         uses: octokit/request-action@v2.x
         with:
-          route: GET /repos/{repo}/releases
+          route: GET /repos/{repo}/releases/latest
           repo: ${{ github.repository }}
 
       # - name: print variables
@@ -41,7 +41,7 @@ jobs:
         uses: sergeysova/jq-action@v2
         with:
           cmd: |
-            temp=cat << EOF | ${{ steps.get-releases.outputs.data }} | EOF
+            temp=${{ steps.get-releases.outputs.data }}
             echo $temp | sed -e "s/'//g"
           # echo "toJSON"
           # JSON="${{ steps.get-releases.outputs.data }}" | sed -e "s/'//g"
