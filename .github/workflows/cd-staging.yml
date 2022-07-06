@@ -1,4 +1,4 @@
-name: Deploy Prerelease to Staging v1
+name: Deploy Prerelease to Staging
 
 on:
   release:
