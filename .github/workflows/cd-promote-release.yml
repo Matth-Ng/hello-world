@@ -39,7 +39,13 @@ jobs:
       - name: Add json to file
         id: json-file
         run: |
-          ${{ steps.get-releases.outputs.data }} >> release.json
+          JSON=${{ steps.get-releases.outputs.data }}
+          for i in "${JSON[body]}"
+          do
+            : 
+            echo $i
+            # do whatever on "$i" here
+          done
 
       - name: Get prerelease
         id: get-prerelease
