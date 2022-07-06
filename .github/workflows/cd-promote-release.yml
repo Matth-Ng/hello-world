@@ -42,7 +42,7 @@ jobs:
         with:
           cmd: |
             echo "original"
-            temp=${{ steps.get-releases.outputs.data }}
+            temp=${{ toJSON(steps.get-releases.outputs.data) }}
           # echo $temp
           # echo "toJSON"
           # JSON="${{ steps.get-releases.outputs.data }}" | sed -e "s/'//g"
