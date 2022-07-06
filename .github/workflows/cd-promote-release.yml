@@ -36,17 +36,20 @@ jobs:
       #   run: |
       #     echo $"${{ steps.get-releases.outputs.data }}"
 
-      # - name: Remove single quotes
-      #   id: remove-quotes
-      #   run: |
-      #     line=$(sed -e "s/'//g" <<< )${{ steps.get-releases.outputs.data }}
-      #     echo "::set-output name=update::$line"
+      - name: Remove single quotes
+        id: remove-quotes
+        run: |
+          line=$(sed -e "s/'//g" <<< )${{ steps.get-releases.outputs.data }}
+          echo "::set-output name=update::$line"
 
       - name: Get prerelease
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: echo "${{ steps.get-releases.outputs.data }}" | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
+          cmd: |
+            echo ${{ steps.get-releases.outputs.data }} >> release.json
+            cat release.json | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
+          # cmd: echo "${{ steps.get-releases.outputs.data }}" | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
 
   promote-for-utility:
     runs-on: ubuntu-latest
