@@ -32,8 +32,8 @@ jobs:
             TEMP=""
             cat << 'EOF' > json.txt
             cat << EOF ${{ steps.get-releases.outputs.data }} EOF > json.txt
-            tr -d \' json.txt
-            cat json.txt
+          # tr -d \' json.txt
+          # cat json.txt
 
       # - name: Get prerelease
       #   id: get-prerelease
