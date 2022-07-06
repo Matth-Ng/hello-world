@@ -34,7 +34,7 @@ jobs:
             ${{ steps.get-releases.outputs.data }}
             EOF
             sed -e "s/'//g" json.txt > newjson.json
-            JSON=cat newjson.json
+            JSON=$(cat newjson.json)
             echo "::set-output name=json::$JSON"
 
       - name: Get prerelease
