@@ -29,12 +29,8 @@ jobs:
         id: get-releases
         uses: octokit/request-action@v2.x
         with:
-          route: GET /repos/{repo}/releases/latest
+          route: GET /repos/{repo}/releases
           repo: ${{ github.repository }}
-
-      # - name: print variables
-      #   run: |
-      #     echo $"${{ steps.get-releases.outputs.data }}"
 
       - name: Get prerelease
         id: get-prerelease
