@@ -11,65 +11,20 @@ env:
   AWS_ECR_REPO: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/dsva/platform-console-ui
 
 jobs:
-  get-prerelease:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-20.04
     outputs:
-      RELEASE_ID: ${{ steps.get-prerelease.outputs.value }}
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
-
+      package-version: ${{ steps.get-version.outputs.package-version }}
     steps:
-      - name: Get releases
-        id: get-releases
-        uses: octokit/request-action@v2.x
-        with:
-          route: GET /repos/{repo}/releases
-          repo: ${{ github.repository }}
-
-      # - name: print variables
-      #   id: print-variable
-      #   shell: bash
-      #   run: |
-      #       cat << EOF > json.txt
-      #       ${{ steps.get-releases.outputs.data }}
-      #       EOF
-      #       sed -e "s/'//g" json.txt > newjson.txt
-      #       JSON=$(cat newjson.txt)
-      #       echo "new json"
-      #       echo "$JSON"
-      #       echo "end json"
-      #       echo "::set-output name=json::$JSON"
-
-      - name: Get prerelease
-        id: get-prerelease
-        uses: sergeysova/jq-action@v2
-        with:
-          cmd: |
-            cat << EOF > json.txt
-            ${{ steps.get-releases.outputs.data }}
-            EOF
-            sed -e "s/'//g" json.txt > newjson.txt
-            JSON=$(cat newjson.txt)
-            echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) |  first | .id'
-          #   printf "%s\n" "$string"${{ steps.get-releases.outputs.data }} > release.json
-          # temp=
-          # echo $temp | sed -e "s/'//g"
-          # echo "toJSON"
-          # JSON="${{ steps.get-releases.outputs.data }}" | sed -e "s/'//g"
-          # echo "after"
-          # echo $JSON
-          # echo "${ fromJSON($JSON) }" | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
-          # sed -e "s/'//g" <<< ${{ steps.get-releases.outputs.data }} | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
-          # echo ${{ steps.get-releases.outputs.data }} >> release.json
-          # tr -d \' release.json | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
-          # cmd: |
-          #   TEMP=""
-          #   cat << 'EOF' > json.txt
-          #   cat << EOF ${{ steps.get-releases.outputs.data }} EOF > json.txt
-          #   tr -d \' json.txt
-          #   cat json.txt
-           
-
-      - name: get varible
+      - name: Configure AWS Credentials
         run: |
-          echo '${{ steps.get-prerelease.outputs.value }}'
+          echo "building dev"
+
+  update-dev-manifest:
+    runs-on: ubuntu-latest
+    environment: Dev
+    needs: build
+    steps:
+      - name: Configure AWS Credentials
+        run: |
+          echo "updating dev manifest"
