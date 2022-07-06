@@ -36,6 +36,8 @@ jobs:
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(<newjson.txt)
             echo "::set-output name=json::$JSON"
+            echo "new json"
+            echo "$JSON"
 
       - name: Get prerelease
         id: get-prerelease
