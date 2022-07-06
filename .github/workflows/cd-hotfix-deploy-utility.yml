@@ -36,7 +36,12 @@ jobs:
         uses: sergeysova/jq-action@v2
         with:
           cmd: |
-            echo "${{ steps.create-workflow-info.outputs.data }}" | jq '.state'
+            cat << EOF > json.txt
+            ${{ steps.create-workflow-info.outputs.data }}
+            EOF
+            sed -e "s/'//g" json.txt > newjson.txt
+            JSON=$(cat newjson.txt)
+            echo "$JSON"| jq '.state'
 
       - name: Print variable
         run: |
