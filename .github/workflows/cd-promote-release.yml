@@ -40,10 +40,8 @@ jobs:
         id: get-prerelease
         uses: sergeysova/jq-action@v2
         with:
-          cmd: |
-            RELEASEJSON=printf "%s" "${{ steps.get-releases.outputs.data }}" | sed -e "s/'//g"
-            echo "inside"
-            echo $RELEASEJSON
+          # cmd: |
+          #   printf "%s\n" "$string"${{ steps.get-releases.outputs.data }} > release.json
           # temp=
           # echo $temp | sed -e "s/'//g"
           # echo "toJSON"
@@ -54,7 +52,7 @@ jobs:
           # sed -e "s/'//g" <<< ${{ steps.get-releases.outputs.data }} | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
           # echo ${{ steps.get-releases.outputs.data }} >> release.json
           # tr -d \' release.json | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
-          # cmd: echo "${{ steps.get-releases.outputs.data }}" | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
+          cmd: echo "${{ steps.get-releases.outputs.data }}" | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
 
   promote-for-utility:
     runs-on: ubuntu-latest
