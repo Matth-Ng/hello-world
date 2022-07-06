@@ -33,6 +33,7 @@ jobs:
             ${{ steps.get-releases.outputs.data }}
             EOF
             sed "s/[']//g" json.txt
+            echo "new json text here"
             cat json.txt
 
       # - name: Get prerelease
