@@ -40,7 +40,7 @@ jobs:
         id: remove-quotes
         run: |
           NEW-STRING=${{ steps.get-releases.outputs.data//\'/\. }}
-          echo "::set-output name=update::NEW-STRING"
+          echo "::set-output name=update::$NEW-STRING"
 
       - name: Get prerelease
         id: get-prerelease
