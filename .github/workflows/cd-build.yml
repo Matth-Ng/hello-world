@@ -33,8 +33,8 @@ jobs:
             cat << EOF > json.txt
             ${{ steps.get-releases.outputs.data }}
             EOF
-            sed -e "s/'//g" json.txt > newjson.json
-            JSON=$(cat newjson.json)
+            sed -e "s/'//g" json.txt > newjson.txt
+            JSON=$(<newjson.txt)
             echo "::set-output name=json::$JSON"
 
       - name: Get prerelease
