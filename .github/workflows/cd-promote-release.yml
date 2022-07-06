@@ -40,12 +40,12 @@ jobs:
         id: json-file
         run: |
           JSON=${{ toJSON(steps.get-releases.outputs.data) }}
-          for i in "${JSON[body]}"
-          do : 
-            echo 'start here'
-            echo $i
-            # do whatever on "$i" here
-          done
+          # for i in "${JSON[@]}"
+          # do : 
+          #   echo 'start here'
+          #   echo $i
+          #   # do whatever on "$i" here
+          # done
 
       - name: Get prerelease
         id: get-prerelease
