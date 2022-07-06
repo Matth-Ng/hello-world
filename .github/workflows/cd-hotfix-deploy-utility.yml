@@ -36,7 +36,7 @@ jobs:
         uses: sergeysova/jq-action@v2
         with:
           cmd: |
-            echo ${{ steps.create-workflow-info.outputs.data }} | jq '.state'
+            echo "${{ steps.create-workflow-info.outputs.data }}" | jq '.state'
 
       - name: Print variable
         run: |
