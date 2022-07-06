@@ -1,4 +1,4 @@
-name: Deploy Release to Utility
+name: Deploy Release to Utility v1
 
 on:
   release:
