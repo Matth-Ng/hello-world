@@ -39,7 +39,8 @@ jobs:
       - name: Remove single quotes
         id: remove-quotes
         run: |
-          NEW-STRING="${{ steps.get-releases.outputs.data//\'/'' }}"
+          line=${{ steps.get-releases.outputs.data }}
+          NEW-STRING="${ line//\'/'' }"
           echo "::set-output name=update::$NEW-STRING"
 
       - name: Get prerelease
