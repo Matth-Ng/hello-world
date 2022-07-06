@@ -43,7 +43,7 @@ jobs:
           cmd: |
             JSON=${{ toJSON(steps.get-releases.outputs.data) }}
             JSON=$JSON | sed -e "s/'//g"
-            echo "${from}" | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
+            echo "${fromJSON($JSON)}" | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
           # sed -e "s/'//g" <<< ${{ steps.get-releases.outputs.data }} | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
           # echo ${{ steps.get-releases.outputs.data }} >> release.json
           # tr -d \' release.json | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
