@@ -46,10 +46,10 @@ jobs:
             EOF
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
-            release-id=$(echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id')
-            release-tag=$(echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .target_commitish')
-            echo "::set-output name=RELEASE_ID::$release-id"
-            echo "::set-output name=RELEASE_TAG::$release-tag"
+            ReleaseId=$(echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id')
+            ReleaseTag=$(echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .target_commitish')
+            echo "::set-output name=RELEASE_ID::$ReleaseId"
+            echo "::set-output name=RELEASE_TAG::$ReleaseTagg"
       
       - name: Delete prerelease
         if: steps.get-prerelease.outcome == 'success'
@@ -105,10 +105,10 @@ jobs:
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
             echo "$JSON"
-          # release-id=echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | first | .id'
-          # release-tag=echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | first | .target_commitish'
-          # echo "::set-output name=RELEASE_ID::$release-id"
-          # echo "::set-output name=RELEASE_TAG::$release-tag"
+            ReleaseId=echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] | .id'
+            ReleaseTag=echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] | .target_commitish'
+            echo "::set-output name=RELEASE_ID::$ReleaseId"
+            echo "::set-output name=RELEASE_TAG::$ReleaseTag"
       
       # - name: Delete prerelease
       #   if: steps.get-prerelease.outcome == 'success'
