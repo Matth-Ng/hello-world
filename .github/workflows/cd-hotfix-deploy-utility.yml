@@ -11,6 +11,8 @@ jobs:
 
   check-workflow:
     if: github.event.review.state == 'approved'
+    outputs:
+      DRAFT_STATE: ${{ steps.create-workflow-enabled.outputs.data }}
     runs-on: ubuntu-latest
 
     steps:
@@ -41,14 +43,10 @@ jobs:
             EOF
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
-            echo "$JSON"| jq -r 'map(select(.name == "Create Prerelease Draft")) | first | .state'
-
-      - name: Print variable
-        run: |
-          echo "${{ steps.create-workflow-enabled.outputs.data }}"
+            echo "$JSON" | jq -r '.workflows[] | select(.name=="Create Prerelease Draft") | .state'
 
   deploy-to-dev:
-    if: github.event.review.state == 'approved'
+    if: github.event.review.state == 'approved' && needs.check-workflow.outputs.DRAFT_STATE == 'active'
     needs: check-workflow
     uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@hotfix
     
