@@ -3,6 +3,11 @@ name: Enable Release Workflow
 on:
   workflow_dispatch:
   workflow_call:
+    secrets:
+      ACTIONS_TOKEN_APP_ID:
+        required: true
+      ACTIONS_TOKEN_PRIVATE_KEY:
+        required: true
 
 jobs:
   generate-token:
