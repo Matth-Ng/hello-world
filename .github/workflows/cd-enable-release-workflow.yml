@@ -6,6 +6,7 @@ on:
 
 jobs:
   generate-token:
+    runs-on: ubuntu-latest
     outputs:
       GIT_TOKEN: ${{ steps.generate-token.outputs.token }}
 
