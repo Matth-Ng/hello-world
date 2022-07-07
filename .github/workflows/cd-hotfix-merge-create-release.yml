@@ -50,6 +50,11 @@ jobs:
             ReleaseTag=$(echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .target_commitish')
             echo "::set-output name=RELEASE_ID::$ReleaseId"
             echo "::set-output name=RELEASE_TAG::$ReleaseTagg"
+
+      - name: print variable
+        run: |
+          echo "${{ steps.get-prerelease.outputs.RELEASE_ID  }}"
+          echo "${{ steps.get-prerelease.outputs.RELEASE_TAG  }}"
       
       - name: Delete prerelease
         if: steps.get-prerelease.outcome == 'success'
