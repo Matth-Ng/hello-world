@@ -8,7 +8,7 @@ jobs:
   generate-token:
     runs-on: ubuntu-latest
     outputs:
-      GIT_TOKEN: ${{ steps.generate-token.outputs.token }}
+      GITAPP_TOKEN: ${{ steps.generate-token.outputs.token }}
 
     steps:
     - name: Generate token
@@ -22,13 +22,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: generate-token
     env:
-      GIT_TOKEN: ${{ needs.generate-token.outputs.GIT_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
+      GITAPP_TOKEN: ${{ needs.generate-token.outputs.GITAPP_TOKEN }}
 
     steps:
     - name: Enable cd-create-prerelease-draft Workflow
       uses: octokit/request-action@v2.x
       env:
-        GITHUB_TOKEN: ${{ env.GIT_TOKEN }}
+        GITHUB_TOKEN: ${{ env.GITAPP_TOKEN }}
       with:
         route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
         repo: ${{ github.repository }}
@@ -38,13 +39,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: generate-token
     env:
-      GIT_TOKEN: ${{ needs.generate-token.outputs.GIT_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
+      GITAPP_TOKEN: ${{ needs.generate-token.outputs.GITAPP_TOKEN }}
 
     steps:
     - name: Enable cd-publish-prerelease Workflow
       uses: octokit/request-action@v2.x
       env:
-        GITHUB_TOKEN: ${{ env.GIT_TOKEN }}
+        GITHUB_TOKEN: ${{ env.GITAPP_TOKEN }}
       with:
         route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
         repo: ${{ github.repository }}
@@ -54,13 +56,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: generate-token
     env:
-      GIT_TOKEN: ${{ needs.generate-token.outputs.GIT_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
+      GITAPP_TOKEN: ${{ needs.generate-token.outputs.GITAPP_TOKEN }}
 
     steps:
     - name: Enable cd-promote-release Workflow
       uses: octokit/request-action@v2.x
       env:
-        GITHUB_TOKEN: ${{ env.GIT_TOKEN }}
+        GITHUB_TOKEN: ${{ env.GITAPP_TOKEN }}
       with:
         route: PUT /repos/{repo}/actions/workflows/{workflow_id}/enable
         repo: ${{ github.repository }}
