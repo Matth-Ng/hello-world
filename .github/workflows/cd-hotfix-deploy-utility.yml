@@ -27,7 +27,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:
-          route: GET /repos/{repo}/actions/workflows/{workflow_id}
+          route: GET /repos/{repo}/actions/workflows
           repo: ${{ github.repository }}
           workflow_id: cd-create-prerelease-draft.yml
       
@@ -41,7 +41,7 @@ jobs:
             EOF
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
-            echo "$JSON"| jq '.state'
+            echo "$JSON"| jq 'map(select(.name == "Create Prerelease Draft")) | '.state'
 
       - name: Print variable
         run: |
