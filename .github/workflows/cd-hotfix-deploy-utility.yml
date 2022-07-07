@@ -12,7 +12,7 @@ jobs:
   check-workflow:
     if: github.event.review.state == 'approved'
     outputs:
-      DRAFT_STATE: ${{ steps.create-workflow-enabled.outputs.data }}
+      DRAFT_STATE: ${{ steps.create-workflow-enabled.outputs.value }}
     runs-on: ubuntu-latest
 
     steps:
@@ -44,6 +44,10 @@ jobs:
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
             echo "$JSON" | jq -r '.workflows[] | select(.name=="Create Prerelease Draft") | .state'
+
+      - name: print variable
+        run: |
+          echo ${{ steps.create-workflow-enabled.outputs.value }}
 
   deploy-to-dev:
     if: github.event.review.state == 'approved' && needs.check-workflow.outputs.DRAFT_STATE == 'active'
