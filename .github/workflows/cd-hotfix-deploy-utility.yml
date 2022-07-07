@@ -41,7 +41,7 @@ jobs:
             EOF
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
-            echo "$JSON"| jq 'map(select(.name == "Create Prerelease Draft")) | first | .state'
+            echo "$JSON"| jq -r 'map(select(.name == "Create Prerelease Draft")) | first | .state'
 
       - name: Print variable
         run: |
