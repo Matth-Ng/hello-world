@@ -1,4 +1,4 @@
-name: Hotfix Merge and Create Release and Deploy Staging
+name: Hotfix Merge and Create Release
 
 on:
   pull_request:
