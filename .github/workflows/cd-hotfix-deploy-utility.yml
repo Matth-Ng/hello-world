@@ -45,10 +45,6 @@ jobs:
             JSON=$(cat newjson.txt)
             echo "$JSON" | jq -r '.workflows[] | select(.name=="Create Prerelease Draft") | .state'
 
-      - name: print variable
-        run: |
-          echo ${{ steps.create-workflow-enabled.outputs.value }}
-
   deploy-to-dev:
     if: github.event.review.state == 'approved' && needs.check-workflow.outputs.DRAFT_STATE == 'active'
     needs: check-workflow
