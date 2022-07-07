@@ -61,3 +61,7 @@ jobs:
       - name: Configure AWS Credentials
         run: |
           echo "updating utility manifest"
+
+  enable-workflows:
+    needs: deploy-prod
+    uses: ./.github/workflows/cd-enable-release-workflow.yml
