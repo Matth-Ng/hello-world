@@ -125,12 +125,14 @@ jobs:
       - name: Convert to json
         id: convert-to-json
         run: |
-          IDARRAY=$(toJSON(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g'))
-          TAGARRAY=$(toJSON(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g'))
+          IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
+          TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
+          IDJSON=$(toJSON($IDARRAY))
+          TAGJSON=$(toJSON($TAGARRAY))
           echo "::set-output name=IDMATRIX::$IDARRAY"
           echo "::set-output name=TAGMATRIX::$TAGARRAY"
-          echo "$IDARRAY"
-          echo "$TAGARRAY"
+          echo "toJSON($IDARRAY)"
+          echo "toJSON($TAGARRAY)"
 
   print-var:
     needs: [get-current-drafts-to-delete]
