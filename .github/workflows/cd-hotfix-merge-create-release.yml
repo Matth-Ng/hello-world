@@ -132,7 +132,7 @@ jobs:
           echo "toJSON($IDARRAY)"
           echo "toJSON($TAGARRAY)"
 
-  delete-current-drafts-releases:
+  print-var:
     needs: [get-current-drafts-to-delete]
     runs-on: ubuntu-latest
     steps:
