@@ -129,11 +129,12 @@ jobs:
     strategy:
       matrix:
         IDMATRIX: ${{fromJson(needs.get-current-drafts-to-delete.outputs.IDMATRIX)}}
-    uses: ./.github/workflows/cd-delete-release-tag.yml
-    secrets: inherit
-    with:
-      tag: 'null'
-      id: ${{ matrix.IDMATRIX }}
+    steps:
+      - uses: ./.github/workflows/cd-delete-release-tag.yml
+      secrets: inherit
+      with:
+        tag: 'null'
+        id: ${{ matrix.IDMATRIX }}
 
   delete-current-drafts-tags:
     needs: [get-current-drafts-to-delete]
@@ -141,11 +142,12 @@ jobs:
     strategy:
       matrix:
         TAGMATRIX: ${{fromJson(needs.get-current-drafts-to-delete.outputs.TAGMATRIX)}}
-    uses: ./.github/workflows/cd-delete-release-tag.yml
-    secrets: inherit
-    with:
-      tag: ${{ matrix.TAGMATRIX }}
-      id: 'null'
+    steps:
+      - uses: ./.github/workflows/cd-delete-release-tag.yml
+      secrets: inherit
+      with:
+        tag: ${{ matrix.TAGMATRIX }}
+        id: 'null'
 
       # - name: Delete prerelease
       #   if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null'
