@@ -9,12 +9,12 @@ on:
 
 jobs:
 
-  deploy-to-dev:
-    # if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
-    uses: ./.github/workflows/cd-build.yml
+  # deploy-to-dev:
+  #   # if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
+  #   uses: ./.github/workflows/cd-build.yml
 
   delete-current-releases:
-    needs: deploy-to-dev
+    # needs: deploy-to-dev
     runs-on: ubuntu-latest
     
     env:
@@ -82,7 +82,7 @@ jobs:
           ref: ${{ steps.get-prerelease-tag.outputs.value }}
 
   get-current-drafts-to-delete:
-    needs: deploy-to-dev
+    # needs: deploy-to-dev
     runs-on: ubuntu-latest
     outputs:
       IDMATRIX: ${{ steps.convert-to-json.outputs.IDMATRIX }}
@@ -134,10 +134,10 @@ jobs:
       - name: Convert to json
         id: convert-to-json
         run: |
-          idarray=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"\]/g')
-          tagarray=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"\]/g')
-          echo '::set-output name=IDMATRIX::$idarray'
-          echo '::set-output name=TAGMATRIX::$tagarray'
+          IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"\]/g')
+          TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"\]/g')
+          echo "::set-output name=IDMATRIX::$IDARRAY"
+          echo "::set-output name=TAGMATRIX::$TAGARRAY"
 
       - name: print var
         run: |
