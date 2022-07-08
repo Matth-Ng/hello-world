@@ -45,10 +45,6 @@ jobs:
           sed -e "s/'//g" json.txt > newjson.txt
           echo ::set-output name=JSON::$(cat newjson.txt)
 
-      - name: print variable
-        run: |
-          echo "${{ steps.sanitize-json.outputs.JSON }}"
-
       - name: Get prerelease ID
         id: get-prerelease-id
         continue-on-error: true
