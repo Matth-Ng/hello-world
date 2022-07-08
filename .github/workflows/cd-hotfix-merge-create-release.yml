@@ -134,8 +134,8 @@ jobs:
       - name: Convert to json
         id: convert-to-json
         run: |
-          idarray=$(echo "${{ steps.get-prerelease-id.outputs.value  }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\\]"/g'
-          tagarray=$(echo "${{ steps.get-prerelease-tag.outputs.value  }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\\]"/g'
+          idarray=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\\]"/g')
+          tagarray=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\\]"/g')
           echo "::set-output name=IDMATRIX::$idarray"
           echo "::set-output name=TAGMATRIX::$tagarray"
           echo "${idarray}"
