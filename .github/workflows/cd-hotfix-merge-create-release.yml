@@ -136,8 +136,10 @@ jobs:
         run: |
           IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/{[\\\"/g' | sed -r 's/($)/\\"]}/g')
           TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/{[\\\"/g' | sed -r 's/($)/\\"]}/g')
-          echo "::set-output name=IDMATRIX::$IDARRAY"
-          echo "::set-output name=TAGMATRIX::$TAGARRAY"
+          echo "::set-output name=IDMATRIX::[\"a\", \"b\", \"c\"]"
+          echo "::set-output name=TAGMATRIX::[\"a\", \"b\", \"c\"]"
+        # echo "::set-output name=IDMATRIX::$IDARRAY"
+        # echo "::set-output name=TAGMATRIX::$TAGARRAY"
 
       - name: print var
         run: |
@@ -153,15 +155,17 @@ jobs:
         TAGMATRIX: ${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}
 
     steps:
-      - name: Delete prerelease
-        if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null'
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        with:
-          route: DELETE /repos/{repo}/releases/{release_id}
-          repo: ${{ github.repository }}
-          release_id: ${{ matrix.IDMATRIX }}
+      - run: |
+        echo "${{ matrix.IDMATRIX }}"
+      # - name: Delete prerelease
+      #   if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null'
+      #   uses: octokit/request-action@v2.x
+      #   env:
+      #     GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+      #   with:
+      #     route: DELETE /repos/{repo}/releases/{release_id}
+      #     repo: ${{ github.repository }}
+      #     release_id: ${{ matrix.IDMATRIX }}
 
       # - name: Delete prerelease tag by tag
       #   if: steps.get-prerelease-tag.outcome == 'success' && steps.get-prerelease-tag.outputs.value != 'null'
