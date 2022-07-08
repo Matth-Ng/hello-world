@@ -16,7 +16,7 @@ jobs:
   get-current-release-to-delete:
     # needs: deploy-to-dev
     runs-on: ubuntu-latest
-    output:
+    outputs:
       ID: ${{ steps.get-prerelease-id.outputs.value }}
       TAG: ${{ steps.get-prerelease-tag.outputs.value }}
     env:
