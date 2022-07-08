@@ -131,7 +131,7 @@ jobs:
             EOF
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
-            echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] | .id' | jq -s
+            echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] | .id' | tr '\n' ','
 
       - name: Get prerelease TAG
         id: get-prerelease-tag
@@ -143,8 +143,9 @@ jobs:
             ${{ steps.get-releases.outputs.data }}
             EOF
             sed -e "s/'//g" json.txt > newjson.txt
-            tagnames=$(cat newjson.txt | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] |  .tag_name' | jq -s | tr -d '[],"\n')
-            echo $tagnames
+            JSON=$(cat newjson.txt)
+            OutputString=()
+            echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] |  .tag_name' | tr '\n' ','
 
       - name: print variable
         run: |
