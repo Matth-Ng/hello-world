@@ -84,7 +84,7 @@ jobs:
         with:
           route: DELETE /repos/{repo}/git/refs/tags/{ref}"
           repo: ${{ github.repository }}
-          reg: ${{ steps.get-prerelease-tag.outputs.value }}
+          ref: ${{ steps.get-prerelease-tag.outputs.value }}
 
   delete-current-drafts:
     # needs: deploy-to-dev
