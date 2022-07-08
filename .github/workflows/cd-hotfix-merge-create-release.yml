@@ -9,12 +9,12 @@ on:
 
 jobs:
 
-  deploy-to-dev:
-    # if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
-    uses: ./.github/workflows/cd-build.yml
+  # deploy-to-dev:
+  #   if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
+  #   uses: ./.github/workflows/cd-build.yml
 
   delete-current-releases:
-    needs: deploy-to-dev
+    # needs: deploy-to-dev
     runs-on: ubuntu-latest
     
     env:
@@ -43,7 +43,7 @@ jobs:
           ${{ steps.get-releases.outputs.data }}
           EOF
           sed -e "s/'//g" json.txt > newjson.txt
-          JSON=$(cat newjson.txt)
+          JSON=$(echo `cat file.txt`)
           echo "::set-output name=JSON::$JSON"
 
       - name: print variable
@@ -92,7 +92,7 @@ jobs:
           reg: ${{ steps.get-prerelease.outputs.RELEASE_TAG  }} 
 
   delete-current-drafts:
-    needs: deploy-to-dev
+    # needs: deploy-to-dev
     runs-on: ubuntu-latest
     
     env:
