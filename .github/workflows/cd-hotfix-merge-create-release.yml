@@ -65,7 +65,7 @@ jobs:
 
   delete-current-release:
     needs: get-current-release-to-delete
-    if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null' && steps.get-prerelease-tag.outputs.value != 'null'
+    if: needs.get-current-release-to-delete.outputs.ID != 'null' && needs.get-current-release-to-delete.outputs.TAG != 'null'
     uses: ./.github/workflows/cd-delete-release-tag.yml
     with:
       id: ${{ needs.get-current-release-to-delete.outputs.ID }}
