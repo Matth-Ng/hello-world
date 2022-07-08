@@ -23,6 +23,13 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+    
       - name: Get releases
         id: get-releases
         uses: octokit/request-action@v2.x
@@ -63,8 +70,7 @@ jobs:
     with:
       id: ${{ needs.get-current-release-to-delete.outputs.ID }}
       tag: ${{ needs.get-current-release-to-delete.outputs.TAG }}
-      app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-      private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+    secrets: inherit
 
   get-current-drafts-to-delete:
     # needs: deploy-to-dev

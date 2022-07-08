@@ -18,12 +18,12 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
-    - name: Generate token
-      id: generate-token
-      uses: tibdex/github-app-token@v1
-      with:
-        app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-        private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
   enable-create-prerelease-draft-workflow:
     runs-on: ubuntu-latest
