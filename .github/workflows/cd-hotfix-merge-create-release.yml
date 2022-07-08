@@ -43,11 +43,11 @@ jobs:
           ${{ steps.get-releases.outputs.data }}
           EOF
           sed -e "s/'//g" json.txt > newjson.txt
-          echo "::set-output name=JSON::$(cat newjson.txt)"
+          echo ::set-output name=JSON::$(cat newjson.txt)
 
       - name: print variable
         run: |
-          cat '${{ steps.sanitize-json.outputs.JSON }}'
+          echo "${{ steps.sanitize-json.outputs.JSON }}"
 
       - name: Get prerelease ID
         id: get-prerelease-id
