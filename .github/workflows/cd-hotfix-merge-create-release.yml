@@ -9,12 +9,12 @@ on:
 
 jobs:
 
-  # deploy-to-dev:
-  #   if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
-  #   uses: ./.github/workflows/cd-build.yml
+  deploy-to-dev:
+    if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
+    uses: ./.github/workflows/cd-build.yml
 
   delete-current-releases:
-    # needs: deploy-to-dev
+    needs: deploy-to-dev
     runs-on: ubuntu-latest
     
     env:
