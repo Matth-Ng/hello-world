@@ -127,12 +127,12 @@ jobs:
         run: |
           IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
           TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
-          IDJSON=$(toJSON($IDARRAY))
-          TAGJSON=$(toJSON($TAGARRAY))
+        # IDJSON=$(toJSON($IDARRAY))
+        # TAGJSON=$(toJSON($TAGARRAY))
           echo "::set-output name=IDMATRIX::$IDARRAY"
           echo "::set-output name=TAGMATRIX::$TAGARRAY"
-          echo "$IDJSON"
-          echo "$TAGARRAY"
+        # echo "$IDJSON"
+        # echo "$TAGARRAY"
 
   print-var:
     needs: [get-current-drafts-to-delete]
@@ -148,24 +148,24 @@ jobs:
           echo "${{ toJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}"
           echo "${{ toJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}"
 
-      - name: print var json
-        run: |
-          echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}"
-          echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}"
+      # - name: print var json
+      #   run: |
+      #     echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}"
+      #     echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}"
 
-  # delete-current-drafts-releases:
-  #   needs: [get-current-drafts-to-delete]
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       IDMATRIX: ${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}
-  #   steps:
-  #     - uses: ./.github/workflows/cd-delete-release-tag.yml
-  #       with:
-  #         tag: 'null'
-  #         id: ${{ matrix.IDMATRIX }}
-  #         app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-  #         private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+  delete-current-drafts-releases:
+    needs: [get-current-drafts-to-delete]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        IDMATRIX: ${{ toJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}
+    steps:
+      - uses: ./.github/workflows/cd-delete-release-tag.yml
+        with:
+          tag: 'null'
+          id: ${{ matrix.IDMATRIX }}
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
   # delete-current-drafts-tags:
   #   needs: [get-current-drafts-to-delete]
