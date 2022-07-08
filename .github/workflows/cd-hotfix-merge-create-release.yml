@@ -48,7 +48,7 @@ jobs:
 
       - name: print variable
         run: |
-          echo "${{ steps.sanitize-json.outputs.JSON }}"
+          echo '${{ steps.sanitize-json.outputs.JSON }}'
 
       - name: Get prerelease ID
         id: get-prerelease-id
