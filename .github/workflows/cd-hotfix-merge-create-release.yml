@@ -140,6 +140,14 @@ jobs:
         run: |
           echo "${{ needs.get-current-drafts-to-delete.outputs.IDMATRIX }}"
           echo "${{ needs.get-current-drafts-to-delete.outputs.TAGMATRIX }}"
+      
+      - name: print var to json
+        run: |
+          echo "${{ toJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}"
+          echo "${{ toJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}"
+
+      - name: print var json
+        run: |
           echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}"
           echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}"
 
