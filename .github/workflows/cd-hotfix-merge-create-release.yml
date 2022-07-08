@@ -145,7 +145,7 @@ jobs:
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
             OutputString=()
-            echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] |  .tag_name' | jq -s | tr -d '[],"\n'
+            echo $(echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] |  .tag_name' | jq -s | tr -d '[],"\n')
 
       - name: print variable
         run: |
