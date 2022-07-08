@@ -61,10 +61,10 @@ jobs:
   publish-prerelease:
     needs: create-prerelease
     uses: Matth-Ng/hello-world/.github/workflows/cd-publish-prerelease.yml@hotfix
+    secrets: inherit
     with:
       disable-workflow: true
       latest: true
-    secrets: inherit
 
   promote-release:
     needs: publish-prerelease

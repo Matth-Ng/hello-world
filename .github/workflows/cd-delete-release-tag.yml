@@ -1,7 +1,6 @@
 name: Delete Release and Tag
 
 on:
-  workflow_dispatch:
   workflow_call:
     inputs:
       id:

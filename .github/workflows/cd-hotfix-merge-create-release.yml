@@ -13,10 +13,12 @@ jobs:
   #   # if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
   #   uses: ./.github/workflows/cd-build.yml
 
-  delete-current-releases:
+  get-current-release-to-delete:
     # needs: deploy-to-dev
     runs-on: ubuntu-latest
-    
+    output:
+      ID: ${{ steps.get-prerelease-id.outputs.value }}
+      TAG: ${{ steps.get-prerelease-tag.outputs.value }}
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
@@ -54,13 +56,14 @@ jobs:
             JSON=$(cat newjson.txt)
             echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .tag_name'
 
-      - name: Delete prerelease
-        if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null' && steps.get-prerelease-tag.outputs.value != 'null'
-        uses: ./.github/workflows/cd-delete-release-tag.yml
-        with:
-          id: ${{ steps.get-prerelease-id.outputs.value }}
-          tag: ${{ steps.get-prerelease-tag.outputs.value }}
-        secrets: inherit
+  delete-current-release:
+    needs: get-current-release-to-delete
+    if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null' && steps.get-prerelease-tag.outputs.value != 'null'
+    uses: ./.github/workflows/cd-delete-release-tag.yml
+    secrets: inherit
+    with:
+      id: ${{ needs.get-current-release-to-delete.outputs.ID }}
+      tag: ${{ needs.get-current-release-to-delete.outputs.TAG }}
 
   get-current-drafts-to-delete:
     # needs: deploy-to-dev
@@ -126,14 +129,11 @@ jobs:
     strategy:
       matrix:
         IDMATRIX: ${{fromJson(needs.get-current-drafts-to-delete.outputs.IDMATRIX)}}
-
-    steps:
-      - name: test print
-        uses: ./.github/workflows/cd-delete-release-tag.yml
-        with:
-          tag: 'null'
-          id: ${{ matrix.IDMATRIX }}
-        secrets: inherit
+    uses: ./.github/workflows/cd-delete-release-tag.yml
+    secrets: inherit
+    with:
+      tag: 'null'
+      id: ${{ matrix.IDMATRIX }}
 
   delete-current-drafts-tags:
     needs: [get-current-drafts-to-delete]
@@ -141,14 +141,11 @@ jobs:
     strategy:
       matrix:
         TAGMATRIX: ${{fromJson(needs.get-current-drafts-to-delete.outputs.TAGMATRIX)}}
-
-    steps:
-      - name: test print
-        uses: ./.github/workflows/cd-delete-release-tag.yml
-        with:
-          tag: ${{ matrix.TAGMATRIX }}
-          id: 'null'
-        secrets: inherit
+    uses: ./.github/workflows/cd-delete-release-tag.yml
+    secrets: inherit
+    with:
+      tag: ${{ matrix.TAGMATRIX }}
+      id: 'null'
 
       # - name: Delete prerelease
       #   if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null'
