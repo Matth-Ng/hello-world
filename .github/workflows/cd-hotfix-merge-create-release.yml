@@ -158,7 +158,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        IDMATRIX: ${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}
+        IDMATRIX: ${{ fromJSON(toJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX)) }}
     steps:
       - name: run
         run: |
