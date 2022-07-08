@@ -129,8 +129,17 @@ jobs:
           TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
           echo "::set-output name=IDMATRIX::toJSON($IDARRAY)"
           echo "::set-output name=TAGMATRIX::toJSON($TAGARRAY)"
-          echo "$IDARRAY"
-          echo "$TAGARRAY"
+          echo "toJSON($IDARRAY)"
+          echo "toJSON($TAGARRAY)"
+
+  delete-current-drafts-releases:
+    needs: [get-current-drafts-to-delete]
+    runs-on: ubuntu-latest
+    steps:
+      - name: print var
+        run: |
+          echo "${{ needs.get-current-drafts-to-delete.outputs.IDMATRIX }}"
+          echo "${{ needs.get-current-drafts-to-delete.outputs.TAGMATRIX }}"
 
   delete-current-drafts-releases:
     needs: [get-current-drafts-to-delete]
