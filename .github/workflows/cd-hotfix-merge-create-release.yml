@@ -81,10 +81,12 @@ jobs:
           repo: ${{ github.repository }}
           ref: ${{ steps.get-prerelease-tag.outputs.value }}
 
-  delete-current-drafts:
+  get-current-drafts-to-delete:
     # needs: deploy-to-dev
     runs-on: ubuntu-latest
-    
+    outputs:
+      IDMATRIX: ${{ steps.convert-to-json.outputs.IDMATRIX }}
+      TAGMATRIX: ${{ steps.convert-to-json.outputs.TAGMATRIX }}
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
@@ -102,23 +104,6 @@ jobs:
         with:
           route: GET /repos/{repo}/releases
           repo: ${{ github.repository }}
-
-      # - name: Get prerelease
-      #   id: get-prerelease
-      #   continue-on-error: true
-      #   uses: sergeysova/jq-action@v2
-      #   with:
-      #     cmd: |
-      #       cat << EOF > json.txt
-      #       ${{ steps.get-releases.outputs.data }}
-      #       EOF
-      #       sed -e "s/'//g" json.txt > newjson.txt
-      #       JSON=$(cat newjson.txt)
-      #       echo "$JSON"
-      #       ReleaseId=echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] | .id'
-      #       ReleaseTag=echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] | .target_commitish'
-      #       echo "::set-output name=RELEASE_ID::$ReleaseId"
-      #       echo "::set-output name=RELEASE_TAG::$ReleaseTag"
       
       - name: Get prerelease ID
         id: get-prerelease-id
@@ -144,23 +129,41 @@ jobs:
             EOF
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
-            OutputString=()
             echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] |  .tag_name' | tr '\n' ','
 
-      - name: print variable
+      - name: Convert to json
+        id: convert-to-json
+        output:
+          IDMATRIX: $(echo "${{ steps.get-prerelease-id.outputs.value  }}" | tr ',' ' ')
+          TAGMATRIX:
         run: |
-          echo "${{ steps.get-prerelease-id.outputs.value  }}"
-          echo "${{ steps.get-prerelease-tag.outputs.value  }}"
+          idarray=$(echo "${{ steps.get-prerelease-id.outputs.value  }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\\]"/g'
+          tagarray=$(echo "${{ steps.get-prerelease-tag.outputs.value  }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\\]"/g'
+          echo "::set-output name=IDMATRIX::$idarray"
+          echo "::set-output name=TAGMATRIX::$tagarray"
+          echo "${idarray}"
+          echo "${tagarray}"
 
-      # - name: Delete prerelease
-      #   if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null'
-      #   uses: octokit/request-action@v2.x
-      #   env:
-      #     GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-      #   with:
-      #     route: DELETE /repos/{repo}/releases/{release_id}
-      #     repo: ${{ github.repository }}
-      #     release_id: ${{ steps.get-prerelease-id.outputs.value  }}
+  delete-current-drafts:
+    needs: get-current-drafts-to-delete
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        value: ${{fromJson(needs.setup.outputs.matrix)}}
+
+    steps:
+      - name: Delete prerelease
+        if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null'
+        strategy:
+          matrix:
+            value: ${{fromJson(needs.setup.outputs.matrix)}}
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+        with:
+          route: DELETE /repos/{repo}/releases/{release_id}
+          repo: ${{ github.repository }}
+          release_id: ${{ matrix.value }}
 
       # - name: Delete prerelease tag by tag
       #   if: steps.get-prerelease-tag.outcome == 'success' && steps.get-prerelease-tag.outputs.value != 'null'
