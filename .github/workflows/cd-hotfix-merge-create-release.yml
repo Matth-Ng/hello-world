@@ -66,6 +66,16 @@ jobs:
           echo "${{ steps.get-prerelease-id.outputs.value }}"
           echo "${{ steps.get-prerelease-tag.outputs.value }}"
 
+      - name: Delete prerelease tag by tag
+        if: steps.get-prerelease-tag.outcome == 'success'
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+        with:
+          route: DELETE /repos/{repo}/git/refs/tags/{ref}"
+          repo: ${{ github.repository }}
+          ref: ${{ steps.get-prerelease-tag.outputs.value }}
+          
       - name: Delete prerelease
         if: steps.get-prerelease-id.outcome == 'success'
         uses: octokit/request-action@v2.x
@@ -76,15 +86,6 @@ jobs:
           repo: ${{ github.repository }}
           release_id: ${{ steps.get-prerelease-id.outputs.value  }}
 
-      - name: Delete prerelease tag by tag
-        if: steps.get-prerelease-tag.outcome == 'success'
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        with:
-          route: DELETE /repos/{repo}/git/refs/tags/{ref}"
-          repo: ${{ github.repository }}
-          ref: ${{ steps.get-prerelease-tag.outputs.value }}
 
   delete-current-drafts:
     # needs: deploy-to-dev
