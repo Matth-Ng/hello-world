@@ -67,7 +67,7 @@ jobs:
           echo "${{ steps.get-prerelease-tag.outputs.value }}"
 
       - name: Delete prerelease
-        if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != "null"
+        if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null'
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
@@ -77,7 +77,7 @@ jobs:
           release_id: ${{ steps.get-prerelease-id.outputs.value  }}
 
       - name: Delete prerelease tag by tag
-        if: steps.get-prerelease-tag.outcome == 'success' && steps.get-prerelease-tag.outputs.value != "null"
+        if: steps.get-prerelease-tag.outcome == 'success' && steps.get-prerelease-tag.outputs.value != 'null'
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
