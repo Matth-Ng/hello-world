@@ -125,8 +125,8 @@ jobs:
       - name: Convert to json
         id: convert-to-json
         run: |
-          IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
-          TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
+          IDARRAY=$(toJSON(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g'))
+          TAGARRAY=$(toJSON(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g'))
           echo "::set-output name=IDMATRIX::$IDARRAY"
           echo "::set-output name=TAGMATRIX::$TAGARRAY"
           echo "$IDARRAY"
@@ -151,53 +151,33 @@ jobs:
           echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}"
           echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}"
 
-  delete-current-drafts-releases:
-    needs: [get-current-drafts-to-delete]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        IDMATRIX: ${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}
-    steps:
-      - uses: ./.github/workflows/cd-delete-release-tag.yml
-        with:
-          tag: 'null'
-          id: ${{ matrix.IDMATRIX }}
-          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+  # delete-current-drafts-releases:
+  #   needs: [get-current-drafts-to-delete]
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       IDMATRIX: ${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}
+  #   steps:
+  #     - uses: ./.github/workflows/cd-delete-release-tag.yml
+  #       with:
+  #         tag: 'null'
+  #         id: ${{ matrix.IDMATRIX }}
+  #         app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+  #         private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
-  delete-current-drafts-tags:
-    needs: [get-current-drafts-to-delete]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        TAGMATRIX: ${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}
-    steps:
-      - uses: ./.github/workflows/cd-delete-release-tag.yml
-        with:
-          tag: ${{ matrix.TAGMATRIX }}
-          id: 'null'
-          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
-
-      # - name: Delete prerelease
-      #   if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null'
-      #   uses: octokit/request-action@v2.x
-      #   env:
-      #     GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-      #   with:
-      #     route: DELETE /repos/{repo}/releases/{release_id}
-      #     repo: ${{ github.repository }}
-      #     release_id: ${{ matrix.IDMATRIX }}
-
-      # - name: Delete prerelease tag by tag
-      #   if: steps.get-prerelease-tag.outcome == 'success' && steps.get-prerelease-tag.outputs.value != 'null'
-      #   uses: octokit/request-action@v2.x
-      #   env:
-      #     GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-      #   with:
-      #     route: DELETE /repos/{repo}/git/refs/tags/{ref}
-      #     repo: ${{ github.repository }}
-      #     ref: ${{ steps.get-prerelease-tag.outputs.value }}
+  # delete-current-drafts-tags:
+  #   needs: [get-current-drafts-to-delete]
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       TAGMATRIX: ${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}
+  #   steps:
+  #     - uses: ./.github/workflows/cd-delete-release-tag.yml
+  #       with:
+  #         tag: ${{ matrix.TAGMATRIX }}
+  #         id: 'null'
+  #         app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+  #         private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
     
   # create-prerelease:
   #   needs: [delete-current-releases, delete-current-drafts]
