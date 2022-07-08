@@ -160,12 +160,15 @@ jobs:
       matrix:
         IDMATRIX: ${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}
     steps:
-      - uses: ./.github/workflows/cd-delete-release-tag.yml
-        with:
-          tag: 'null'
-          id: ${{ matrix.IDMATRIX }}
-          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+      - name: run
+        run: |
+          echo "${{ matrix.IDMATRIX }}"
+  # - uses: ./.github/workflows/cd-delete-release-tag.yml
+  #   with:
+  #     tag: 'null'
+  #     id: ${{ matrix.IDMATRIX }}
+  #     app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+  #     private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
   # delete-current-drafts-tags:
   #   needs: [get-current-drafts-to-delete]
