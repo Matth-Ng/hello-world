@@ -146,8 +146,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        IDMATRIX: ${{fromJson(needs.get-current-drafts-to-delete.outputs.IDMATRIX)}}
-        TAGMATRIX: ${{fromJson(needs.get-current-drafts-to-delete.outputs.TAGMATRIX)}}
+        IDMATRIX: ${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}
+        TAGMATRIX: ${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}
 
     steps:
       - name: Delete prerelease
