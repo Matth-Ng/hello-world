@@ -82,7 +82,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:
-          route: DELETE /repos/{repo}/git/refs/tags/{ref}"
+          route: DELETE /repos/{repo}/git/refs/{ref}"
           repo: ${{ github.repository }}
           reg: ${{ steps.get-prerelease-tag.outputs.value }} 
 
