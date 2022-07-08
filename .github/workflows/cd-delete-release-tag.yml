@@ -1,0 +1,55 @@
+name: Delete Release and Tag
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      id:
+        required: true
+        type: string
+        default: "null"
+      tag:
+        type: string
+        default: "null"
+        required: true
+    secrets:
+      ACTIONS_TOKEN_APP_ID:
+        required: true
+      ACTIONS_TOKEN_PRIVATE_KEY:
+        required: true
+
+jobs:
+  delete-release:
+    runs-on: ubuntu-latest
+    outputs:
+      RELEASE_ID: ${{ steps.get-prerelease.outputs.value }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+
+      - name: Delete prerelease
+        if: steps.get-prerelease-id.outcome == 'success' && inputs.id != 'null'
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+        with:
+          route: DELETE /repos/{repo}/releases/{release_id}
+          repo: ${{ github.repository }}
+          release_id: ${{ inputs.id }}
+
+      - name: Delete prerelease tag by tag
+        if: steps.get-prerelease-tag.outcome == 'success' && inputs.tag != 'null'
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+        with:
+          route: DELETE /repos/{repo}/git/refs/tags/{ref}
+          repo: ${{ github.repository }}
+          ref: ${{ inputs.tag }}
