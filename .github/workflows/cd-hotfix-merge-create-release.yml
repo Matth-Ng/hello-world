@@ -129,6 +129,8 @@ jobs:
           TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/{[\\\"/g' | sed -r 's/($)/\\"]}/g')
           echo "::set-output name=IDMATRIX::$IDARRAY"
           echo "::set-output name=TAGMATRIX::$TAGARRAY"
+          echo "$IDARRAY"
+          echo "$TAGARRAY"
 
   delete-current-drafts-releases:
     needs: [get-current-drafts-to-delete]
@@ -149,7 +151,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        TAGMATRIX: ${{fromJson(needs.get-current-drafts-to-delete.outputs.TAGMATRIX)}}
+        TAGMATRIX: ${{needs.get-current-drafts-to-delete.outputs.TAGMATRIX}}
     steps:
       - uses: ./.github/workflows/cd-delete-release-tag.yml
         with:
