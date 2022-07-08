@@ -87,7 +87,7 @@ jobs:
           reg: ${{ steps.get-prerelease.outputs.RELEASE_TAG  }} 
 
   delete-current-drafts:
-    needs: deploy-to-dev
+    # needs: deploy-to-dev
     runs-on: ubuntu-latest
     
     env:
