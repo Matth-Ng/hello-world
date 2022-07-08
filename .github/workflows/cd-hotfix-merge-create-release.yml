@@ -127,10 +127,10 @@ jobs:
         run: |
           IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
           TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
-          echo "::set-output name=IDMATRIX::toJSON($IDARRAY)"
-          echo "::set-output name=TAGMATRIX::toJSON($TAGARRAY)"
-          echo "toJSON($IDARRAY)"
-          echo "toJSON($TAGARRAY)"
+          echo "::set-output name=IDMATRIX::$IDARRAY"
+          echo "::set-output name=TAGMATRIX::$TAGARRAY"
+          echo "$IDARRAY"
+          echo "$TAGARRAY"
 
   print-var:
     needs: [get-current-drafts-to-delete]
@@ -140,6 +140,8 @@ jobs:
         run: |
           echo "${{ needs.get-current-drafts-to-delete.outputs.IDMATRIX }}"
           echo "${{ needs.get-current-drafts-to-delete.outputs.TAGMATRIX }}"
+          echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}"
+          echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}"
 
   delete-current-drafts-releases:
     needs: [get-current-drafts-to-delete]
