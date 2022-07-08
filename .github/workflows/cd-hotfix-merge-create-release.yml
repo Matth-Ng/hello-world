@@ -60,10 +60,10 @@ jobs:
     needs: get-current-release-to-delete
     if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null' && steps.get-prerelease-tag.outputs.value != 'null'
     uses: ./.github/workflows/cd-delete-release-tag.yml
-    secrets: inherit
     with:
       id: ${{ needs.get-current-release-to-delete.outputs.ID }}
       tag: ${{ needs.get-current-release-to-delete.outputs.TAG }}
+    secrets: inherit
 
   get-current-drafts-to-delete:
     # needs: deploy-to-dev
@@ -131,10 +131,10 @@ jobs:
         IDMATRIX: ${{fromJson(needs.get-current-drafts-to-delete.outputs.IDMATRIX)}}
     steps:
       - uses: ./.github/workflows/cd-delete-release-tag.yml
-        secrets: inherit
         with:
           tag: 'null'
           id: ${{ matrix.IDMATRIX }}
+        secrets: inherit
 
   delete-current-drafts-tags:
     needs: [get-current-drafts-to-delete]
@@ -144,10 +144,10 @@ jobs:
         TAGMATRIX: ${{fromJson(needs.get-current-drafts-to-delete.outputs.TAGMATRIX)}}
     steps:
       - uses: ./.github/workflows/cd-delete-release-tag.yml
-        secrets: inherit
         with:
           tag: ${{ matrix.TAGMATRIX }}
           id: 'null'
+        secrets: inherit
 
       # - name: Delete prerelease
       #   if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null'
