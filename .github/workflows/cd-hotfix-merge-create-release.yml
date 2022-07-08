@@ -144,8 +144,13 @@ jobs:
             EOF
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
-            echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] |  .tag_name'
-
+            OutputString=()
+            tags=$(echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] |  .tag_name')
+            for value in $tags; do
+            OutputString+=($value)
+            done
+            echo "$OutputString"
+            
       - name: print variable
         run: |
           echo "${{ steps.get-prerelease-id.outputs.value  }}"
