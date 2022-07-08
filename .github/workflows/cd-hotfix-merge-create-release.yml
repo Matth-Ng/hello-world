@@ -155,8 +155,9 @@ jobs:
         TAGMATRIX: ${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}
 
     steps:
-      - run: |
-        echo "${{ matrix.IDMATRIX }}"
+      - name: test print
+        run: |
+          echo "${{ matrix.IDMATRIX }}"
       # - name: Delete prerelease
       #   if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null'
       #   uses: octokit/request-action@v2.x
