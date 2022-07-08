@@ -74,7 +74,7 @@ jobs:
         with:
           route: DELETE /repos/{repo}/releases/{release_id}
           repo: ${{ github.repository }}
-          release_id: ${{ steps.get-prerelease.outputs.RELEASE_ID  }}
+          release_id: ${{ steps.get-prerelease-id.outputs.value  }}
 
       - name: Delete prerelease tag
         if: steps.get-prerelease-tag.outcome == 'success'
@@ -84,7 +84,7 @@ jobs:
         with:
           route: DELETE /repos/{repo}/git/refs/tags/{ref}"
           repo: ${{ github.repository }}
-          reg: ${{ steps.get-prerelease.outputs.RELEASE_TAG  }} 
+          reg: ${{ steps.get-prerelease-tag.outputs.value }} 
 
   delete-current-drafts:
     # needs: deploy-to-dev
