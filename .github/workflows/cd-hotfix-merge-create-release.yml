@@ -59,7 +59,7 @@ jobs:
             EOF
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
-            echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .target_commitish'
+            echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .tag_name'
       
       - name: print variable
         run: |
@@ -78,23 +78,11 @@ jobs:
 
       - name: Delete prerelease tag by tag
         if: steps.get-prerelease-tag.outcome == 'success'
-        continue-on-error: true
-        id: delete-prerelease-tag-by-tag
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:
           route: DELETE /repos/{repo}/git/refs/tags/{ref}"
-          repo: ${{ github.repository }}
-          reg: ${{ steps.get-prerelease-tag.outputs.value }}
-
-      - name: Delete prerelease tag by ref
-        if: steps.delete-prerelease-tag-by-tag.outcome == 'failure'
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        with:
-          route: DELETE /repos/{repo}/git/refs/{ref}"
           repo: ${{ github.repository }}
           reg: ${{ steps.get-prerelease-tag.outputs.value }}
 
