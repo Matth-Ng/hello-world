@@ -63,7 +63,8 @@ jobs:
     with:
       id: ${{ needs.get-current-release-to-delete.outputs.ID }}
       tag: ${{ needs.get-current-release-to-delete.outputs.TAG }}
-    secrets: inherit
+      app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+      private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
   get-current-drafts-to-delete:
     # needs: deploy-to-dev
@@ -134,7 +135,8 @@ jobs:
         with:
           tag: 'null'
           id: ${{ matrix.IDMATRIX }}
-        secrets: inherit
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
   delete-current-drafts-tags:
     needs: [get-current-drafts-to-delete]
@@ -147,7 +149,8 @@ jobs:
         with:
           tag: ${{ matrix.TAGMATRIX }}
           id: 'null'
-        secrets: inherit
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
       # - name: Delete prerelease
       #   if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null'
