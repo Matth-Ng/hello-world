@@ -82,7 +82,7 @@ jobs:
           ref: ${{ steps.get-prerelease-tag.outputs.value }}
 
   get-current-drafts-to-delete:
-    # needs: deploy-to-dev
+    needs: deploy-to-dev
     runs-on: ubuntu-latest
     outputs:
       IDMATRIX: ${{ steps.convert-to-json.outputs.IDMATRIX }}
@@ -145,25 +145,23 @@ jobs:
           echo "${tagarray}"
 
   delete-current-drafts:
-    needs: get-current-drafts-to-delete
+    needs: [get-current-drafts-to-delete]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        value: ${{fromJson(needs.setup.outputs.matrix)}}
+        IDMATRIX: ${{fromJson(needs.get-current-drafts-to-delete.outputs.IDMATRIX)}}
+        TAGMATRIX: ${{fromJson(needs.get-current-drafts-to-delete.outputs.TAGMATRIX)}}
 
     steps:
       - name: Delete prerelease
         if: steps.get-prerelease-id.outcome == 'success' && steps.get-prerelease-id.outputs.value != 'null'
-        strategy:
-          matrix:
-            value: ${{fromJson(needs.setup.outputs.matrix)}}
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:
           route: DELETE /repos/{repo}/releases/{release_id}
           repo: ${{ github.repository }}
-          release_id: ${{ matrix.value }}
+          release_id: ${{ matrix.IDMATRIX }}
 
       # - name: Delete prerelease tag by tag
       #   if: steps.get-prerelease-tag.outcome == 'success' && steps.get-prerelease-tag.outputs.value != 'null'
