@@ -40,7 +40,7 @@ jobs:
         shell: bash
         run: |
           cat << EOF > json.txt
-          ${{ steps.create-workflow-info.outputs.data }}
+          ${{ steps.get-releases.outputs.data }}
           EOF
           sed -e "s/'//g" json.txt > newjson.txt
           JSON=$(cat newjson.txt)
