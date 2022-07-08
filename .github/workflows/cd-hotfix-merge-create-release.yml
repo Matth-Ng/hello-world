@@ -43,7 +43,7 @@ jobs:
           ${{ steps.get-releases.outputs.data }}
           EOF
           sed -e "s/'//g" json.txt > newjson.txt
-          JSON="$(cat newjson.txt)"
+          JSON=$(<newjson.txt)
           echo "::set-output name=JSON::$JSON"
 
       - name: print variable
