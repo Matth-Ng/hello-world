@@ -76,7 +76,7 @@ jobs:
           repo: ${{ github.repository }}
           release_id: ${{ steps.get-prerelease-id.outputs.value  }}
 
-       - name: Delete prerelease tag by tag
+      - name: Delete prerelease tag by tag
         if: steps.get-prerelease-tag.outcome == 'success'
         uses: octokit/request-action@v2.x
         env:
