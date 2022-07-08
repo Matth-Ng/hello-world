@@ -34,7 +34,7 @@ jobs:
           private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
       - name: Delete prerelease
-        if: steps.get-prerelease-id.outcome == 'success' && inputs.id != 'null'
+        if: inputs.id != 'null'
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
@@ -44,7 +44,7 @@ jobs:
           release_id: ${{ inputs.id }}
 
       - name: Delete prerelease tag by tag
-        if: steps.get-prerelease-tag.outcome == 'success' && inputs.tag != 'null'
+        if: inputs.tag != 'null'
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
