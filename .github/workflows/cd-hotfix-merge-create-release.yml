@@ -137,7 +137,8 @@ jobs:
       matrix:
         idmatrix: ${{fromJson(needs.get-current-drafts-to-delete.outputs.idmatrix)}}
     steps:
-      - uses: ./.github/workflows/cd-delete-release-tag.yml
+      - name: delete-draft-release
+        uses: ./.github/workflows/cd-delete-release-tag.yml
         with:
           tag: ${{ matrix.TAGMATRIX }}
           id: 'null'
