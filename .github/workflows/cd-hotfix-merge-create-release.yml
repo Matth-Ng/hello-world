@@ -156,15 +156,17 @@ jobs:
       #     echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}"
 
   delete-current-drafts-releases:
-    needs: [get-current-drafts-to-delete]
+    needs: [ get-current-drafts-to-delete ]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        IDMATRIX: ${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}
+        IDMATRIX: ${{fromJson(needs.get-current-drafts-to-delete.outputs.IDMATRIX)}}
     steps:
-      - name: run
-        run: |
-          echo "${{ matrix.IDMATRIX }}"
+      - run: |
+          echo "${{ matrix.value }}"
+      # - name: run
+      #   run: |
+      #     echo "${{ matrix.IDMATRIX }}"
   # - uses: ./.github/workflows/cd-delete-release-tag.yml
   #   with:
   #     tag: 'null'
