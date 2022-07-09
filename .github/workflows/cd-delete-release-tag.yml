@@ -19,6 +19,7 @@ on:
 
 jobs:
   delete-release:
+
     runs-on: ubuntu-latest
     outputs:
       RELEASE_ID: ${{ steps.get-prerelease.outputs.value }}
@@ -26,6 +27,7 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
+      - uses: actions/checkout@v3
       - name: Generate token
         id: generate-token
         uses: tibdex/github-app-token@v1
