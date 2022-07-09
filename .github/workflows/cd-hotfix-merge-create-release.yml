@@ -170,7 +170,8 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - id: set-matrix
+      - name: set matrix
+        id: set-matrix
         run: echo "::set-output name=matrix::[\"a\", \"b\", \"c\"]"
 
    build:
@@ -181,8 +182,8 @@ jobs:
         value: ${{fromJson(needs.job1.outputs.matrix)}}
     steps:
       - name: test
-          run: |
-            echo "${{ matrix.value }}"
+        run: |
+          echo "${{ matrix.value }}"
       # - name: run
       #   run: |
       #     echo "${{ matrix.IDMATRIX }}"
