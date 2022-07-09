@@ -129,10 +129,10 @@ jobs:
           TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
           echo '::set-output name=IDMATRIX::[\"a\", \"b\", \"c\"]'
           echo '::set-output name=TAGMATRIX::[\"a\", \"b\", \"c\"]'
-        # echo "::set-output name=IDMATRIX::$IDARRAY"
-        # echo "::set-output name=TAGMATRIX::$TAGARRAY"
           echo "$IDARRAY"
           echo "$TAGARRAY"
+        # echo "::set-output name=IDMATRIX::$IDARRAY"
+        # echo "::set-output name=TAGMATRIX::$TAGARRAY"
         # IDJSON=$(toJSON($IDARRAY))
         # TAGJSON=$(toJSON($TAGARRAY))
 
