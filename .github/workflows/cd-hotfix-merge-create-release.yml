@@ -76,8 +76,8 @@ jobs:
     # needs: deploy-to-dev
     runs-on: ubuntu-latest
     outputs:
-      IDMATRIX: ${{ steps.convert-to-json.outputs.IDMATRIX }}
-      TAGMATRIX: ${{ steps.convert-to-json.outputs.TAGMATRIX }}
+      idmatrix: ${{ steps.convert-to-json.outputs.IDMATRIX }}
+      tagmatrix: ${{ steps.convert-to-json.outputs.TAGMATRIX }}
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
@@ -160,10 +160,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        IDMATRIX: ${{fromJson(needs.get-current-drafts-to-delete.outputs.IDMATRIX)}}
+        idmatrix: ${{fromJson(needs.get-current-drafts-to-delete.outputs.idmatrix)}}
     steps:
       - run: |
-          echo "${{ matrix.value }}"
+          echo "${{ matrix.idmatrix }}"
       # - name: run
       #   run: |
       #     echo "${{ matrix.IDMATRIX }}"
