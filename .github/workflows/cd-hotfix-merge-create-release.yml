@@ -171,14 +171,15 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - id: set-matrix
-        run: echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
+        run: echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"}]}"
   job2:
     needs: job1
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{fromJSON(needs.job1.outputs.matrix)}}
+      matrix: 
+        matrixid: ${{fromJSON(needs.job1.outputs.matrix)}}
     steps:
-      - run: build
+      - run: echo "${{ matrix.matrixid }}"
       # - name: run
       #   run: |
       #     echo "${{ matrix.IDMATRIX }}"
