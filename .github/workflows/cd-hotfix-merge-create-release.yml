@@ -9,16 +9,75 @@ on:
 
 jobs:
 
-  # deploy-to-dev:
-  #   # if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
-  #   uses: ./.github/workflows/cd-build.yml
+  # # deploy-to-dev:
+  # #   # if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
+  # #   uses: ./.github/workflows/cd-build.yml
 
-  # get-current-release-to-delete:
+  # # get-current-release-to-delete:
+  # #   # needs: deploy-to-dev
+  # #   runs-on: ubuntu-latest
+  # #   outputs:
+  # #     ID: ${{ steps.get-prerelease-id.outputs.value }}
+  # #     TAG: ${{ steps.get-prerelease-tag.outputs.value }}
+  # #   env:
+  # #     GITHUB_TOKEN: ${{ github.token }}
+
+  # #   steps:
+  # #     - name: Generate token
+  # #       id: generate-token
+  # #       uses: tibdex/github-app-token@v1
+  # #       with:
+  # #         app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+  # #         private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+    
+  # #     - name: Get releases
+  # #       id: get-releases
+  # #       uses: octokit/request-action@v2.x
+  # #       with:
+  # #         route: GET /repos/{repo}/releases
+  # #         repo: ${{ github.repository }}
+
+  # #     - name: Get prerelease ID
+  # #       id: get-prerelease-id
+  # #       continue-on-error: true
+  # #       uses: sergeysova/jq-action@v2
+  # #       with:
+  # #         cmd: |
+  # #           cat << EOF > json.txt
+  # #           ${{ steps.get-releases.outputs.data }}
+  # #           EOF
+  # #           sed -e "s/'//g" json.txt > newjson.txt
+  # #           JSON=$(cat newjson.txt)
+  # #           echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
+
+  # #     - name: Get prerelease TAG
+  # #       id: get-prerelease-tag
+  # #       continue-on-error: true
+  # #       uses: sergeysova/jq-action@v2
+  # #       with:
+  # #         cmd: |
+  # #           cat << EOF > json.txt
+  # #           ${{ steps.get-releases.outputs.data }}
+  # #           EOF
+  # #           sed -e "s/'//g" json.txt > newjson.txt
+  # #           JSON=$(cat newjson.txt)
+  # #           echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .tag_name'
+
+  # # delete-current-release:
+  # #   needs: get-current-release-to-delete
+  # #   if: needs.get-current-release-to-delete.outputs.ID != 'null' && needs.get-current-release-to-delete.outputs.TAG != 'null'
+  # #   uses: ./.github/workflows/cd-delete-release-tag.yml
+  # #   with:
+  # #     id: ${{ needs.get-current-release-to-delete.outputs.ID }}
+  # #     tag: ${{ needs.get-current-release-to-delete.outputs.TAG }}
+  # #   secrets: inherit
+
+  # get-current-drafts-to-delete:
   #   # needs: deploy-to-dev
   #   runs-on: ubuntu-latest
   #   outputs:
-  #     ID: ${{ steps.get-prerelease-id.outputs.value }}
-  #     TAG: ${{ steps.get-prerelease-tag.outputs.value }}
+  #     idmatrix: ${{ steps.convert-to-json.outputs.IDMATRIX }}
+  #     tagmatrix: ${{ steps.convert-to-json.outputs.TAGMATRIX }}
   #   env:
   #     GITHUB_TOKEN: ${{ github.token }}
 
@@ -29,14 +88,14 @@ jobs:
   #       with:
   #         app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
   #         private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
-    
+
   #     - name: Get releases
   #       id: get-releases
   #       uses: octokit/request-action@v2.x
   #       with:
   #         route: GET /repos/{repo}/releases
   #         repo: ${{ github.repository }}
-
+      
   #     - name: Get prerelease ID
   #       id: get-prerelease-id
   #       continue-on-error: true
@@ -48,7 +107,7 @@ jobs:
   #           EOF
   #           sed -e "s/'//g" json.txt > newjson.txt
   #           JSON=$(cat newjson.txt)
-  #           echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
+  #           echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] | .id' | tr '\n' ','
 
   #     - name: Get prerelease TAG
   #       id: get-prerelease-tag
@@ -61,109 +120,50 @@ jobs:
   #           EOF
   #           sed -e "s/'//g" json.txt > newjson.txt
   #           JSON=$(cat newjson.txt)
-  #           echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .tag_name'
+  #           echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] |  .tag_name' | tr '\n' ','
 
-  # delete-current-release:
-  #   needs: get-current-release-to-delete
-  #   if: needs.get-current-release-to-delete.outputs.ID != 'null' && needs.get-current-release-to-delete.outputs.TAG != 'null'
-  #   uses: ./.github/workflows/cd-delete-release-tag.yml
-  #   with:
-  #     id: ${{ needs.get-current-release-to-delete.outputs.ID }}
-  #     tag: ${{ needs.get-current-release-to-delete.outputs.TAG }}
-  #   secrets: inherit
+  #     - name: Convert to json
+  #       id: convert-to-json
+  #       run: |
+  #         IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
+  #         TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
+  #         echo '::set-output name=IDMATRIX::[\"a\", \"b\", \"c\"]'
+  #         echo '::set-output name=TAGMATRIX::[\"a\", \"b\", \"c\"]'
+  #         echo "$IDARRAY"
+  #         echo "$TAGARRAY"
+  #       # echo "::set-output name=IDMATRIX::$IDARRAY"
+  #       # echo "::set-output name=TAGMATRIX::$TAGARRAY"
+  #       # IDJSON=$(toJSON($IDARRAY))
+  #       # TAGJSON=$(toJSON($TAGARRAY))
 
-  get-current-drafts-to-delete:
-    # needs: deploy-to-dev
-    runs-on: ubuntu-latest
-    outputs:
-      idmatrix: ${{ steps.convert-to-json.outputs.IDMATRIX }}
-      tagmatrix: ${{ steps.convert-to-json.outputs.TAGMATRIX }}
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
-
-    steps:
-      - name: Generate token
-        id: generate-token
-        uses: tibdex/github-app-token@v1
-        with:
-          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
-
-      - name: Get releases
-        id: get-releases
-        uses: octokit/request-action@v2.x
-        with:
-          route: GET /repos/{repo}/releases
-          repo: ${{ github.repository }}
+  # print-var:
+  #   needs: [get-current-drafts-to-delete]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: print var
+  #       run: |
+  #         echo "${{ needs.get-current-drafts-to-delete.outputs.IDMATRIX }}"
+  #         echo "${{ needs.get-current-drafts-to-delete.outputs.TAGMATRIX }}"
       
-      - name: Get prerelease ID
-        id: get-prerelease-id
-        continue-on-error: true
-        uses: sergeysova/jq-action@v2
-        with:
-          cmd: |
-            cat << EOF > json.txt
-            ${{ steps.get-releases.outputs.data }}
-            EOF
-            sed -e "s/'//g" json.txt > newjson.txt
-            JSON=$(cat newjson.txt)
-            echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] | .id' | tr '\n' ','
+  #     - name: print var to json
+  #       run: |
+  #         echo "${{ toJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}"
+  #         echo "${{ toJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}"
 
-      - name: Get prerelease TAG
-        id: get-prerelease-tag
-        continue-on-error: true
-        uses: sergeysova/jq-action@v2
-        with:
-          cmd: |
-            cat << EOF > json.txt
-            ${{ steps.get-releases.outputs.data }}
-            EOF
-            sed -e "s/'//g" json.txt > newjson.txt
-            JSON=$(cat newjson.txt)
-            echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] |  .tag_name' | tr '\n' ','
+  #     # - name: print var json
+  #     #   run: |
+  #     #     echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}"
+  #     #     echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}"
 
-      - name: Convert to json
-        id: convert-to-json
-        run: |
-          IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
-          TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\\\", \\\"/g' | sed -r 's/(^)/[\\\"/g' | sed -r 's/($)/\\"]/g')
-          echo '::set-output name=IDMATRIX::[\"a\", \"b\", \"c\"]'
-          echo '::set-output name=TAGMATRIX::[\"a\", \"b\", \"c\"]'
-          echo "$IDARRAY"
-          echo "$TAGARRAY"
-        # echo "::set-output name=IDMATRIX::$IDARRAY"
-        # echo "::set-output name=TAGMATRIX::$TAGARRAY"
-        # IDJSON=$(toJSON($IDARRAY))
-        # TAGJSON=$(toJSON($TAGARRAY))
-
-  print-var:
-    needs: [get-current-drafts-to-delete]
-    runs-on: ubuntu-latest
-    steps:
-      - name: print var
-        run: |
-          echo "${{ needs.get-current-drafts-to-delete.outputs.IDMATRIX }}"
-          echo "${{ needs.get-current-drafts-to-delete.outputs.TAGMATRIX }}"
-      
-      - name: print var to json
-        run: |
-          echo "${{ toJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}"
-          echo "${{ toJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}"
-
-      # - name: print var json
-      #   run: |
-      #     echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.IDMATRIX) }}"
-      #     echo "${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}"
-
-  delete-current-drafts-releases:
-    needs: [ get-current-drafts-to-delete ]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        idmatrix: ${{fromJson(needs.get-current-drafts-to-delete.outputs.idmatrix)}}
-    steps:
-      - run: |
-          echo "${{ matrix.idmatrix }}"
+  # delete-current-drafts-releases:
+  #   needs: [ get-current-drafts-to-delete ]
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       idmatrix: ${{fromJson(needs.get-current-drafts-to-delete.outputs.idmatrix)}}
+  #   steps:
+  #     - run: |
+  #         echo "${{ matrix.idmatrix }}"
 
   setup:
     runs-on: ubuntu-latest
