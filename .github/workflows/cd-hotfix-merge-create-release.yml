@@ -127,6 +127,8 @@ jobs:
         run: |
           IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\", \"/g' | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
           TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\", \"/g' | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
+          echo "$IDARRAY"
+          echo "$TAGARRAY"
           echo "::set-output name=IDMATRIX::$IDARRAY"
           echo "::set-output name=TAGMATRIX::$TAGARRAY"
 
