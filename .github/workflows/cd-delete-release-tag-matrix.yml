@@ -20,8 +20,6 @@ on:
 jobs:
   delete-release:
     runs-on: ubuntu-latest
-    outputs:
-      RELEASE_ID: ${{ steps.get-prerelease.outputs.value }}
     env:
       GITHUB_TOKEN: ${{ github.token }}
     strategy:
@@ -29,28 +27,26 @@ jobs:
         id: ${{fromJson(inputs.id)}}
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Generate token
-        id: generate-token
-        uses: tibdex/github-app-token@v1
-        with:
-          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+    - uses: actions/checkout@v2
+    - name: Generate token
+      id: generate-token
+      uses: tibdex/github-app-token@v1
+      with:
+        app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+        private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
-      - name: Delete prerelease
-        if: inputs.id != 'null'
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        with:
-          route: DELETE /repos/{repo}/releases/{release_id}
-          repo: ${{ github.repository }}
-          release_id: ${{ inputs.id }}
+    - name: Delete prerelease
+      if: inputs.id != 'null'
+      uses: octokit/request-action@v2.x
+      env:
+        GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+      with:
+        route: DELETE /repos/{repo}/releases/{release_id}
+        repo: ${{ github.repository }}
+        release_id: ${{ inputs.id }}
 
   delete-tag:
     runs-on: ubuntu-latest
-    outputs:
-      RELEASE_ID: ${{ steps.get-prerelease.outputs.value }}
     env:
       GITHUB_TOKEN: ${{ github.token }}
     strategy:
@@ -59,6 +55,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
       - name: Generate token
         id: generate-token
         uses: tibdex/github-app-token@v1
