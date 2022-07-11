@@ -144,10 +144,10 @@ jobs:
 
   delete-current-drafts-releases:
     needs: [ get-current-drafts-to-delete ]
+    uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
     env:
       APPID: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
       APPKEY: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
-    uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
     with:
       tag: ${{ needs.get-current-drafts-to-delete.outputs.tagmatrix }}
       id: ${{ needs.get-current-drafts-to-delete.outputs.idmatrix }}
