@@ -63,6 +63,16 @@ jobs:
   #           JSON=$(cat newjson.txt)
   #           echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .tag_name'
 
+  #     - name: Convert to json
+  #       id: convert-to-json
+  #       run: |
+  #         IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\", \"/g' | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
+  #         TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\", \"/g' | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
+  #         echo "$IDARRAY"
+  #         echo "$TAGARRAY"
+  #         echo "::set-output name=IDMATRIX::$IDARRAY"
+  #         echo "::set-output name=TAGMATRIX::$TAGARRAY"
+
   # delete-current-release:
   #   needs: get-current-release-to-delete
   #   if: needs.get-current-release-to-delete.outputs.ID != 'null' && needs.get-current-release-to-delete.outputs.TAG != 'null'
@@ -135,22 +145,15 @@ jobs:
   delete-current-drafts-releases:
     needs: [ get-current-drafts-to-delete ]
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        idmatrix: ${{fromJson(needs.get-current-drafts-to-delete.outputs.idmatrix)}}
 
     steps:
-      - name: using testmain
-        uses: ./.github/workflows/testmain.yml
-        with: 
-          versions: "[\"14.x\", \"16.x\"]"
-      # - name: delete-draft-release
-      #   uses: ./.github/workflows/cd-delete-release-tag.yml
-      #   with:
-      #     tag: ${{ matrix.TAGMATRIX }}
-      #     id: 'null'
-      #     app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-      #     private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+      - name: delete-draft-release
+        uses: ./.github/workflows/cd-delete-release-tag.yml
+        with:
+          tag: ${{ needs.get-current-drafts-to-delete.outputs.tagmatrix }}
+          id: ${{ needs.get-current-drafts-to-delete.outputs.idmatrix }}
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
   # - uses: ./.github/workflows/cd-delete-release-tag.yml
   #   with:
