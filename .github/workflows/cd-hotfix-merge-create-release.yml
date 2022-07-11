@@ -9,13 +9,6 @@ on:
 
 jobs:
 
-  print-var:
-    runs-on: ubuntu-latest
-    steps:
-      - name: print branch name
-        run: |
-          echo "${{ github.head_ref }}"
-
   deploy-to-dev:
     if: github.head_ref == 'hotfix'
     uses: ./.github/workflows/cd-build.yml
@@ -163,6 +156,7 @@ jobs:
 
   create-new-prerelease:
     needs: [delete-current-drafts-releases]
+    if: always()
     uses: ./.github/workflows/cd-create-prerelease-draft.yml
     secrets: inherit
     with:
