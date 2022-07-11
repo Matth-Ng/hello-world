@@ -144,7 +144,7 @@ jobs:
 
   delete-current-drafts-releases:
     needs: [ get-current-drafts-to-delete ]
-    uses: Matth-Ng/hello-world/.github/workflows/cd-delete-release-tag@main
+    uses: Matth-Ng/hello-world/.github/workflows/cd-delete-release-tag.yml@main
     with:
       tag: ${{ needs.get-current-drafts-to-delete.outputs.tagmatrix }}
       id: ${{ needs.get-current-drafts-to-delete.outputs.idmatrix }}
