@@ -18,40 +18,12 @@ on:
         required: true
 
 jobs:
-  delete-release:
+  build:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
+
     strategy:
       matrix:
-        id: ${{fromJson(inputs.id)}}
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Generate token
-      id: generate-token
-      uses: tibdex/github-app-token@v1
-      with:
-        app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-        private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
-
-    - name: Delete prerelease
-      if: inputs.id != 'null'
-      uses: octokit/request-action@v2.x
-      env:
-        GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-      with:
-        route: DELETE /repos/{repo}/releases/{release_id}
-        repo: ${{ github.repository }}
-        release_id: ${{ inputs.id }}
-
-  delete-tag:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
-    strategy:
-      matrix:
-        tag: ${{fromJson(inputs.tag)}}
+        node-version: ${{fromJson(inputs.versions)}}
 
     steps:
     - uses: actions/checkout@v2
@@ -59,19 +31,58 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Generate token
-      id: generate-token
-      uses: tibdex/github-app-token@v1
-      with:
-        app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-        private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+    - run: |
+      echo "entering here"
+  # delete-release:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     GITHUB_TOKEN: ${{ github.token }}
+  #   strategy:
+  #     matrix:
+  #       id: ${{fromJson(inputs.id)}}
 
-    - name: Delete prerelease tag by tag
-      if: inputs.tag != 'null'
-      uses: octokit/request-action@v2.x
-      env:
-        GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-      with:
-        route: DELETE /repos/{repo}/git/refs/tags/{ref}
-        repo: ${{ github.repository }}
-        ref: ${{ matrix.tag }}
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Generate token
+  #     id: generate-token
+  #     uses: tibdex/github-app-token@v1
+  #     with:
+  #       app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+  #       private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+
+  #   - name: Delete prerelease
+  #     if: inputs.id != 'null'
+  #     uses: octokit/request-action@v2.x
+  #     env:
+  #       GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+  #     with:
+  #       route: DELETE /repos/{repo}/releases/{release_id}
+  #       repo: ${{ github.repository }}
+  #       release_id: ${{ inputs.id }}
+
+  # delete-tag:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     GITHUB_TOKEN: ${{ github.token }}
+  #   strategy:
+  #     matrix:
+  #       tag: ${{fromJson(inputs.tag)}}
+
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Generate token
+  #     id: generate-token
+  #     uses: tibdex/github-app-token@v1
+  #     with:
+  #       app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+  #       private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+
+  #   - name: Delete prerelease tag by tag
+  #     if: inputs.tag != 'null'
+  #     uses: octokit/request-action@v2.x
+  #     env:
+  #       GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+  #     with:
+  #       route: DELETE /repos/{repo}/git/refs/tags/{ref}
+  #       repo: ${{ github.repository }}
+  #       ref: ${{ matrix.tag }}
