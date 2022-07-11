@@ -160,3 +160,11 @@ jobs:
       id: ${{ needs.get-current-drafts-to-delete.outputs.IDSJSON }}
       tag: ${{ needs.get-current-drafts-to-delete.outputs.TAGSJSON }}
     secrets: inherit
+
+  create-new-prerelease:
+    needs: [delete-current-releases, delete-current-drafts]
+    uses: ./.github/workflows/cd-create-prerelease-draft.yml
+    secrets: inherit
+    with:
+      disable-workflow: false
+      disable-notes: false
