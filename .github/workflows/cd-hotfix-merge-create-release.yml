@@ -79,7 +79,7 @@ jobs:
   delete-current-prerelease:
     needs: get-current-prerelease-to-delete
     if: needs.get-current-prerelease-to-delete.outputs.ID != 'null'
-    uses: ./.github/workflows/cd-delete-prerelease-tag-matrix.yml
+    uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
     with:
       id: ${{ needs.get-current-prerelease-to-delete.outputs.IDJSON }}
       tag: 'null'
@@ -88,7 +88,7 @@ jobs:
   delete-current-prerelease-tags:
     needs: delete-current-prerelease
     if: needs.get-current-prerelease-to-delete.outputs.TAG != 'null'
-    uses: ./.github/workflows/cd-delete-prerelease-tag-matrix.yml
+    uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
     with:
       id: 'null'
       tag: ${{ needs.get-current-prerelease-to-delete.outputs.TAGJSON }}
