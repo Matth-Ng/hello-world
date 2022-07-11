@@ -1,4 +1,4 @@
-name: Delete Release and Tag
+name: Delete Release and Tag Matrix
 
 on:
   workflow_call:
@@ -19,7 +19,6 @@ on:
 
 jobs:
   delete-release:
-
     runs-on: ubuntu-latest
     outputs:
       RELEASE_ID: ${{ steps.get-prerelease.outputs.value }}
@@ -28,10 +27,8 @@ jobs:
     strategy:
       matrix:
         id: ${{fromJson(inputs.id)}}
-        tag: ${{fromJson(inputs.tag)}}
 
     steps:
-      - uses: actions/checkout@v3
       - name: Generate token
         id: generate-token
         uses: tibdex/github-app-token@v1
@@ -49,6 +46,24 @@ jobs:
           repo: ${{ github.repository }}
           release_id: ${{ inputs.id }}
 
+  delete-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      RELEASE_ID: ${{ steps.get-prerelease.outputs.value }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    strategy:
+      matrix:
+        tag: ${{fromJson(inputs.tag)}}
+
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+
       - name: Delete prerelease tag by tag
         if: inputs.tag != 'null'
         uses: octokit/request-action@v2.x
@@ -57,4 +72,4 @@ jobs:
         with:
           route: DELETE /repos/{repo}/git/refs/tags/{ref}
           repo: ${{ github.repository }}
-          ref: ${{ inputs.tag }}
+          ref: ${{ matrix.tag }}

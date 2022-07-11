@@ -139,13 +139,17 @@ jobs:
       matrix:
         idmatrix: ${{fromJson(needs.get-current-drafts-to-delete.outputs.idmatrix)}}
     steps:
-      - name: delete-draft-release
-        uses: ./.github/workflows/cd-delete-release-tag.yml
-        with:
-          tag: ${{ matrix.TAGMATRIX }}
-          id: 'null'
-          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+      ci:
+        uses: ./.github/workflows/testmain.yml
+        with: 
+          versions: "[\"14.x\", \"16.x\"]"
+      # - name: delete-draft-release
+      #   uses: ./.github/workflows/cd-delete-release-tag.yml
+      #   with:
+      #     tag: ${{ matrix.TAGMATRIX }}
+      #     id: 'null'
+      #     app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+      #     private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
   # - uses: ./.github/workflows/cd-delete-release-tag.yml
   #   with:
