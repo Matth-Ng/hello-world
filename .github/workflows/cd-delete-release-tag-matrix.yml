@@ -43,7 +43,7 @@ jobs:
       with:
         route: DELETE /repos/{repo}/releases/{release_id}
         repo: ${{ github.repository }}
-        release_id: ${{ inputs.id }}
+        release_id: ${{ matrix.id }}
   
   delete-tags:
     needs: [ delete-prerelease ]
