@@ -46,6 +46,7 @@ jobs:
         release_id: ${{ inputs.id }}
   
   delete-tags:
+    needs: delete-prerelease
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ github.token }}
