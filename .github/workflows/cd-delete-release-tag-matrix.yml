@@ -1,0 +1,74 @@
+name: Delete Prerelease and Tag Matrix
+
+on:
+  workflow_call:
+    inputs:
+      id:
+        required: true
+        type: string
+        default: "null"
+      tag:
+        type: string
+        default: "null"
+        required: true
+    secrets:
+      ACTIONS_TOKEN_APP_ID:
+        required: true
+      ACTIONS_TOKEN_PRIVATE_KEY:
+        required: true
+
+jobs:
+  delete-prerelease:
+    runs-on: ubuntu-latest
+    if: inputs.id != 'null'
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    strategy:
+      matrix:
+        id: ${{fromJson(inputs.id)}}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Generate token
+      id: generate-token
+      uses: tibdex/github-app-token@v1
+      with:
+        app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+        private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+
+    - name: Delete prerelease
+      uses: octokit/request-action@v2.x
+      env:
+        GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+      with:
+        route: DELETE /repos/{repo}/releases/{release_id}
+        repo: ${{ github.repository }}
+        release_id: ${{ matrix.id }}
+  
+  delete-tags:
+    needs: [ delete-prerelease ]
+    if: inputs.tag != 'null'
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    strategy:
+      matrix:
+        tag: ${{fromJson(inputs.tag)}}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Generate token
+      id: generate-token
+      uses: tibdex/github-app-token@v1
+      with:
+        app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+        private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+
+    - name: Delete prerelease tag by tag
+      uses: octokit/request-action@v2.x
+      env:
+        GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+      with:
+        route: DELETE /repos/{repo}/git/refs/tags/{ref}
+        repo: ${{ github.repository }}
+        ref: ${{ matrix.tag }}
