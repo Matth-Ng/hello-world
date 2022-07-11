@@ -29,6 +29,7 @@ jobs:
         id: ${{fromJson(inputs.id)}}
 
     steps:
+      - uses: actions/checkout@v2
       - name: Generate token
         id: generate-token
         uses: tibdex/github-app-token@v1
@@ -57,6 +58,7 @@ jobs:
         tag: ${{fromJson(inputs.tag)}}
 
     steps:
+      - uses: actions/checkout@v2
       - name: Generate token
         id: generate-token
         uses: tibdex/github-app-token@v1
