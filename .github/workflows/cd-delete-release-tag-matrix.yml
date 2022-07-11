@@ -18,36 +18,22 @@ on:
         required: true
 
 jobs:
-  build:
+  delete-release:
     runs-on: ubuntu-latest
-
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
     strategy:
       matrix:
-        node-version: ${{fromJson(inputs.versions)}}
+        id: ${{fromJson(inputs.id)}}
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js "14.0.0"
-      uses: actions/setup-node@v2
+    - name: Generate token
+      id: generate-token
+      uses: tibdex/github-app-token@v1
       with:
-        node-version: ${{ matrix.node-version }}
-    - run: echo "entering here"
-  # delete-release:
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     GITHUB_TOKEN: ${{ github.token }}
-  #   strategy:
-  #     matrix:
-  #       id: ${{fromJson(inputs.id)}}
-
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: Generate token
-  #     id: generate-token
-  #     uses: tibdex/github-app-token@v1
-  #     with:
-  #       app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-  #       private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+        app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+        private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
   #   - name: Delete prerelease
   #     if: inputs.id != 'null'
