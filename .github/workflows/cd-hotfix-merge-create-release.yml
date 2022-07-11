@@ -77,7 +77,7 @@ jobs:
 
   delete-current-prerelease:
     needs: get-current-prerelease-to-delete
-    if: needs.get-current-prerelease-to-delete.outputs.ID != 'null' & needs.get-current-prerelease-to-delete.outputs.ID != ""
+    if: needs.get-current-prerelease-to-delete.outputs.ID != 'null' && needs.get-current-prerelease-to-delete.outputs.ID != ""
     uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
     with:
       id: ${{ needs.get-current-prerelease-to-delete.outputs.IDJSON }}
