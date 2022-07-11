@@ -10,7 +10,7 @@ on:
 jobs:
 
   deploy-to-dev:
-    # if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
+    if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
     uses: ./.github/workflows/cd-build.yml
 
   get-current-prerelease-to-delete:
