@@ -144,7 +144,6 @@ jobs:
 
   delete-current-drafts-releases:
     needs: [ get-current-drafts-to-delete ]
-    runs-on: ubuntu-latest
     uses: ./.github/workflows/cd-delete-release-tag.yml
     with:
       tag: ${{ needs.get-current-drafts-to-delete.outputs.tagmatrix }}
