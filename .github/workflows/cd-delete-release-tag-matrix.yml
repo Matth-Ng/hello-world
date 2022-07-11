@@ -46,6 +46,7 @@ jobs:
         release_id: ${{ inputs.id }}
   
   delete-tags:
+    needs: [ delete-prerelease ]
     if: inputs.tag != 'null'
     runs-on: ubuntu-latest
     env:
