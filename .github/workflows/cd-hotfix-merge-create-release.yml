@@ -146,8 +146,16 @@ jobs:
     needs: [ get-current-drafts-to-delete ]
     uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
     with:
-      tag: ${{ needs.get-current-drafts-to-delete.outputs.TAGS }}
+      tag: "null"
       id: ${{ needs.get-current-drafts-to-delete.outputs.IDS }}
+    secrets: inherit
+
+  delete-current-drafts-tags:
+    needs: [ delete-current-drafts-releases ]
+    uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
+    with:
+      tag: ${{ needs.get-current-drafts-to-delete.outputs.TAGS }}
+      id: "null"
     secrets: inherit
 
   # delete-current-drafts-releases:
