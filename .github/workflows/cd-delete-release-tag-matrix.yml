@@ -20,6 +20,7 @@ on:
 jobs:
   delete-prerelease:
     runs-on: ubuntu-latest
+    if: inputs.id != 'null'
     env:
       GITHUB_TOKEN: ${{ github.token }}
     strategy:
@@ -36,7 +37,6 @@ jobs:
         private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
     - name: Delete prerelease
-      if: inputs.id != 'null'
       uses: octokit/request-action@v2.x
       env:
         GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
@@ -46,7 +46,7 @@ jobs:
         release_id: ${{ inputs.id }}
   
   delete-tags:
-    needs: delete-prerelease
+    if: inputs.tag != 'null'
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ github.token }}
@@ -64,7 +64,6 @@ jobs:
         private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
     - name: Delete prerelease tag by tag
-      if: inputs.tag != 'null'
       uses: octokit/request-action@v2.x
       env:
         GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}

@@ -13,7 +13,7 @@ jobs:
     # if: needs.get-source-branch.outputs.SOURCE_BRANCH == 'hotfix'
     uses: ./.github/workflows/cd-build.yml
 
-  get-current-release-to-delete:
+  get-current-prerelease-to-delete:
     needs: deploy-to-dev
     runs-on: ubuntu-latest
     outputs:
@@ -50,7 +50,7 @@ jobs:
             EOF
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
-            echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
+            echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true and .draft == false)) | first | .id'
 
       - name: Get prerelease TAG
         id: get-prerelease-tag
@@ -69,20 +69,29 @@ jobs:
         if: steps.get-prerelease-id.outputs.value != 'null' && steps.get-prerelease-tag.outputs.value != 'null'
         id: convert-to-json
         run: |
-          IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\", \"/g' | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
-          TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\", \"/g' | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
+          IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
+          TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
           echo "$IDARRAY"
           echo "$TAGARRAY"
           echo "::set-output name=ID::$IDARRAY"
           echo "::set-output name=TAG::$TAGARRAY"
 
-  delete-current-release:
-    needs: get-current-release-to-delete
-    if: needs.get-current-release-to-delete.outputs.ID != 'null' && needs.get-current-release-to-delete.outputs.TAG != 'null'
-    uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
+  delete-current-prerelease:
+    needs: get-current-prerelease-to-delete
+    if: needs.get-current-prerelease-to-delete.outputs.ID != 'null'
+    uses: ./.github/workflows/cd-delete-prerelease-tag-matrix.yml
     with:
-      id: ${{ needs.get-current-release-to-delete.outputs.ID }}
-      tag: ${{ needs.get-current-release-to-delete.outputs.TAG }}
+      id: ${{ needs.get-current-prerelease-to-delete.outputs.IDJSON }}
+      tag: 'null'
+    secrets: inherit
+
+  delete-current-prerelease-tags:
+    needs: delete-current-prerelease
+    if: needs.get-current-prerelease-to-delete.outputs.TAG != 'null'
+    uses: ./.github/workflows/cd-delete-prerelease-tag-matrix.yml
+    with:
+      id: 'null'
+      tag: ${{ needs.get-current-prerelease-to-delete.outputs.TAGJSON }}
     secrets: inherit
   
   # delete-current-prerelease:
@@ -167,8 +176,16 @@ jobs:
     needs: [ get-current-drafts-to-delete ]
     uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
     with:
-      tag: ${{ needs.get-current-drafts-to-delete.outputs.TAGS }}
+      tag: 'null'
       id: ${{ needs.get-current-drafts-to-delete.outputs.IDS }}
+    secrets: inherit
+
+  delete-current-drafts-tags:
+    needs: [ delete-current-drafts-releases ]
+    uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
+    with:
+      tag: ${{ needs.get-current-drafts-to-delete.outputs.TAGS }}
+      id: 'null'
     secrets: inherit
 
   # delete-current-drafts-tags:
