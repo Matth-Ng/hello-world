@@ -18,7 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       ID: ${{ steps.get-prerelease-id.outputs.value }}
-      TAG: ${{ steps.get-prerelease-tag.outputs.value }}
       IDJSON: ${{ steps.convert-to-json.outputs.ID }}
       TAGJSON: ${{ steps.convert-to-json.outputs.TAG }}
     env:
@@ -85,39 +84,13 @@ jobs:
       tag: ${{ needs.get-current-prerelease-to-delete.outputs.TAGJSON }}
     secrets: inherit
 
-  delete-current-prerelease-tags:
-    needs: delete-current-prerelease
-    if: needs.get-current-prerelease-to-delete.outputs.TAG != 'null'
-    uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
-    with:
-      id: 'null'
-      tag: ${{ needs.get-current-prerelease-to-delete.outputs.TAGJSON }}
-    secrets: inherit
-  
-  delete-current-prerelease:
-    needs: [ get-current-release-to-delete ]
-    if: needs.get-current-release-to-delete.outputs.ID != 'null'
-    uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
-    with:
-      tag: "null"
-      id: ${{ needs.get-current-drafts-to-delete.outputs.IDS }}
-    secrets: inherit
-
-  delete-current-prerelease-tags:
-    needs: [ get-current-release-to-delete ]
-    if: needs.get-current-release-to-delete.outputs.TAG != 'null'
-    uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
-    with:
-      tag: ${{ needs.get-current-drafts-to-delete.outputs.TAGS }}
-      id: "null"
-    secrets: inherit
-
   get-current-drafts-to-delete:
     needs: deploy-to-dev
     runs-on: ubuntu-latest
     outputs:
-      IDS: ${{ steps.convert-to-json.outputs.IDS }}
-      TAGS: ${{ steps.convert-to-json.outputs.TAGS }}
+      ID: ${{ steps.get-prerelease-id.outputs.value }}
+      IDSJSON: ${{ steps.convert-to-json.outputs.IDS }}
+      TAGSJSON: ${{ steps.convert-to-json.outputs.TAGS }}
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
@@ -174,65 +147,9 @@ jobs:
 
   delete-current-drafts-releases:
     needs: [ get-current-drafts-to-delete ]
+    if: needs.get-current-drafts-to-delete.outputs.ID != 'null'
     uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
     with:
-      tag: ${{ needs.get-current-drafts-to-delete.outputs.TAGS }}
-      id: ${{ needs.get-current-drafts-to-delete.outputs.IDS }}
+      id: ${{ needs.get-current-drafts-to-delete.outputs.IDSJSON }}
+      tag: ${{ needs.get-current-drafts-to-delete.outputs.TAGSJSON }}
     secrets: inherit
-
-  # delete-current-drafts-tags:
-  #   needs: [ delete-current-drafts-releases ]
-  #   uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
-  #   with:
-  #     tag: ${{ needs.get-current-drafts-to-delete.outputs.TAGS }}
-  #     id: 'null'
-  #   secrets: inherit
-
-  # delete-current-drafts-tags:
-  #   needs: [ delete-current-drafts-releases ]
-  #   uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
-  #   with:
-  #     tag: ${{ needs.get-current-drafts-to-delete.outputs.TAGS }}
-  #     id: "null"
-  #   secrets: inherit
-
-  # delete-current-drafts-releases:
-  #   needs: [ get-current-drafts-to-delete ]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Delete current draft releases
-  #       uses: ./.github/workflows/cd-delete-release-tag.yml
-  #       with:
-  #         tag: ${{ needs.get-current-drafts-to-delete.outputs.tagmatrix }}
-  #         id: ${{ needs.get-current-drafts-to-delete.outputs.idmatrix }}
-  #         app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-  #         private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
-
-  # - uses: ./.github/workflows/cd-delete-release-tag.yml
-  #   with:
-  #     tag: 'null'
-  #     id: ${{ matrix.IDMATRIX }}
-  #     app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-  #     private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
-
-  # delete-current-drafts-tags:
-  #   needs: [get-current-drafts-to-delete]
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       TAGMATRIX: ${{ fromJSON(needs.get-current-drafts-to-delete.outputs.TAGMATRIX) }}
-  #   steps:
-  #     - uses: ./.github/workflows/cd-delete-release-tag.yml
-  #       with:
-  #         tag: ${{ matrix.TAGMATRIX }}
-  #         id: 'null'
-  #         app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-  #         private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
-    
-  # create-prerelease:
-  #   needs: [delete-current-releases, delete-current-drafts]
-  #   uses: ./.github/workflows/cd-create-prerelease-draft.yml
-  #   secrets: inherit
-  #   with:
-  #     disable-workflow: false
-  #     disable-notes: false
