@@ -144,15 +144,24 @@ jobs:
 
   delete-current-drafts-releases:
     needs: [ get-current-drafts-to-delete ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Delete current draft releases
-        uses: ./.github/workflows/cd-delete-release-tag.yml
-        with:
-          tag: ${{ needs.get-current-drafts-to-delete.outputs.tagmatrix }}
-          id: ${{ needs.get-current-drafts-to-delete.outputs.idmatrix }}
-          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+    uses: ./.github/workflows/cd-delete-release-tag.yml
+      with:
+        tag: ${{ needs.get-current-drafts-to-delete.outputs.tagmatrix }}
+        id: ${{ needs.get-current-drafts-to-delete.outputs.idmatrix }}
+        app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+        private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+
+  # delete-current-drafts-releases:
+  #   needs: [ get-current-drafts-to-delete ]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Delete current draft releases
+  #       uses: ./.github/workflows/cd-delete-release-tag.yml
+  #       with:
+  #         tag: ${{ needs.get-current-drafts-to-delete.outputs.tagmatrix }}
+  #         id: ${{ needs.get-current-drafts-to-delete.outputs.idmatrix }}
+  #         app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+  #         private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
 
   # - uses: ./.github/workflows/cd-delete-release-tag.yml
   #   with:
