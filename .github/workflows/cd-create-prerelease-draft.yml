@@ -86,7 +86,7 @@ jobs:
 
       - name: print var
         run: |
-          echo ""
+          echo "inputs.disable-workflow"
 
       - name: Disable Workflow
         if: inputs.disable-workflow == 'true'
