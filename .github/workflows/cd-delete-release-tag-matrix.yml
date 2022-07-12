@@ -5,10 +5,12 @@ on:
     inputs:
       id:
         required: true
+        description: "The Release ID"
         type: string
         default: "null"
       tag:
         type: string
+        description: "The Tag Name"
         default: "null"
         required: true
     secrets:
