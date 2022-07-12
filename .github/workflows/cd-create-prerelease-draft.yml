@@ -11,10 +11,10 @@ on:
         description: "true to disable this workflow after running"
         default: false
         required: true
-      disable-notes:
+      generate-notes:
         type: boolean
         description: "true to disable auto generate release notes, false to auto generate release notes"
-        default: false
+        default: true
         required: false
     secrets:
       ACTIONS_TOKEN_APP_ID:
