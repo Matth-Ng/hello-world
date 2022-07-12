@@ -84,7 +84,7 @@ jobs:
           prerelease: true
 
       - name: Disable Workflow
-        if: [ inputs.disable-workflow == 'true' ]
+        if: inputs.disable-workflow == 'true'
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
