@@ -42,7 +42,7 @@ jobs:
         id: generate-notes-boolean
         run: |
           echo "::set-output name=boolean::true"
-          if [ "${{ inputs.disable-notes }}" == "false"]; then
+          if [ "${{ inputs.disable-notes }}" == "true"]; then
             echo "::set-output name=boolean::false"
           fi
 
