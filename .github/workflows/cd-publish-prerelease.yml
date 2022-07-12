@@ -42,7 +42,7 @@ jobs:
         id: release-offset
         run: |
           echo "::set-output name=offset::nth(1)"
-          if [ "${{ inputs.latest }}" == "true"]; then
+          if [ "${{ inputs.latest }}" == 'true']; then
             echo "::set-output name=offset::first"
           fi
 
@@ -87,7 +87,7 @@ jobs:
         id: disable-workflow-boolean
         run: |
           echo "::set-output name=boolean::false"
-          if [ "${{ inputs.disable-workflow }}" == "true"]; then
+          if [ "${{ inputs.disable-workflow }}" == 'true']; then
             echo "::set-output name=boolean::true"
           fi
 
