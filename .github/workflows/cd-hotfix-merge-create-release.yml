@@ -70,8 +70,6 @@ jobs:
         run: |
           IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
           TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
-          echo "$IDARRAY"
-          echo "$TAGARRAY"
           echo "::set-output name=ID::$IDARRAY"
           echo "::set-output name=TAG::$TAGARRAY"
 
@@ -140,8 +138,6 @@ jobs:
         run: |
           IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\", \"/g' | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
           TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\", \"/g' | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
-          echo "$IDARRAY"
-          echo "$TAGARRAY"
           echo "::set-output name=IDS::$IDARRAY"
           echo "::set-output name=TAGS::$TAGARRAY"
 
