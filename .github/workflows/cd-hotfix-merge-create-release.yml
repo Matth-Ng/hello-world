@@ -157,4 +157,3 @@ jobs:
     secrets: inherit
     with:
       disable-workflow: false
-      disable-notes: false
