@@ -42,7 +42,7 @@ jobs:
         id: generate-notes-boolean
         run: |
           echo "::set-output name=boolean::true"
-          if [ "${{ inputs.disable-notes }}" == "true"]; then
+          if [ "${{ inputs.disable-notes }}" == 'true' ]; then
             echo "::set-output name=boolean::false"
           fi
 
@@ -96,7 +96,7 @@ jobs:
         id: disable-workflow-boolean
         run: |
           echo "::set-output name=boolean::false"
-          if [ "${{ inputs.disable-workflow }}" == "true"]; then
+          if [ "${{ inputs.disable-workflow }}" == 'true']; then
             echo "::set-output name=boolean::true"
           fi
 
