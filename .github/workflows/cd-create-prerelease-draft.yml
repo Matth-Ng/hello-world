@@ -11,10 +11,10 @@ on:
         description: "true to disable this workflow after running"
         default: false
         required: true
-      generate-notes:
+      disable-notes:
         type: boolean
-        description: "true to auto generate release notes, false to disable auto generate release notes"
-        default: true
+        description: "true to disable auto generate release notes, false to auto generate release notes"
+        default: false
         required: false
     secrets:
       ACTIONS_TOKEN_APP_ID:
@@ -37,6 +37,14 @@ jobs:
         with:
           app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
           private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+
+      - name: Generate Notes Boolean
+        id: generate-notes-boolean
+        run: |
+          echo "::set-output name=boolean::true"
+          if [ "${{ inputs.disable-notes }}" == 'true' ]; then
+            echo "::set-output name=boolean::false"
+          fi
 
       - name: Get Date
         id: get-date
@@ -80,16 +88,16 @@ jobs:
           name: ${{ steps.get-date.outputs.date-string }}
           tag_name: ${{ steps.get-version.outputs.package-version }}
           target_commitish: ${{ steps.get-sha.outputs.sha }}
-          generate_release_notes: ${{ inputs.generate-notes }}
+          generate_release_notes: ${{ steps.generate-notes-boolean.outputs.boolean }}
           prerelease: true
           draft: true
 
       - name: print var
         run: |
-          echo "inputs.disable-workflow"
+          echo "${{inputs.disable-workflow}}"
 
       - name: Disable Workflow
-        if: inputs.disable-workflow == 'true'
+        if: ${{ inputs.disable-workflow == 'true' }}
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
