@@ -8,6 +8,7 @@ on:
     inputs:
       disable-workflow:
         type: boolean
+        description: "True to disable this workflow after running"
         default: false
         required: true
     secrets:
@@ -72,7 +73,7 @@ jobs:
         id: disable-workflow-boolean
         run: |
           echo "::set-output name=boolean::false"
-          if [ "${{ inputs.disable-workflow }}" ]; then
+          if [ "${{ inputs.disable-workflow }}" == "true"]; then
             echo "::set-output name=boolean::true"
           fi
 

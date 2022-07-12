@@ -8,6 +8,7 @@ on:
     inputs:
       disable-workflow:
         type: boolean
+        description: "true to disable this workflow after running"
         default: false
         required: true
       disable-notes:
@@ -41,7 +42,7 @@ jobs:
         id: generate-notes-boolean
         run: |
           echo "::set-output name=boolean::true"
-          if [ "${{ inputs.disable-notes }}" ]; then
+          if [ "${{ inputs.disable-notes }}" == "false"]; then
             echo "::set-output name=boolean::false"
           fi
 
@@ -95,7 +96,7 @@ jobs:
         id: disable-workflow-boolean
         run: |
           echo "::set-output name=boolean::false"
-          if [ "${{ inputs.disable-workflow }}" ]; then
+          if [ "${{ inputs.disable-workflow }}" == "true"]; then
             echo "::set-output name=boolean::true"
           fi
 
