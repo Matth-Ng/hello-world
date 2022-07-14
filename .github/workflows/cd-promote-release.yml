@@ -8,6 +8,7 @@ on:
     inputs:
       disable-workflow:
         type: boolean
+        description: "True to disable this workflow after running"
         default: false
         required: true
     secrets:
@@ -42,7 +43,7 @@ jobs:
             EOF
             sed -e "s/'//g" json.txt > newjson.txt
             JSON=$(cat newjson.txt)
-            echo "$JSON" | jq 'map(select(.published_at and .prerelease == true)) | first | .id'
+            echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .id'
 
   promote-for-utility:
     runs-on: ubuntu-latest
@@ -68,16 +69,8 @@ jobs:
           release_id: ${{ env.RELEASE_ID }}
           prerelease: false
 
-      - name: Disable workflow boolean
-        id: disable-workflow-boolean
-        run: |
-          echo "::set-output name=boolean::false"
-          if [ "${{ inputs.disable-workflow }}" ]; then
-            echo "::set-output name=boolean::true"
-          fi
-
       - name: Disable Workflow
-        if: ${{ steps.disable-workflow-boolean.outputs.boolean == 'true' }}
+        if: inputs.disable-workflow == 'true'
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}

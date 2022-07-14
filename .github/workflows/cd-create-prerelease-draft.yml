@@ -8,12 +8,13 @@ on:
     inputs:
       disable-workflow:
         type: boolean
+        description: "true to disable this workflow after running"
         default: false
         required: true
-      disable-notes:
+      generate-notes:
         type: boolean
         description: "true to disable auto generate release notes, false to auto generate release notes"
-        default: false
+        default: true
         required: false
     secrets:
       ACTIONS_TOKEN_APP_ID:
@@ -41,7 +42,7 @@ jobs:
         id: generate-notes-boolean
         run: |
           echo "::set-output name=boolean::true"
-          if [ "${{ inputs.disable-notes }}" ]; then
+          if [ "${{ inputs.disable-notes }}" == 'true' ]; then
             echo "::set-output name=boolean::false"
           fi
 
@@ -91,20 +92,17 @@ jobs:
           prerelease: true
           draft: true
 
-      - name: Disable workflow boolean
-        id: disable-workflow-boolean
+      - name: print var
         run: |
-          echo "::set-output name=boolean::false"
-          if [ "${{ inputs.disable-workflow }}" ]; then
-            echo "::set-output name=boolean::true"
-          fi
+          echo "${{inputs.disable-workflow}}"
+          echo "${{github.event.inputs.disable-workflow}}"
 
       - name: Disable Workflow
-        if: ${{ steps.disable-workflow-boolean.outputs.boolean == 'true' }}
+        if: inputs.disable-workflow
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:
           route: PUT /repos/{repo}/actions/workflows/{workflow_id}/disable
           repo: ${{ github.repository }}
-          workflow_id: cd-publish-prerelease.yml
+          workflow_id: cd-create-prerelease-draft.yml

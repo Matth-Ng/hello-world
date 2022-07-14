@@ -8,10 +8,12 @@ on:
     inputs:
       latest:
         required: true
+        description: "True to publish the latest draft release"
         type: boolean
         default: false
       disable-workflow:
         type: boolean
+        description: "True to disable workflow after running"
         default: false
         required: true
     secrets:
@@ -40,7 +42,7 @@ jobs:
         id: release-offset
         run: |
           echo "::set-output name=offset::nth(1)"
-          if [ "${{ inputs.latest }}" ]; then
+          if [ "${{ inputs.latest }}" == 'true']; then
             echo "::set-output name=offset::first"
           fi
 
@@ -80,17 +82,9 @@ jobs:
           release_id: ${{ env.RELEASE_ID }}
           draft: false
           prerelease: true
-      
-      - name: Disable workflow boolean
-        id: disable-workflow-boolean
-        run: |
-          echo "::set-output name=boolean::false"
-          if [ "${{ inputs.disable-workflow }}" ]; then
-            echo "::set-output name=boolean::true"
-          fi
 
       - name: Disable Workflow
-        if: ${{ steps.disable-workflow-boolean.outputs.boolean == 'true' }}
+        if: inputs.disable-workflow == 'true'
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}

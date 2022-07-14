@@ -1,0 +1,151 @@
+name: Hotfix Delete Old Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+
+  deploy-to-dev:
+    if: github.head_ref == 'hotfix'
+    uses: ./.github/workflows/cd-build.yml
+
+  get-current-prerelease-to-delete:
+    needs: deploy-to-dev
+    runs-on: ubuntu-latest
+    outputs:
+      ID: ${{ steps.get-prerelease-id.outputs.value }}
+      IDJSON: ${{ steps.convert-to-json.outputs.ID }}
+      TAGJSON: ${{ steps.convert-to-json.outputs.TAG }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+    
+      - name: Get releases
+        id: get-releases
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/{repo}/releases
+          repo: ${{ github.repository }}
+
+      - name: Get prerelease ID
+        id: get-prerelease-id
+        continue-on-error: true
+        uses: sergeysova/jq-action@v2
+        with:
+          cmd: |
+            cat << EOF > json.txt
+            ${{ steps.get-releases.outputs.data }}
+            EOF
+            sed -e "s/'//g" json.txt > newjson.txt
+            JSON=$(cat newjson.txt)
+            echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true and .draft == false)) | first | .id'
+
+      - name: Get prerelease TAG
+        id: get-prerelease-tag
+        continue-on-error: true
+        uses: sergeysova/jq-action@v2
+        with:
+          cmd: |
+            cat << EOF > json.txt
+            ${{ steps.get-releases.outputs.data }}
+            EOF
+            sed -e "s/'//g" json.txt > newjson.txt
+            JSON=$(cat newjson.txt)
+            echo "$JSON" | jq -r 'map(select(.published_at and .prerelease == true)) | first | .tag_name'
+
+      - name: Convert to json
+        if: steps.get-prerelease-id.outputs.value != 'null' && steps.get-prerelease-tag.outputs.value != 'null'
+        id: convert-to-json
+        run: |
+          IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
+          TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
+          echo "::set-output name=ID::$IDARRAY"
+          echo "::set-output name=TAG::$TAGARRAY"
+
+  delete-current-prerelease:
+    needs: get-current-prerelease-to-delete
+    if: needs.get-current-prerelease-to-delete.outputs.ID != 'null' && needs.get-current-prerelease-to-delete.outputs.ID != ''
+    uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
+    with:
+      id: ${{ needs.get-current-prerelease-to-delete.outputs.IDJSON }}
+      tag: ${{ needs.get-current-prerelease-to-delete.outputs.TAGJSON }}
+    secrets: inherit
+
+  get-current-drafts-to-delete:
+    needs: deploy-to-dev
+    runs-on: ubuntu-latest
+    outputs:
+      ID: ${{ steps.get-prerelease-id.outputs.value }}
+      IDSJSON: ${{ steps.convert-to-json.outputs.IDS }}
+      TAGSJSON: ${{ steps.convert-to-json.outputs.TAGS }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+
+      - name: Get releases
+        id: get-releases
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/{repo}/releases
+          repo: ${{ github.repository }}
+      
+      - name: Get prerelease ID
+        id: get-prerelease-id
+        continue-on-error: true
+        uses: sergeysova/jq-action@v2
+        with:
+          cmd: |
+            cat << EOF > json.txt
+            ${{ steps.get-releases.outputs.data }}
+            EOF
+            sed -e "s/'//g" json.txt > newjson.txt
+            JSON=$(cat newjson.txt)
+            echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] | .id' | tr '\n' ','
+
+      - name: Get prerelease TAG
+        id: get-prerelease-tag
+        continue-on-error: true
+        uses: sergeysova/jq-action@v2
+        with:
+          cmd: |
+            cat << EOF > json.txt
+            ${{ steps.get-releases.outputs.data }}
+            EOF
+            sed -e "s/'//g" json.txt > newjson.txt
+            JSON=$(cat newjson.txt)
+            echo "$JSON" | jq -r 'map(select(.draft == true and .prerelease == true)) | .[] |  .tag_name' | tr '\n' ','
+
+      - name: Convert to json
+        id: convert-to-json
+        run: |
+          IDARRAY=$(echo "${{ steps.get-prerelease-id.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\", \"/g' | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
+          TAGARRAY=$(echo "${{ steps.get-prerelease-tag.outputs.value }}" | sed -r 's/(,$)//g' | sed -r 's/,/\", \"/g' | sed -r 's/(^)/[\"/g' | sed -r 's/($)/\"]/g')
+          echo "::set-output name=IDS::$IDARRAY"
+          echo "::set-output name=TAGS::$TAGARRAY"
+
+  delete-current-drafts-releases:
+    needs: [ get-current-drafts-to-delete ]
+    if: needs.get-current-drafts-to-delete.outputs.ID != 'null' && needs.get-current-drafts-to-delete.outputs.ID != ''
+    uses: ./.github/workflows/cd-delete-release-tag-matrix.yml
+    with:
+      id: ${{ needs.get-current-drafts-to-delete.outputs.IDSJSON }}
+      tag: ${{ needs.get-current-drafts-to-delete.outputs.TAGSJSON }}
+    secrets: inherit
