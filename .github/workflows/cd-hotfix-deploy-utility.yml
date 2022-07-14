@@ -11,8 +11,11 @@ jobs:
     steps:
       - name: print var
         run: |
+          echo "$GITHUB_EVENT_PATH"
+          echo "break_____________________________________"
+          echo "${{ github.event.pull_request.head.ref }}"
+          echo "${{ github.event.pull_request.base.ref }}"
           echo "${{ github.base_ref }}"
-          echo "${{ github.ref }}"
           echo "${{ github.head_ref }}"
           echo "$GITHUB_REF"
           echo "$GITHUB_HEAD_REF"
