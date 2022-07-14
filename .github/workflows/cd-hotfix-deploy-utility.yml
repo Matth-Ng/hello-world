@@ -12,7 +12,7 @@ jobs:
       - name: print var
         run: |
           echo "${{ github.event.git_ref }}"
-          echo ${GITHUB_REF##*/}
+          echo "${{GITHUB_REF##*/}}"
 
   # check-workflow:
   #   if: github.event.review.state == 'approved'
