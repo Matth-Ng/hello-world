@@ -6,81 +6,67 @@ on:
   workflow_dispatch:
 
 jobs:
-  print-var:
+
+  check-workflow:
+    if: github.event.review.state == 'approved' && github.event.pull_request.head.ref == 'hotfix'
+    outputs:
+      DRAFT_STATE: ${{ steps.create-workflow-enabled.outputs.value }}
     runs-on: ubuntu-latest
+
     steps:
-      - name: print var
-        run: |
-          echo "$GITHUB_EVENT_PATH"
-          echo "break_____________________________________"
-          echo "${{ github.event.pull_request.head.ref }}"
-          echo "${{ github.event.pull_request.base.ref }}"
-          echo "${{ github.base_ref }}"
-          echo "${{ github.head_ref }}"
-          echo "$GITHUB_REF"
-          echo "$GITHUB_HEAD_REF"
-          echo "done"
-
-  # check-workflow:
-  #   if: github.event.review.state == 'approved'
-  #   outputs:
-  #     DRAFT_STATE: ${{ steps.create-workflow-enabled.outputs.value }}
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - name: Generate token
-  #       id: generate-token
-  #       uses: tibdex/github-app-token@v1
-  #       with:
-  #         app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
-  #         private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.ACTIONS_TOKEN_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_TOKEN_PRIVATE_KEY }}
           
-  #     - name: Get cd-create-prerelease-draft workflow
-  #       id: create-workflow-info
-  #       uses: octokit/request-action@v2.x
-  #       env:
-  #         GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-  #       with:
-  #         route: GET /repos/{repo}/actions/workflows
-  #         repo: ${{ github.repository }}
-  #         workflow_id: cd-create-prerelease-draft.yml
+      - name: Get cd-create-prerelease-draft workflow
+        id: create-workflow-info
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+        with:
+          route: GET /repos/{repo}/actions/workflows
+          repo: ${{ github.repository }}
+          workflow_id: cd-create-prerelease-draft.yml
       
-  #     - name: Check if create workflow enabled
-  #       id: create-workflow-enabled
-  #       uses: sergeysova/jq-action@v2
-  #       with:
-  #         cmd: |
-  #           cat << EOF > json.txt
-  #           ${{ steps.create-workflow-info.outputs.data }}
-  #           EOF
-  #           sed -e "s/'//g" json.txt > newjson.txt
-  #           JSON=$(cat newjson.txt)
-  #           echo "$JSON" | jq -r '.workflows[] | select(.name=="Create Prerelease Draft") | .state'
+      - name: Check if create workflow enabled
+        id: create-workflow-enabled
+        uses: sergeysova/jq-action@v2
+        with:
+          cmd: |
+            cat << EOF > json.txt
+            ${{ steps.create-workflow-info.outputs.data }}
+            EOF
+            sed -e "s/'//g" json.txt > newjson.txt
+            JSON=$(cat newjson.txt)
+            echo "$JSON" | jq -r '.workflows[] | select(.name=="Create Prerelease Draft") | .state'
 
-  # deploy-to-dev:
-  #   if: github.event.review.state == 'approved' && needs.check-workflow.outputs.DRAFT_STATE == 'active'
-  #   needs: check-workflow
-  #   uses: ./.github/workflows/cd-build.yml
+  deploy-to-dev:
+    if: github.event.review.state == 'approved' && needs.check-workflow.outputs.DRAFT_STATE == 'active'
+    needs: check-workflow
+    uses: ./.github/workflows/cd-build.yml
     
-  # create-prerelease:
-  #   needs: deploy-to-dev
-  #   uses: ./.github/workflows/cd-create-prerelease-draft.yml
-  #   with:
-  #     disable-workflow: true
-  #     generate-notes: false
-  #   secrets: inherit
+  create-prerelease:
+    needs: deploy-to-dev
+    uses: ./.github/workflows/cd-create-prerelease-draft.yml
+    with:
+      disable-workflow: true
+      generate-notes: false
+    secrets: inherit
 
-  # publish-prerelease:
-  #   needs: create-prerelease
-  #   uses: ./.github/workflows/cd-publish-prerelease.yml
-  #   with:
-  #     disable-workflow: true
-  #     latest: true
-  #   secrets: inherit
+  publish-prerelease:
+    needs: create-prerelease
+    uses: ./.github/workflows/cd-publish-prerelease.yml
+    with:
+      disable-workflow: true
+      latest: true
+    secrets: inherit
 
-  # promote-release:
-  #   needs: publish-prerelease
-  #   uses: ./.github/workflows/cd-promote-release.yml
-  #   with:
-  #     disable-workflow: true
-  #   secrets: inherit
+  promote-release:
+    needs: publish-prerelease
+    uses: ./.github/workflows/cd-promote-release.yml
+    with:
+      disable-workflow: true
+    secrets: inherit
