@@ -3,11 +3,16 @@ name: Hotfix Deploy to Utility
 on:
   pull_request_review:
     types: [submitted]
-    branches:
-      - hotfix
   workflow_dispatch:
 
 jobs:
+  print-var:
+    runs-on: ubuntu-latest
+    steps:
+      - name: print var
+        run: |
+          echo "${{ github.event.git_ref }}"
+          echo ${GITHUB_REF##*/}
 
   check-workflow:
     if: github.event.review.state == 'approved'
@@ -48,11 +53,11 @@ jobs:
   deploy-to-dev:
     if: github.event.review.state == 'approved' && needs.check-workflow.outputs.DRAFT_STATE == 'active'
     needs: check-workflow
-    uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@hotfix
+    uses: ./.github/workflows/cd-build.yml
     
   create-prerelease:
     needs: deploy-to-dev
-    uses: Matth-Ng/hello-world/.github/workflows/cd-create-prerelease-draft.yml@hotfix
+    uses: ./.github/workflows/cd-create-prerelease-draft.yml
     with:
       disable-workflow: true
       generate-notes: false
@@ -60,7 +65,7 @@ jobs:
 
   publish-prerelease:
     needs: create-prerelease
-    uses: Matth-Ng/hello-world/.github/workflows/cd-publish-prerelease.yml@hotfix
+    uses: ./.github/workflows/cd-publish-prerelease.yml
     with:
       disable-workflow: true
       latest: true
@@ -68,7 +73,7 @@ jobs:
 
   promote-release:
     needs: publish-prerelease
-    uses: Matth-Ng/hello-world/.github/workflows/cd-promote-release.yml@hotfix
+    uses: ./.github/workflows/cd-promote-release.yml
     with:
       disable-workflow: true
     secrets: inherit
