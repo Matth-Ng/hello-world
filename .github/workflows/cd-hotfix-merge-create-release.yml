@@ -151,9 +151,10 @@ jobs:
     secrets: inherit
 
   create-new-prerelease:
-    needs: [delete-current-drafts-releases]
-    if: always()
+    needs: [get-current-prerelease-to-delete, delete-current-drafts-releases]
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
     uses: ./.github/workflows/cd-create-prerelease-draft.yml
     secrets: inherit
     with:
       disable-workflow: false
+      disable-notes: false

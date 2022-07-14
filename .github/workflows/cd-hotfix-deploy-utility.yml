@@ -3,14 +3,12 @@ name: Hotfix Deploy to Utility
 on:
   pull_request_review:
     types: [submitted]
-    branches:
-      - hotfix
   workflow_dispatch:
 
 jobs:
 
   check-workflow:
-    if: github.event.review.state == 'approved'
+    if: github.event.pull_request.head.ref == 'hotfix' && github.event.review.state == 'approved'
     outputs:
       DRAFT_STATE: ${{ steps.create-workflow-enabled.outputs.value }}
     runs-on: ubuntu-latest

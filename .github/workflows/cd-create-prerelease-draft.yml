@@ -95,9 +95,10 @@ jobs:
       - name: print var
         run: |
           echo "${{inputs.disable-workflow}}"
+          echo "${{github.event.inputs.disable-workflow}}"
 
       - name: Disable Workflow
-        if: github.event.inputs.disable-workflow == 'true'
+        if: inputs.disable-workflow
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
