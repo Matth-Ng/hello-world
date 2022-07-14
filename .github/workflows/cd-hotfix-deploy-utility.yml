@@ -46,11 +46,11 @@ jobs:
   deploy-to-dev:
     if: github.event.review.state == 'approved' && needs.check-workflow.outputs.DRAFT_STATE == 'active'
     needs: check-workflow
-    uses: ./.github/workflows/cd-build.yml
+    uses: Matth-Ng/hello-world/.github/workflows/cd-build.yml@hotfix
     
   create-prerelease:
     needs: deploy-to-dev
-    uses: ./.github/workflows/cd-create-prerelease-draft.yml
+    uses: Matth-Ng/hello-world/.github/workflows/cd-create-prerelease-draft.yml@hotfix
     with:
       disable-workflow: true
       generate-notes: false
@@ -58,7 +58,7 @@ jobs:
 
   publish-prerelease:
     needs: create-prerelease
-    uses: ./.github/workflows/cd-publish-prerelease.yml
+    uses: Matth-Ng/hello-world/.github/workflows/cd-publish-prerelease.yml@hotfix
     with:
       disable-workflow: true
       latest: true
@@ -66,7 +66,7 @@ jobs:
 
   promote-release:
     needs: publish-prerelease
-    uses: ./.github/workflows/cd-promote-release.yml
+    uses: Matth-Ng/hello-world/.github/workflows/cd-promote-release.yml@hotfix
     with:
       disable-workflow: true
     secrets: inherit

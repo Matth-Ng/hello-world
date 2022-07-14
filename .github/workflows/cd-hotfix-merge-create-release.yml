@@ -1,4 +1,4 @@
-name: Hotfix Delete Old Release
+name: Hotfix Merge and Create Release
 
 on:
   pull_request:
@@ -149,3 +149,12 @@ jobs:
       id: ${{ needs.get-current-drafts-to-delete.outputs.IDSJSON }}
       tag: ${{ needs.get-current-drafts-to-delete.outputs.TAGSJSON }}
     secrets: inherit
+
+  create-new-prerelease:
+    needs: [get-current-prerelease-to-delete, delete-current-drafts-releases]
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
+    uses: ./.github/workflows/cd-create-prerelease-draft.yml
+    secrets: inherit
+    with:
+      disable-workflow: false
+      disable-notes: false
