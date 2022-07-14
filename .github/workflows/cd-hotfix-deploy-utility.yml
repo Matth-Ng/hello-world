@@ -11,8 +11,10 @@ jobs:
     steps:
       - name: print var
         run: |
-          echo "${{ github.event.git_ref }}"
-          echo "${GITHUB_REF##*/}"
+          echo "${{ github.base_ref }}"
+          echo "${{ github.ref }}"
+          echo "${{ github.head_ref }}"
+          echo "${GITHUB_REF}"
 
   # check-workflow:
   #   if: github.event.review.state == 'approved'
